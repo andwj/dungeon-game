@@ -1,13 +1,11 @@
-_work
+oga/*.dat
+oga/*.lno
 
 menu/fteqcc.log
-menu/menu.dat
-menu/menu.lno
-
 game/fteqcc.log
-game/progs.dat
-game/progs.lno
-
 client/fteqcc.log
-client/csprogs.dat
-client/csprogs.lno
+
+# local crud
+bin
+_work
+Run-me.sh
