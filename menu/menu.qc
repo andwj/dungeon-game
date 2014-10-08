@@ -98,7 +98,7 @@ void m_draw()
 	back_size_y = vid_height;
 	back_size_z = 0;
 
-	drawpic('0 0 0', "title", back_size, '1 1 1', 1.0, 0);
+	drawpic('0 0 0', "gfx/title", back_size, '1 1 1', 1.0, 0);
 }
 
 
