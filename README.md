@@ -16,8 +16,8 @@ menu/     : contains QC code for the menus
 bin/      : where we place executables (esp. Darkplaces itself)
 
 oga/      : where to place all ready-to-use assets
-            (this is the "-game" folder for the Darkplaces engine)
-            (Note: name is temporary)
+            (this is the "gamedir" folder for the Darkplaces engine)
+            (NOTE: name is temporary)
    
 dpdefs/   : definitions for Darkplaces (copied from Darkplaces source)
 
@@ -28,21 +28,21 @@ Makefile  : makefile for building the QC programs (requires fteqcc)
 
 ##Structure underneath oga/ :
 
-textures/   : contains the textures  (TGA format preferred)
-              [ TODO : see if sub-directories are usable ]
+textures/    : contains the textures  (TGA or JPEG format)
 
-gfx/        : contains user interface images
+gfx/         : contains user interface images (TGA format preferred)
 
-sound/      : contains sound effects  (WAV format)
+sound/       : contains sound effects  (WAV format)
 
-music/      : contains music  (OGG/Vorbis format)
+music/       : contains music  (OGG/Vorbis format)
 
-progs/      : contains models
+progs/       : contains models
 
 progs.dat    : game code (compiled QC)
+
 csprogs.dat  : client/ui code (compiled QC)
+
 menu.dat     : menu code (compiled QC)
 
-quake.rc     : commands run at engine startup
-default.cfg  : default configuration (incl. key bindings)
+default.cfg  : default configuration (including key bindings)
 
