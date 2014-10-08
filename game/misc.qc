@@ -176,7 +176,7 @@ void() misc_fireball =
 	self.nextthink = time + (random() * 5);
 	self.think = fire_fly;
 	if (!self.speed)
-		self.speed == 1000;
+		self.speed = 1000;
 };
 
 void() fire_fly =
@@ -288,213 +288,12 @@ void() misc_explobox2 =
 	}
 };
 
-//============================================================================
-
-float SPAWNFLAG_SUPERSPIKE	= 1;
-float SPAWNFLAG_LASER = 2;
-
-void(vector org, vector vec) LaunchLaser;
-
-void() spikeshooter_use =
-{
-	if (self.spawnflags & SPAWNFLAG_LASER)
-	{
-		sound (self, CHAN_VOICE, "enforcer/enfire.wav", 1, ATTN_NORM);
-		LaunchLaser (self.origin, self.movedir);
-	}
-	else
-	{
-		sound (self, CHAN_VOICE, "weapons/spike2.wav", 1, ATTN_NORM);
-		launch_spike (self.origin, self.movedir);
-		newmis.velocity = self.movedir * 500;
-		if (self.spawnflags & SPAWNFLAG_SUPERSPIKE)
-			newmis.touch = superspike_touch;
-	}
-};
-
-void() shooter_think =
-{
-	spikeshooter_use ();
-	self.nextthink = time + self.wait;
-	newmis.velocity = self.movedir * 500;
-};
-
-
-/*QUAKED trap_spikeshooter (0 .5 .8) (-8 -8 -8) (8 8 8) superspike laser
-When triggered, fires a spike in the direction set in QuakeEd.
-Laser is only for REGISTERED.
-*/
-
-void() trap_spikeshooter =
-{
-	SetMovedir ();
-	self.use = spikeshooter_use;
-	if (self.spawnflags & SPAWNFLAG_LASER)
-	{
-		precache_model2 ("progs/laser.mdl");
-		
-		precache_sound2 ("enforcer/enfire.wav");
-		precache_sound2 ("enforcer/enfstop.wav");
-	}
-	else
-		precache_sound ("weapons/spike2.wav");
-};
-
-
-/*QUAKED trap_shooter (0 .5 .8) (-8 -8 -8) (8 8 8) superspike laser
-Continuously fires spikes.
-"wait" time between spike (1.0 default)
-"nextthink" delay before firing first spike, so multiple shooters can be stagered.
-*/
-void() trap_shooter =
-{
-	trap_spikeshooter ();
-	
-	if (self.wait == 0)
-		self.wait = 1;
-	self.nextthink = self.nextthink + self.wait + self.ltime;
-	self.think = shooter_think;
-};
-
-
-
 /*
 ===============================================================================
 
 
 ===============================================================================
 */
-
-
-void() make_bubbles;
-void() bubble_remove;
-void() bubble_bob;
-
-/*QUAKED air_bubbles (0 .5 .8) (-8 -8 -8) (8 8 8)
-
-testing air bubbles
-*/
-
-void() air_bubbles =
-
-{
-	if (deathmatch)
-	{
-		remove (self);
-		return;
-	}
-	precache_model ("progs/s_bubble.spr");
-	self.nextthink = time + 1;
-	self.think = make_bubbles;
-};
-
-void() make_bubbles =
-{
-local entity	bubble;
-
-	bubble = spawn();
-	setmodel (bubble, "progs/s_bubble.spr");
-	setorigin (bubble, self.origin);
-	bubble.movetype = MOVETYPE_NOCLIP;
-	bubble.solid = SOLID_NOT;
-	bubble.velocity = '0 0 15';
-	bubble.nextthink = time + 0.5;
-	bubble.think = bubble_bob;
-	bubble.touch = bubble_remove;
-	bubble.classname = "bubble";
-	bubble.frame = 0;
-	bubble.cnt = 0;
-	setsize (bubble, '-8 -8 -8', '8 8 8');
-	self.nextthink = time + random() + 0.5;
-	self.think = make_bubbles;
-};
-
-void() bubble_split =
-{
-local entity	bubble;
-	bubble = spawn();
-	setmodel (bubble, "progs/s_bubble.spr");
-	setorigin (bubble, self.origin);
-	bubble.movetype = MOVETYPE_NOCLIP;
-	bubble.solid = SOLID_NOT;
-	bubble.velocity = self.velocity;
-	bubble.nextthink = time + 0.5;
-	bubble.think = bubble_bob;
-	bubble.touch = bubble_remove;
-	bubble.classname = "bubble";
-	bubble.frame = 1;
-	bubble.cnt = 10;
-	setsize (bubble, '-8 -8 -8', '8 8 8');
-	self.frame = 1;
-	self.cnt = 10;
-	if (self.waterlevel != 3)
-		remove (self);
-};
-
-void() bubble_remove =
-{
-	if (other.classname == self.classname)
-	{
-//		dprint ("bump");
-		return;
-	}
-	remove(self);
-};
-
-void() bubble_bob =
-{
-local float		rnd1, rnd2, rnd3;
-local vector	vtmp1, modi;
-
-	self.cnt = self.cnt + 1;
-	if (self.cnt == 4)
-		bubble_split();
-	if (self.cnt == 20)
-		remove(self);
-
-	rnd1 = self.velocity_x + (-10 + (random() * 20));
-	rnd2 = self.velocity_y + (-10 + (random() * 20));
-	rnd3 = self.velocity_z + 10 + random() * 10;
-
-	if (rnd1 > 10)
-		rnd1 = 5;
-	if (rnd1 < -10)
-		rnd1 = -5;
-		
-	if (rnd2 > 10)
-		rnd2 = 5;
-	if (rnd2 < -10)
-		rnd2 = -5;
-		
-	if (rnd3 < 10)
-		rnd3 = 15;
-	if (rnd3 > 30)
-		rnd3 = 25;
-	
-	self.velocity_x = rnd1;
-	self.velocity_y = rnd2;
-	self.velocity_z = rnd3;
-		
-	self.nextthink = time + 0.5;
-	self.think = bubble_bob;
-};
-
-/*~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>
-~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~<~>~*/
-
-/*QUAKED viewthing (0 .5 .8) (-8 -8 -8) (8 8 8)
-
-Just for the debugging level.  Don't use
-*/
-
-void() viewthing =
-
-{
-	self.movetype = MOVETYPE_NONE;
-	self.solid = SOLID_NOT;
-	precache_model ("progs/player.mdl");
-	setmodel (self, "progs/player.mdl");
-};
 
 
 /*
@@ -533,7 +332,7 @@ void() func_illusionary =
 	self.movetype = MOVETYPE_NONE;
 	self.solid = SOLID_NOT;
 	setmodel (self, self.model);
-	makestatic ();
+	makestatic (self);
 };
 
 /*QUAKED func_episodegate (0 .5 .8) ? E1 E2 E3 E4

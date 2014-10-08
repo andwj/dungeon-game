@@ -9,6 +9,17 @@ float() W_BestWeapon;
 void() W_SetCurrentAmmo;
 
 
+void (entity targ, entity inflictor, entity attacker, float damage) T_Damage =
+{
+  // TODO
+}
+
+void(entity bomb, entity attacker, float rad, entity ignore) T_RadiusDamage =
+{
+  // TODO
+}
+
+
 // called by worldspawn
 void() W_Precache =
 {
@@ -90,8 +101,7 @@ SpawnMeatSpray
 */
 void(vector org, vector vel) SpawnMeatSpray =
 {
-	local	entity missile, mpuff;
-	local	vector	org;
+	local	entity missile;
 
 	missile = spawn ();
 	missile.owner = self;
@@ -311,6 +321,7 @@ ROCKETS
 ==============================================================================
 */
 
+
 void()	s_explode1	=	[0,		s_explode2] {};
 void()	s_explode2	=	[1,		s_explode3] {};
 void()	s_explode3	=	[2,		s_explode4] {};
@@ -375,7 +386,7 @@ W_FireRocket
 */
 void() W_FireRocket =
 {
-	local	entity missile, mpuff;
+	local	entity missile;
 	
 	self.currentammo = self.ammo_rockets = self.ammo_rockets - 1;
 	
@@ -550,7 +561,7 @@ W_FireGrenade
 */
 void() W_FireGrenade =
 {
-	local	entity missile, mpuff;
+	local	entity missile;
 	
 	self.currentammo = self.ammo_rockets = self.ammo_rockets - 1;
 	
@@ -629,7 +640,6 @@ void(vector org, vector dir) launch_spike =
 void() W_FireSuperSpikes =
 {
 	local vector	dir;
-	local entity	old;
 	
 	sound (self, CHAN_WEAPON, "weapons/spike2.wav", 1, ATTN_NORM);
 	self.attack_finished = time + 0.2;
@@ -645,7 +655,6 @@ void() W_FireSuperSpikes =
 void(float ox) W_FireSpikes =
 {
 	local vector	dir;
-	local entity	old;
 	
 	makevectors (self.v_angle);
 	
@@ -673,10 +682,8 @@ void(float ox) W_FireSpikes =
 
 
 
-.float hit_z;
 void() spike_touch =
 {
-local float rand;
 	if (other == self.owner)
 		return;
 
@@ -716,7 +723,6 @@ local float rand;
 
 void() superspike_touch =
 {
-local float rand;
 	if (other == self.owner)
 		return;
 

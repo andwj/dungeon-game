@@ -1,6 +1,4 @@
 
-void() bubble_bob;
-
 /*
 ==============================================================================
 
@@ -236,7 +234,6 @@ void() player_rocket3   =[$rockatt3, player_rocket4  ] {self.weaponframe=3;};
 void() player_rocket4   =[$rockatt4, player_rocket5  ] {self.weaponframe=4;};
 void() player_rocket5   =[$rockatt5, player_rocket6  ] {self.weaponframe=5;};
 void() player_rocket6   =[$rockatt6, player_run  ] {self.weaponframe=6;};
-void(float num_bubbles) DeathBubbles;
 
 void() PainSound =
 {
@@ -254,7 +251,6 @@ local float		rs;
 // water pain sounds
 	if (self.watertype == CONTENT_WATER && self.waterlevel == 3)
 	{
-		DeathBubbles(1);
 		if (random() > 0.5)
 			sound (self, CHAN_VOICE, "player/drown1.wav", 1, ATTN_NORM);
 		else
@@ -355,46 +351,6 @@ void() player_died1;
 void() player_diee1;
 void() player_die_ax1;
 
-void() DeathBubblesSpawn =
-{
-local entity	bubble;
-	if (self.owner.waterlevel != 3)
-		return;
-	bubble = spawn();
-	setmodel (bubble, "progs/s_bubble.spr");
-	setorigin (bubble, self.owner.origin + '0 0 24');
-	bubble.movetype = MOVETYPE_NOCLIP;
-	bubble.solid = SOLID_NOT;
-	bubble.velocity = '0 0 15';
-	bubble.nextthink = time + 0.5;
-	bubble.think = bubble_bob;
-	bubble.classname = "bubble";
-	bubble.frame = 0;
-	bubble.cnt = 0;
-	setsize (bubble, '-8 -8 -8', '8 8 8');
-	self.nextthink = time + 0.1;
-	self.think = DeathBubblesSpawn;
-	self.air_finished = self.air_finished + 1;
-	if (self.air_finished >= self.bubble_count)
-		remove(self);
-};
-
-void(float num_bubbles) DeathBubbles =
-{
-local entity	bubble_spawner;
-	
-	bubble_spawner = spawn();
-	setorigin (bubble_spawner, self.origin);
-	bubble_spawner.movetype = MOVETYPE_NONE;
-	bubble_spawner.solid = SOLID_NOT;
-	bubble_spawner.nextthink = time + 0.1;
-	bubble_spawner.think = DeathBubblesSpawn;
-	bubble_spawner.air_finished = 0;
-	bubble_spawner.owner = self;
-	bubble_spawner.bubble_count = num_bubbles;
-	return;
-};
-
 
 void() DeathSound =
 {
@@ -403,7 +359,6 @@ local float		rs;
 	// water death sounds
 	if (self.waterlevel == 3)
 	{
-		DeathBubbles(20);
 		sound (self, CHAN_VOICE, "player/h2odeath.wav", 1, ATTN_NONE);
 		return;
 	}
@@ -532,10 +487,7 @@ void() PlayerDie =
 	self.radsuit_finished = 0;
 	self.modelindex = modelindex_player;	// don't use eyes
 
-	if (deathmatch || coop)
-		DropBackpack();
-	
-	self.weaponmodel="";
+	self.weaponmodel = "";
 	self.view_ofs = '0 0 -8';
 	self.deadflag = DEAD_DYING;
 	self.solid = SOLID_NOT;

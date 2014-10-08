@@ -167,20 +167,9 @@ float	AS_MISSILE		= 4;
 void(vector tdest, float tspeed, void() func) SUB_CalcMove;
 void(entity ent, vector tdest, float tspeed, void() func) SUB_CalcMoveEnt;
 void(vector destangle, float tspeed, void() func) SUB_CalcAngleMove;
-void()  SUB_CalcMoveDone;
+void() SUB_CalcMoveDone;
 void() SUB_CalcAngleMoveDone;
 void() SUB_Null;
 void() SUB_UseTargets;
 void() SUB_Remove;
-
-//
-//	combat.qc
-//
-void(entity targ, entity inflictor, entity attacker, float damage) T_Damage;
-
-
-float (entity e, float healamount, float ignore) T_Heal; // health function
-
-float(entity targ, entity inflictor) CanDamage;
-
 

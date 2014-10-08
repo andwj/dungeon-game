@@ -4,8 +4,6 @@ void () W_WeaponFrame;
 void() W_SetCurrentAmmo;
 void() player_pain;
 void() player_stand1;
-void (vector org) spawn_tfog;
-void (vector org, entity death_owner) spawn_tdeath;
 
 float	modelindex_eyes, modelindex_player;
 
@@ -131,6 +129,7 @@ entity() FindIntermission =
 		return spot;
 	
 	objerror ("FindIntermission: no spot");
+  return world;
 };
 
 
@@ -289,8 +288,6 @@ void() execute_changelevel =
 
 void() changelevel_touch =
 {
-	local entity	pos;
-
 	if (other.classname != "player")
 		return;
 
@@ -533,10 +530,7 @@ void() PutClientInServer =
 	if (deathmatch || coop)
 	{
 		makevectors(self.angles);
-		spawn_tfog (self.origin + v_forward*20);
 	}
-
-	spawn_tdeath (self.origin, self);
 };
 
 
@@ -691,7 +685,6 @@ void() CheckRules =
 
 void() PlayerDeathThink =
 {
-	local entity	old_self;
 	local float		forward;
 
 	if ((self.flags & FL_ONGROUND))
@@ -726,8 +719,6 @@ void() PlayerDeathThink =
 
 void() PlayerJump =
 {
-	local vector start, end;
-	
 	if (self.flags & FL_WATERJUMP)
 		return;
 	
@@ -898,9 +889,6 @@ Called every frame before physics are run
 */
 void() PlayerPreThink =
 {
-	local	float	mspeed, aspeed;
-	local	float	r;
-
 	if (intermission_running)
 	{
 		IntermissionThink ();	// otherwise a button could be missed between
@@ -1110,14 +1098,11 @@ Called every frame after physics are run
 */
 void() PlayerPostThink =
 {
-	local	float	mspeed, aspeed;
-	local	float	r;
-
 	if (self.view_ofs == '0 0 0')
 		return;		// intermission or finale
 	if (self.deadflag)
 		return;
-		
+
 // do weapon stuff
 
 	W_WeaponFrame ();
