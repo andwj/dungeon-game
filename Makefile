@@ -2,7 +2,7 @@
 # Makefile for game / client / menu progs
 #
 
-all: oga/menu.dat
+all: oga/menu.dat oga/progs.dat
 
 oga/progs.dat: game/*.qc game/progs.src
 	cd game && fteqcc > /dev/null
@@ -22,7 +22,7 @@ oga/menu.dat: menu/*.qc menu/progs.src
 clean:
 	rm -f */*.dat
 	rm -f */*.lno
-	rm -f */fteqcc.log
+	rm -f */fteqcc.log ./fteqcc.log
 
 #--- editor settings ------------
 # vi:ts=8:sw=8:noexpandtab
