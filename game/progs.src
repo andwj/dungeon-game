@@ -1,5 +1,8 @@
 progs.dat
 
+../dpdefs/progsdefs.qc
+../dpdefs/dpextensions.qc
+
 defs.qc
 subs.qc
 weapons.qc
