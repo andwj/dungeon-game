@@ -1,7 +1,7 @@
 #/bin/sh
 # if installed by a package manager, run that one
 if type -t darkplaces ; then
-  darkplaces -game oga ;
+  darkplaces -customgamedirname1 oga ;
 else
-  bin/darkplaces-linux-686-sdl -game oga ;
+  bin/darkplaces-linux-686-sdl -customgamedirname1 oga ;
 fi
