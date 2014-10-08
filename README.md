@@ -19,6 +19,8 @@ oga/      : where to place all ready-to-use assets
             (this is the "-game" folder for the Darkplaces engine)
             (Note: name is temporary)
    
+dpdefs/   : definitions for Darkplaces (copied from Darkplaces source)
+
 misc/     : miscellaneous stuff, e.g. packing scripts
 
 
