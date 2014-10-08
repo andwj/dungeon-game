@@ -1,0 +1,9 @@
+{
+  "classname" "worldspawn"
+}
+{
+  "classname" "info_player_start"
+  "origin" "224 224 90"
+  "angle" "0"
+}
+
