@@ -43,5 +43,6 @@ progs.dat    : game code (compiled QC)
 csprogs.dat  : client/ui code (compiled QC)
 menu.dat     : menu code (compiled QC)
 
+quake.rc     : commands run at engine startup
 default.cfg  : default configuration (incl. key bindings)
 
