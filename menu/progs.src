@@ -1,7 +1,7 @@
 menu.dat
 
-dpdefs/menudefs.qc
-dpdefs/keycodes.qc
+../dpdefs/menudefs.qc
+../dpdefs/keycodes.qc
 
 menu.qc
 
