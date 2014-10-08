@@ -4,14 +4,24 @@
 
 all: oga/menu.dat
 
-oga/menu.dat: menu/*.qc menu/*.qh menu/progs.src
+oga/progs.dat: game/*.qc game/progs.src
+	cd game && fteqcc > /dev/null
+	mv game/progs.dat oga/
+	mv game/progs.lno oga/
+
+oga/csprogs.dat: client/*.qc client/progs.src
+	cd client && fteqcc > /dev/null
+	mv client/csprogs.dat oga/
+	mv client/csprogs.lno oga/
+
+oga/menu.dat: menu/*.qc menu/progs.src
 	cd menu && fteqcc > /dev/null
 	mv menu/menu.dat oga/
 	mv menu/menu.lno oga/
 
 clean:
-	rm -f oga/*.dat
-	rm -f menu/menu.dat menu/menu.lno
+	rm -f */*.dat
+	rm -f */*.lno
 	rm -f */fteqcc.log
 
 #--- editor settings ------------
