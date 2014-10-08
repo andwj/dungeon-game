@@ -1,1 +1,11 @@
-menu/dpdefs
+menu/fteqcc.log
+menu/menu.dat
+menu/menu.lno
+
+game/fteqcc.log
+game/progs.dat
+game/progs.lno
+
+client/fteqcc.log
+client/csprogs.dat
+client/csprogs.lno
