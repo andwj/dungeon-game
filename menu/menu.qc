@@ -92,8 +92,6 @@ void m_draw()
 	if (menu_state == MENU_OFF)
 		return;
 
-print("m_draw....\n");
-
 	vector back_size;
 
 	back_size_x = vid_width;
