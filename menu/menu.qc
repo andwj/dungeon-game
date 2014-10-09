@@ -12,6 +12,11 @@ float menu_state;
 #define MENU_Confirm_New    5
 #define MENU_Confirm_Quit   6
 
+vector mouse_pos;
+
+// button the mouse is currently over
+string over_button;
+
 
 float vid_width;
 float vid_height;
@@ -50,6 +55,8 @@ void Menu_Show()
 	menu_state = MENU_Main;
 
 	setkeydest(KEY_MENU);
+
+	setmousetarget(MT_CLIENT);
 }
 
 
@@ -58,6 +65,8 @@ void Menu_Hide()
 	menu_state = MENU_OFF;
 
 	setkeydest(KEY_GAME);
+
+	setmousetarget(MT_CLIENT);
 }
 
 
@@ -87,10 +96,60 @@ void m_keydown(float key, float ascii)
 }
 
 
+//------------------------------------------------------------------------
+
+
+void draw_cursor()
+{
+	drawpic(mouse_pos, "gfx/cursor_arrow", '64 64 0', '1 1 1', 1.0, DRAWFLAG_NORMAL);
+}
+
+
+void draw_text(float x, float y, string text)
+{
+	vector pos = '0 0 0';
+	pos_x = x;
+	pos_y = y;
+
+	vector scale = '25 35 0';
+	vector color = '255 127 0';
+
+	drawstring(pos, text, scale, color, 1.0 /* alpha */, DRAWFLAG_NORMAL);
+}
+
+
+void M_TextButton(string button, float x, float y, string text)
+{
+	if (mouse_pos_x >= 0)
+	{
+		if ((mouse_pos_x > x - 50) && (mouse_pos_x < x + 300 &&
+			(mouse_pos_y > y - 5)  && (mouse_pos_y < y + 30)))
+		{
+			over_button = button;
+		}
+	}
+
+	draw_text(x, y, text);
+}
+
+
+void Menu_DrawMain()
+{
+	draw_text(320, 100, "MAIN MENU");
+
+	over_button = "";
+
+	M_TextButton("test_map", 400, 150, "Test Map");
+	M_TextButton("quit",     400, 200, "Quit");
+}
+
+
 void m_draw()
 {
 	if (menu_state == MENU_OFF)
 		return;
+
+	mouse_pos = getmousepos();
 
 	vector back_size;
 
@@ -98,7 +157,12 @@ void m_draw()
 	back_size_y = vid_height;
 	back_size_z = 0;
 
-	drawpic('0 0 0', "gfx/title", back_size, '1 1 1', 1.0, 0);
+	drawpic('0 0 0', "gfx/title", back_size, '1 1 1', 1.0, DRAWFLAG_NORMAL);
+
+	if (menu_state == MENU_Main)
+		Menu_DrawMain();
+
+	draw_cursor();
 }
 
 
