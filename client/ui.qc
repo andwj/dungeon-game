@@ -2,11 +2,13 @@
 
 void CSQC_Init()
 {
+	print("CSQC_Init....\n");
 }
 
 
 void CSQC_Shutdown()
 {
+	print("CSQC_Shutdown....\n");
 }
 
 
