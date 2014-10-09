@@ -555,12 +555,16 @@ void(entity own, vector start, vector end) te_lightning3 = #430;
 void(entity own, vector start, vector end) te_beam = #431;
 void(vector dir) vectorvectors = #432;
 void(vector org) te_plasmaburn = #433;
+
+// andrewj : these are repeated below, disabled to fix compiler error
+#if 0
 float(entity e, float s) getsurfacenumpoints = #434;
 vector(entity e, float s, float n) getsurfacepoint = #435;
 vector(entity e, float s) getsurfacenormal = #436;
 string(entity e, float s) getsurfacetexture = #437;
 float(entity e, vector p) getsurfacenearpoint = #438;
 vector(entity e, float s, vector p) getsurfaceclippedpoint = #439;
+#endif
 
 float(string s) tokenize = #441;
 string(float n) argv = #442;
@@ -589,11 +593,15 @@ void(float bufhandle, float string_index, string str) bufstr_set = #467;
 float(float bufhandle, string str, float order) bufstr_add = #468;
 void(float bufhandle, float string_index) bufstr_free = #469;
 
+// andrewj : these are repeated below, disabled to fix compiler error
+#if 0
 float(float s) asin = #471;
 float(float c) acos = #472;
 float(float t) atan = #473;
 float(float c, float s) atan2 = #474;
 float(float a) tan = #475;
+#endif
+
 float(string s) strippedstringlen = #476;
 float(string s) strlennocol = #476; // This is the correct name for the function, but not removing the decolorizedstring mapping.
 string(string s) decolorizedstring = #477;
@@ -605,7 +613,12 @@ string(string s) cvar_defstring = #482;
 void(vector origin, string sample, float volume, float attenuation) pointsound = #483;
 string(string search, string replace, string subject) strreplace = #484;
 string(string search, string replace, string subject) strireplace = #485;
+
+// andrewj : these are repeated below, disabled to fix compiler error
+#if 0
 vector(entity e, float s, float n, float a) getsurfacepointattribute = #486;
+#endif
+
 #ifdef SUPPORT_GECKO
 float gecko_create( string name ) = #487;
 void gecko_destroy( string name ) = #488;
