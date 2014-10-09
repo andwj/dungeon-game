@@ -93,6 +93,15 @@ void m_keydown(float key, float ascii)
 
 	if (menu_state && key == K_ESCAPE)
 		Menu_Hide();
+
+	if (menu_state == MENU_Main && key >= K_MOUSE1 && key <= K_MOUSE3)
+	{
+		if (over_button == "quit")
+			cmd("\nquit\n");
+
+		if (over_button == "test")
+			cmd("\nmap test.obj\n");
+	}
 }
 
 
@@ -112,7 +121,7 @@ void draw_text(float x, float y, string text)
 	pos_y = y;
 
 	vector scale = '25 35 0';
-	vector color = '255 127 0';
+	vector color = '2 2 2';
 
 	drawstring(pos, text, scale, color, 1.0 /* alpha */, DRAWFLAG_NORMAL);
 }
@@ -120,16 +129,25 @@ void draw_text(float x, float y, string text)
 
 void M_TextButton(string button, float x, float y, string text)
 {
+	vector pos = '0 0 0';
+	pos_x = x;
+	pos_y = y;
+
+	vector scale = '25 35 0';
+	vector color = '2 0 0';
+
 	if (mouse_pos_x >= 0)
 	{
 		if ((mouse_pos_x > x - 50) && (mouse_pos_x < x + 300 &&
 			(mouse_pos_y > y - 5)  && (mouse_pos_y < y + 30)))
 		{
 			over_button = button;
+
+			color = '2 2 0';
 		}
 	}
 
-	draw_text(x, y, text);
+	drawstring(pos, text, scale, color, 1.0 /* alpha */, DRAWFLAG_NORMAL);
 }
 
 
@@ -139,8 +157,8 @@ void Menu_DrawMain()
 
 	over_button = "";
 
-	M_TextButton("test_map", 400, 150, "Test Map");
-	M_TextButton("quit",     400, 200, "Quit");
+	M_TextButton("test", 400, 150, "Test Map");
+	M_TextButton("quit", 400, 200, "Quit");
 }
 
 
