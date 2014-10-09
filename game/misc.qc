@@ -469,3 +469,17 @@ void() misc_noisemaker =
 	self.nextthink = time + 0.1 + random();
 	self.think = noise_think;
 };
+
+
+
+// andrewj : TEST CRUD
+
+void() test_pachyderme =
+{
+	precache_model ("progs/pachyderme.mdl");
+	setmodel (self, "progs/pachyderme.mdl");
+	self.skin = 0;
+  self.scale = 20;
+	setsize (self, '-16 -16 0', '16 16 56');
+}
+
