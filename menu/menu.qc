@@ -108,9 +108,12 @@ void m_keydown(float key, float ascii)
 //------------------------------------------------------------------------
 
 
+#define SCALE_1TO1  '0 0 0'
+
+
 void draw_cursor()
 {
-	drawpic(mouse_pos, "gfx/cursor_arrow", '64 64 0', '1 1 1', 1.0, DRAWFLAG_NORMAL);
+	drawpic(mouse_pos, "gfx/cursor_arrow", SCALE_1TO1, '1 1 1', 1.0, DRAWFLAG_NORMAL);
 }
 
 
@@ -171,7 +174,7 @@ void m_draw()
 
 	vector back_size;
 
-	back_size_x = vid_width;
+	back_size_x = vid_width / 1.6;
 	back_size_y = vid_height;
 	back_size_z = 0;
 
