@@ -2,7 +2,7 @@
 # Makefile for game / client / menu progs
 #
 
-all: oga/menu.dat oga/progs.dat
+all: oga/menu.dat oga/progs.dat oga/csprogs.dat
 
 oga/progs.dat: game/*.qc game/progs.src
 	cd game && fteqcc > /dev/null
