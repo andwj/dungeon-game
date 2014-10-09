@@ -38,6 +38,8 @@ music/       : contains music  (OGG/Vorbis format)
 
 progs/       : contains models
 
+env/         : contains sky boxes
+
 progs.dat    : game code (compiled QC)
 
 csprogs.dat  : client/ui code (compiled QC)
