@@ -55,8 +55,6 @@ void Menu_Show()
 	menu_state = MENU_Main;
 
 	setkeydest(KEY_MENU);
-
-	setmousetarget(MT_CLIENT);
 }
 
 
@@ -65,8 +63,6 @@ void Menu_Hide()
 	menu_state = MENU_OFF;
 
 	setkeydest(KEY_GAME);
-
-	setmousetarget(MT_CLIENT);
 }
 
 
