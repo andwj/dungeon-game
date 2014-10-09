@@ -1,6 +1,6 @@
 
 
-void CSQC_Init(float apiver, string enginename, float enginever)
+void CSQC_Init()
 {
 }
 
@@ -18,19 +18,19 @@ float CSQC_ConsoleCommand(string cmd)
 }
 
 
-void CSQC_UpdateView(float vwidth, float vheight, float notmenu)
+void CSQC_UpdateView(float vwidth, float vheight)
 {
 	clearscene();
 
-	setviewprop(VF_DRAWWORLD, 1);
+	setproperty(VF_DRAWWORLD, 1);
 
-	addentities(MASK_ENGINE | MASK_VIEWMODEL | MASK_NORMAL);
+	addentities(MASK_ENGINE | MASK_ENGINEVIEWMODELS | MASK_NORMAL);
 
 	renderscene();
 }
 
 
-float CSQC_InputEvent(float evtype, float scanx, float chary, float devid)
+float CSQC_InputEvent(float evtype, float x, float y)
 {
 	// TODO
 
