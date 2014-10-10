@@ -28,9 +28,26 @@ void UI_CMD_describe(string cmd)
 
 void UI_DrawDescription()
 {
-	vector pos = mouse_pos + '30 10 0';
-	vector scale = '8 8 0';
+	vector scale = '10 10 0';
+	vector pos   = mouse_pos + '0 20 0';
 	vector color = '2 2 2';
+
+	float width = stringwidth(obj_description, FALSE /* colorcodes */, scale);
+
+	float clip_x1 = 0;
+	float clip_x2 = 640;  //FIXME!!!  vid_conwidth
+
+	// position string near the cursor, but make it depend on absolute X
+	// coordinate (so it never gets chopped off by edge of screen)
+	float a;
+	if (mouse_pos_x < clip_x1)
+		a = 0;
+	else if (mouse_pos_x > clip_x2)
+		a = 1;
+	else
+		a = (mouse_pos_x - clip_x1) / (clip_x2 - clip_x1);
+
+	pos_x = pos_x - width * a;
 
 	drawstring(pos, obj_description, scale, color, 1.0 /* alpha */, DRAWFLAG_NORMAL);
 }
