@@ -8,7 +8,7 @@ vector mouse_pos;
 string obj_description;
 
 
-void UI_CMD_describe(cmd)
+void UI_CMD_describe(string cmd)
 {
 	if (obj_description != "")
 	{
@@ -29,7 +29,7 @@ void UI_CMD_describe(cmd)
 void UI_DrawDescription()
 {
 	vector pos = mouse_pos + '30 10 0';
-	vector scale = '12 12 0';
+	vector scale = '8 8 0';
 	vector color = '2 2 2';
 
 	drawstring(pos, obj_description, scale, color, 1.0 /* alpha */, DRAWFLAG_NORMAL);
@@ -62,6 +62,12 @@ void CSQC_Init()
 	print("CSQC_Init....\n");
 
 	registercommand("ui_describe");
+
+	// turn on Prydon cursor mode
+	cvar_set("cl_prydoncursor", "1");
+
+	// ensure we get mouse move events (even with Prydon cursor enabled)
+	setcursormode(1);
 }
 
 
