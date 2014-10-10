@@ -880,6 +880,29 @@ void() CheckWaterJump =
 };
 
 
+entity highlighted_ent;
+
+
+// andrewj: added this
+void CheckHighlightObject()
+{
+  if (! self.cursor_active)
+    return;
+
+  if (self.cursor_trace_ent == highlighted_ent)
+    return;
+
+  highlighted_ent = self.cursor_trace_ent;
+
+  // send description to client CSQC (empty if NO ent)
+
+  if (highlighted_ent)
+    localcmd(sprintf("\nui_describe %s\n", highlighted_ent.description));
+  else
+    localcmd("\nui_describe\n");
+}
+
+
 /*
 ================
 PlayerPreThink
@@ -897,6 +920,8 @@ void() PlayerPreThink =
 
 	if (self.view_ofs == '0 0 0')
 		return;		// intermission or finale
+
+  CheckHighlightObject();
 
 	makevectors (self.v_angle);		// is this still used
 

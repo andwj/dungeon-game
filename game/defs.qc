@@ -158,6 +158,9 @@ float	AS_MISSILE		= 4;
 .float		volume;
 
 
+// andrewj:
+.string   description;
+
 
 //============================================================================
 
