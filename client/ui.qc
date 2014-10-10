@@ -1,5 +1,6 @@
 
 
+
 void CSQC_Init()
 {
 	print("CSQC_Init....\n");
@@ -30,6 +31,12 @@ void CSQC_UpdateView(float vwidth, float vheight)
 
 	renderscene();
 }
+
+
+#define EVENT_KeyDown    0
+#define EVENT_KeyUp      1
+#define EVENT_RelMouse   2
+#define EVENT_AbsMouse   3
 
 
 float CSQC_InputEvent(float evtype, float x, float y)
