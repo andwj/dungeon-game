@@ -16,22 +16,27 @@ cp -v Run-linux.sh $dest
 chmod 755 $dest/Run-linux.sh
 
 # Data
-cp -av oga $dest/oga
+echo "Copying game assets...."
+
+cp -a oga $dest/oga
 
 # Source code
 mkdir -v $dest/source
 
-cp -av game   $dest/source/game
-cp -av client $dest/source/client
-cp -av menu   $dest/source/menu
+echo "Copying QC source...."
 
-rm -fv $dest/*/fteqcc.log
+cp -a game   $dest/source/game
+cp -a client $dest/source/client
+cp -a menu   $dest/source/menu
+
+rm -fv $dest/source/*/fteqcc.log
 
 #  Documentation
-#TODO
+markdown --html4tags doc/README_pack.md > $dest/README.html
+#TODO LICENSES
 
 # OK done
 #
-echo "------------------------------------"
-echo "zip -l -r oga-game-XXX oga-game-XXX.zip"
+echo "---------------------------------------"
+echo "zip -l -r oga-game-XXX.zip oga-game-XXX"
 echo ""
