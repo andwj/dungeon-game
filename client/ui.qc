@@ -1,8 +1,5 @@
 
 
-vector mouse_pos;
-
-
 // description for object currently under the cursor
 // NOTE : will be strzone'd (if not empty) so use carefully!
 string obj_description;
@@ -28,14 +25,14 @@ void UI_CMD_describe(string cmd)
 
 void UI_DrawDescription()
 {
-	vector scale = '10 10 0';
-	vector pos   = mouse_pos + '0 20 0';
+	vector scale = '14 14 0';
+	vector pos   = mouse_pos + '0 70 0';
 	vector color = '2 2 2';
 
 	float width = stringwidth(obj_description, FALSE /* colorcodes */, scale);
 
 	float clip_x1 = 0;
-	float clip_x2 = 640;  //FIXME!!!  vid_conwidth
+	float clip_x2 = scr_width;  // LESS IF INVENTORY IS SHOWN
 
 	// position string near the cursor, but make it depend on absolute X
 	// coordinate (so it never gets chopped off by edge of screen)
@@ -53,8 +50,41 @@ void UI_DrawDescription()
 }
 
 
+#define SCALE_1TO1  '0 0 0'
+
+
+void UI_DrawStats()
+{
+	vector bg_size = draw_getimagesize("gfx/stat_box");
+
+	vector pos = '0 0 0';
+
+	pos_x = scr_width  - bg_size_x;
+	pos_y = scr_height - bg_size_y;
+
+	drawpic(pos, "gfx/stat_box", SCALE_1TO1, '1 1 1', 1.0, 0);
+}
+
+
+void UI_DrawInventory()
+{
+	vector bg_size = draw_getimagesize("gfx/invent_box");
+
+	vector pos = '0 0 0';
+
+	pos_x = scr_width        - bg_size_x;
+	pos_y = scr_height - 200 - bg_size_y;
+
+	drawpic(pos, "gfx/invent_box", SCALE_1TO1, '1 1 1', 1.0, 0);
+}
+
+
 void UI_Draw()
 {
+	UI_DrawStats();
+
+	UI_DrawInventory();
+
 	if (obj_description != "")
 		UI_DrawDescription();
 }
@@ -114,6 +144,10 @@ float CSQC_ConsoleCommand(string cmd)
 
 void CSQC_UpdateView(float vwidth, float vheight)
 {
+	UpdateScreenSize();
+
+	mouse_pos = getmousepos();
+
 	UI_RenderWorld();
 	UI_Draw();
 }
@@ -127,12 +161,6 @@ void CSQC_UpdateView(float vwidth, float vheight)
 
 float CSQC_InputEvent(float evtype, float x, float y)
 {
-	if (evtype == EVENT_AbsMouse)
-	{
-		mouse_pos_x = x;
-		mouse_pos_y = y;
-	}
-
 	return 0;
 }
 

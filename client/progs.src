@@ -2,5 +2,7 @@ csprogs.dat
 
 ../dpdefs/csprogsdefs.qc
 
+../menu/screen.qc
+
 ui.qc
 
