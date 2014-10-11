@@ -36,7 +36,9 @@ sound/       : contains sound effects  (WAV format)
 
 music/       : contains music  (OGG/Vorbis format)
 
-progs/       : contains models
+models/      : contains models  (IQM "InterQuakeModel" format)
+
+items/       : contains item models and icon images
 
 env/         : contains sky boxes
 

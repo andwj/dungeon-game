@@ -481,7 +481,6 @@ void() test_pachyderme =
 	self.skin = 0;
   self.scale = 20;
 	setsize (self, '-16 -16 0', '16 16 56');
-  self.effects = EF_SELECTABLE;
 }
 
 

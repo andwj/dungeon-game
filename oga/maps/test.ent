@@ -11,6 +11,11 @@
   "classname" "test_pachyderme"
   "origin" "224 324 1"
   "angle" "180"
-  "description" "a huge hungry hippo"
+}
+
+{
+  "classname" "test_gold_key"
+  "origin" "464 224 16"
+  "angle" "180"
 }
 
