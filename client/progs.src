@@ -4,5 +4,6 @@ csprogs.dat
 
 ../menu/screen.qc
 
+invent.qc
 ui.qc
 
