@@ -4,7 +4,7 @@
 
 # Quake-C compiler to use
 # (we discard output of fteqcc since it creates a log file)
-QCC=fteqcc > /dev/null
+QCC=fteqcc -O0 > /dev/null
 
 all: oga/menu.dat oga/progs.dat oga/csprogs.dat
 
