@@ -51,10 +51,7 @@ float UpdateScreenSize()
 	//    3. vid_pixelheight changes final width (i.e. we squish or stretch horizontally
 	//       to account for non-square pixels)
 
-	screen_h = h;
-
-	if (h > 1000)
-		screen_h = screen_h / 2;
+	scr_height = 768;
 
 	scr_width = scr_height * w / h;
 
