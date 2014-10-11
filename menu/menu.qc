@@ -109,7 +109,7 @@ void m_keydown(float key, float ascii)
 
 void draw_cursor()
 {
-	drawpic(mouse_pos, "gfx/cursor_arrow", SCALE_1TO1, '1 1 1', 1.0, DRAWFLAG_NORMAL);
+	drawpic(mouse_pos, "gfx/prydoncursor001", SCALE_1TO1, '1 1 1', 1.0, DRAWFLAG_NORMAL);
 }
 
 
