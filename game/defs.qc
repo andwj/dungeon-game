@@ -160,6 +160,7 @@ float	AS_MISSILE		= 4;
 
 // andrewj:
 .string   description;
+.string   icon;
 
 
 //============================================================================

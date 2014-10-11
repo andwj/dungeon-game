@@ -484,3 +484,17 @@ void() test_pachyderme =
   self.effects = EF_SELECTABLE;
 }
 
+
+void() test_gold_key =
+{
+	precache_model ("items/gold_key.mdl");
+
+	setmodel (self, "items/gold_key.mdl");
+	self.skin = 0;
+  self.scale = 1;
+	setsize (self, '-16 -16 0', '16 16 56');
+  self.effects = EF_SELECTABLE;
+  self.description = "a shiny golden key";
+  self.icon = "items/gold_key_icon";
+}
+
