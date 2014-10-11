@@ -20,20 +20,50 @@ entity inventory_head;
 
 void UI_CreateInventory()
 {
-	float x, y;
+	float ix, iy;
 
-	for (x = 0 ; x < 4 ; ++x)
-	for (y = 0 ; y < 4 ; ++y)
+	for (ix = 0 ; ix < 4 ; ++ix)
+	for (iy = 0 ; iy < 4 ; ++iy)
 	{
 		entity box = spawn();
 
-		box.invent_x = x;
-		box.invent_y = y;
+		box.invent_x = ix;
+		box.invent_y = iy;
+
+box.invent_pic = "items/gold_key_icon";
 
 		// link it in
 		box.chain = inventory_head;
 		inventory_head = box;
 	}
+}
+
+
+entity UI_GetInventorySlot(float ix, float iy)
+{
+	entity e;
+
+	for (e = inventory_head ; e ; e = e.chain)
+		if (e.invent_x == ix && e.invent_y == iy)
+			return e;
+	
+	error("Inventory slot not found!\n");
+	return inventory_head;
+}
+
+
+void UI_DrawItem(vector box_pos, entity e)
+{
+	if (e.invent_pic == "")
+		return;
+	
+	// TODO if (e.invent_flags & INV_DRAGGING) return;
+
+	box_pos = box_pos + '15 70 0';
+	box_pos = box_pos + e.invent_x * '76 0 0';
+	box_pos = box_pos + e.invent_y * '0 64 0';
+
+	drawpic(box_pos, e.invent_pic, '64 64 0', '1 1 1', 1.0, 0);
 }
 
 
@@ -48,10 +78,12 @@ void UI_DrawInventory()
 
 	drawpic(pos, "gfx/invent_box", '0 0 0', '1 1 1', 1.0, 0);
 
-	// TEST for drawing an item...
-	pos = pos + '15 70 0';
+	/* draw the items */
 
-	drawpic(pos, "items/gold_key_icon", '64 64 0', '1 1 1', 1.0, 0);
+	entity e;
+
+	for (e = inventory_head ; e ; e = e.chain)
+		UI_DrawItem(pos, e);
 }
 
 

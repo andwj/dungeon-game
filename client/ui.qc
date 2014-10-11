@@ -98,6 +98,8 @@ void CSQC_Init()
 {
 	print("CSQC_Init....\n");
 
+	UI_CreateInventory();
+
 	registercommand("ui_describe");
 
 	// turn on Prydon cursor mode
