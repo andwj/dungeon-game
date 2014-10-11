@@ -3,5 +3,7 @@ menu.dat
 ../dpdefs/menudefs.qc
 ../dpdefs/keycodes.qc
 
+screen.qc
+
 menu.qc
 

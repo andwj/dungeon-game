@@ -12,21 +12,9 @@ float menu_state;
 #define MENU_Confirm_New    5
 #define MENU_Confirm_Quit   6
 
-vector mouse_pos;
-
 // button the mouse is currently over
 string over_button;
 
-
-float vid_width;
-float vid_height;
-
-
-void GetVidWidth()
-{
-	vid_width  = cvar("vid_conwidth");
-	vid_height = cvar("vid_conheight");
-}
 
 
 //---------------------- CALLBACKS -------------------------------------
@@ -35,7 +23,7 @@ void m_init()
 {
 	print("m_init....\n");
 
-	GetVidWidth();
+	UpdateScreenSize();
 
 	print("menu width  : "); print(ftos(vid_width));  print("\n");
 	print("menu height : "); print(ftos(vid_height)); print("\n");
@@ -165,6 +153,8 @@ void m_draw()
 {
 	if (menu_state == MENU_OFF)
 		return;
+
+	UpdateScreenSize();
 
 	mouse_pos = getmousepos();
 
