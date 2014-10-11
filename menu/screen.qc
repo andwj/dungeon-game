@@ -4,13 +4,13 @@
 //
 
 // copies of the cvars with the same names
-// (not just for convenience, also used to detect when those cvars have changed)
+// (not just for convenience, also to detect when those cvars have changed)
 float vid_width;
 float vid_height;
 float vid_pixelheight;
 
 // virtual size of screen
-// (sent to vid_conwidth and vid_conheight)
+// (sent to vid_conwidth and vid_conheight cvars)
 float scr_width;
 float scr_height;
 
@@ -18,7 +18,7 @@ float scr_height;
 vector mouse_pos;
 
 
-// check if screen changed size, and upda
+// check if video resolution has changed, update our virtual size
 // returns 1 if screen did change size, 0 normally
 float UpdateScreenSize()
 {
@@ -37,38 +37,40 @@ float UpdateScreenSize()
 		h == vid_height &&
 		p == vid_pixelheight)
 	{
-		return 0;
+		return 0;  // no change
 	}
+
+	vid_width  = w;
+	vid_height = h;
+	vid_pixelheight = p;
 
 	// compute new size of virtual screen
 	// requirements:
-	//    1. height is main thing we check
-	//    2. if real size < 4:3 aspect, allow squishing, otherwise keep same aspect ratio
+	//    1. height is the main factor
+	//    2. if real size < 4:3 aspect, squish, otherwise keep same aspect ratio
 	//    3. vid_pixelheight changes final width (i.e. we squish or stretch horizontally
 	//       to account for non-square pixels)
 
-	if (h < 392 ||
-	    (h/2 > 376 && h/2 < 392) ||
-	    (h/3 > 376 && h/3 < 392) ||
-	    (h/4 > 376 && h/4 < 392))
-	{
-		scr_height = 384;
-	}
-	else
-	{
-		scr_height = 400;
-	}
+	screen_h = h;
 
-	float w2 = w;
-	if (w / h < 1.5)
-		w2 = w2 * (1.5 / (w / h));
+	if (h > 1000)
+		screen_h = screen_h / 2;
 
-	scr_width = scr_height * w2 / h / p;
+	scr_width = scr_height * w / h;
+
+	// adjust for non-square pixels
+	scr_width = scr_width / p;
+
+	// leave enough horizontal room for UI stuff
+	if (scr_width < scr_height * 1.25)
+		scr_width = scr_height * 1.25;
 
 	cvar_set("vid_conwidth",  ftos(scr_width));
 	cvar_set("vid_conheight", ftos(scr_height));
 
 	mouse_pos = getmousepos();
+
+	return 1;
 }
 
 
