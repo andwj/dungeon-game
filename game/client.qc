@@ -1019,5 +1019,32 @@ void() ClientDisconnect =
 	set_suicide_frame ();
 };
 
+
+void(string s) SV_ParseClientCommand =
+{
+  // 'self' is the client which sent the command
+
+  print("SV_ParseClientCommand:\n");
+
+float num = tokenize(s);
+float i;
+
+for (i = 0 ; i < num ; ++i)
+{
+	print("  [");
+	print(argv(i));
+	print("]\n");
+}
+
+  if (FALSE /* check stuff...*/)
+  {
+  }
+  else
+  {
+    clientcommand(self, s);
+  }
+}
+
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab
