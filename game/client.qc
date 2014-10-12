@@ -487,7 +487,7 @@ void PutClientInServer()
 	W_SetCurrentAmmo ();
 
 	self.attack_finished = time;
-	self.th_pain = player_pain;
+//???	self.th_pain = player_pain;
 //???	self.th_die = Player_Die;
 	
 	self.deadflag = DEAD_NO;

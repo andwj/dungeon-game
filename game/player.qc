@@ -681,6 +681,9 @@ void Player_Obituary(entity targ, entity attacker)
 	local	string deathstring, deathstring2;
 	rnum = random();
 
+	deathstring  = "";
+	deathstring2 = "";
+
 	if (targ.classname == "player")
 	{
 		if (attacker.classname == "teledeath")

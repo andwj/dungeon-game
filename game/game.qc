@@ -41,6 +41,11 @@ void EndFrame()
 }
 
 
+// this is not used at all, but declared in dpdefs/progdefs.h
+void main()
+{ }
+
+
 //------------------------------------------------------------------------
 
 
