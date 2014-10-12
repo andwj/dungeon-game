@@ -18,5 +18,26 @@
 //
 
 
+void SV_Shutdown()
+{
+	/* nothing needed */
+}
+
+
+// andrewj: called by server at beginning of SV_Physics()
+void StartFrame()
+{
+	teamplay = cvar("teamplay");
+	skill = cvar("skill");
+	framecount = framecount + 1;
+}
+
+// andrewj: called by server at end of SV_Physics()
+void EndFrame()
+{
+	/* nothing needed */
+}
+
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab
