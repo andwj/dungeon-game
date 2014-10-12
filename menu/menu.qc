@@ -26,27 +26,7 @@ float menu_state;
 // button the mouse is currently over
 string over_button;
 
-
-
-//---------------------- CALLBACKS -------------------------------------
-
-void m_init()
-{
-	print("m_init....\n");
-
-	UpdateScreenSize();
-
-	print("menu width  : "); print(ftos(vid_width));  print("\n");
-	print("menu height : "); print(ftos(vid_height)); print("\n");
-
-	menu_state = MENU_OFF;
-}
-
-
-void m_shutdown()
-{
-	print("m_shutdown....\n");
-}
+float menu_initialized;
 
 
 void Menu_Show()
@@ -65,9 +45,67 @@ void Menu_Hide()
 }
 
 
+void Draw_Cursor()
+{
+	drawpic(mouse_pos, "gfx/prydoncursor001", SIZE_NORMAL, '1 1 1', 1.0, DRAWFLAG_NORMAL);
+}
+
+
+void Draw_Title()
+{
+	// FIXME: wrong.....
+
+	vector back_size;
+
+	back_size_x = vid_width / 1.6;
+	back_size_y = vid_height;
+	back_size_z = 0;
+
+	drawpic('0 0 0', "gfx/title", back_size, '1 1 1', 1.0, DRAWFLAG_NORMAL);
+}
+
+
+//---------------------- CALLBACKS -------------------------------------
+
+void m_init()
+{
+	print("m_init....\n");
+
+	UpdateScreenSize();
+
+	print("menu width  : "); print(ftos(vid_width));  print("\n");
+	print("menu height : "); print(ftos(vid_height)); print("\n");
+
+	menu_state = MENU_OFF;
+
+	menu_initialized = 1;
+}
+
+
+void m_shutdown()
+{
+	print("m_shutdown....\n");
+}
+
+
 void m_toggle(float mode)
 {
 	print("m_toggle = "); print(ftos(mode)); print("\n");
+
+	// andrewj : special logic for handling the very first call.
+	//
+	// That is because the engine ALWAYS executes a "menutoggle 1" command
+	// during start-up.  However what we want is to just show the title
+	// screen (and play the title music), and user presses a key to bring
+	// up the menu.
+
+	if (mode && menu_initialized == 1)
+	{
+		menu_initialized == 2;
+
+		setkeydest(KEY_MENU);
+		return;
+	}
 
 	if (mode)
 		Menu_Show();
@@ -76,12 +114,14 @@ void m_toggle(float mode)
 }
 
 
+/* engine callback */
 void m_keyup(float key, float ascii)
 {
 	print("m_keyup\n");
 }
 
 
+/* engine callback */
 void m_keydown(float key, float ascii)
 {
 	print("m_keydown = "); print(ftos(key)); print("\n");
@@ -101,12 +141,6 @@ void m_keydown(float key, float ascii)
 
 
 //------------------------------------------------------------------------
-
-
-void draw_cursor()
-{
-	drawpic(mouse_pos, "gfx/prydoncursor001", SIZE_NORMAL, '1 1 1', 1.0, DRAWFLAG_NORMAL);
-}
 
 
 void draw_text(float x, float y, string text)
@@ -157,27 +191,26 @@ void Menu_DrawMain()
 }
 
 
+/* engine callback */
 void m_draw()
 {
-	if (menu_state == MENU_OFF)
-		return;
-
 	UpdateScreenSize();
 
 	mouse_pos = getmousepos();
 
-	vector back_size;
+	// is player in game?  if not, draw the title picture
+	if (clientstate() != CS_CONNECTED)
+	{
+		Draw_Title();
+	}
 
-	back_size_x = vid_width / 1.6;
-	back_size_y = vid_height;
-	back_size_z = 0;
-
-	drawpic('0 0 0', "gfx/title", back_size, '1 1 1', 1.0, DRAWFLAG_NORMAL);
+	if (menu_state == MENU_OFF)
+		return;
 
 	if (menu_state == MENU_Main)
 		Menu_DrawMain();
 
-	draw_cursor();
+	Draw_Cursor();
 }
 
 
