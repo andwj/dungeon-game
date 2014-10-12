@@ -52,9 +52,6 @@ void UI_DrawDescription()
 }
 
 
-#define SCALE_1TO1  '0 0 0'
-
-
 void UI_DrawStats()
 {
 	vector bg_size = draw_getimagesize("gfx/stat_box");
@@ -64,7 +61,7 @@ void UI_DrawStats()
 	pos_x = scr_width  - bg_size_x;
 	pos_y = scr_height - bg_size_y;
 
-	drawpic(pos, "gfx/stat_box", SCALE_1TO1, '1 1 1', 1.0, 0);
+	drawpic(pos, "gfx/stat_box", SIZE_NORMAL, '1 1 1', 1.0, 0);
 }
 
 

@@ -3,6 +3,8 @@
 //       hence it should stay as self-contained as possible.
 //
 
+#define SIZE_NORMAL  '0 0 0'
+
 // copies of the cvars with the same names
 // (not just for convenience, also to detect when those cvars have changed)
 float vid_width;

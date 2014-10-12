@@ -92,12 +92,9 @@ void m_keydown(float key, float ascii)
 //------------------------------------------------------------------------
 
 
-#define SCALE_1TO1  '0 0 0'
-
-
 void draw_cursor()
 {
-	drawpic(mouse_pos, "gfx/prydoncursor001", SCALE_1TO1, '1 1 1', 1.0, DRAWFLAG_NORMAL);
+	drawpic(mouse_pos, "gfx/prydoncursor001", SIZE_NORMAL, '1 1 1', 1.0, DRAWFLAG_NORMAL);
 }
 
 
