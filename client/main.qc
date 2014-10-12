@@ -10,6 +10,34 @@
 //========================================================================
 
 
+float free_camera;
+
+void UpdateCameraMode()
+{
+	// check for +button8
+	float enable = (input_buttons & 128);
+
+	if (free_camera == enable)
+		return;
+
+	free_camera = enable;
+
+	if (enable)
+	{
+		cvar_set("cl_prydoncursor", "0");
+	}
+	else
+	{
+		cvar_set("cl_prydoncursor", "1");
+
+		// FIXME RESET ANGLE 
+	}
+}
+
+
+// ------------------------------------------------------------------------
+
+
 void CSQC_Init()
 {
 	print("UI Init....\n");
@@ -22,8 +50,8 @@ void CSQC_Init()
 	// turn on Prydon cursor mode
 	cvar_set("cl_prydoncursor", "1");
 
-	// ensure we get mouse move events (even with Prydon cursor enabled)
-	setcursormode(1);
+//???	// ensure we get mouse move events (even with Prydon cursor enabled)
+//???  	setcursormode(1);
 }
 
 
@@ -50,6 +78,7 @@ float CSQC_ConsoleCommand(string cmd)
 void CSQC_UpdateView(float vwidth, float vheight)
 {
 	UpdateScreenSize();
+	UpdateCameraMode();
 
 	mouse_pos = getmousepos();
 
@@ -67,6 +96,8 @@ void CSQC_UpdateView(float vwidth, float vheight)
 
 float CSQC_InputEvent(float evtype, float x, float y)
 {
+	// TODO
+
 	return 0;
 }
 
