@@ -177,3 +177,6 @@ void() SUB_Null;
 void() SUB_UseTargets;
 void() SUB_Remove;
 
+
+//--- editor settings ---
+// vi:ts=4:sw=4:noexpandtab

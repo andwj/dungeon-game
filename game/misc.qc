@@ -517,3 +517,6 @@ void(string s) SV_ParseClientCommand =
   }
 }
 
+
+//--- editor settings ---
+// vi:ts=4:sw=4:noexpandtab

@@ -284,3 +284,6 @@ void() SUB_UseTargets =
 	}
 };
 
+
+//--- editor settings ---
+// vi:ts=4:sw=4:noexpandtab

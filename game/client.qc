@@ -1448,3 +1448,6 @@ void(entity targ, entity attacker) ClientObituary =
 		}
 	}
 };
+
+//--- editor settings ---
+// vi:ts=4:sw=4:noexpandtab
