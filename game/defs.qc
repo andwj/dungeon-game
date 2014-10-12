@@ -13,10 +13,11 @@
 //
 // globals
 //
+entity		null_entity;	// an alias for 'world'
+
 float	movedist;
 float	gameover;		// set when a rule exits
 
-string	string_null;	// null string, nothing should be held here
 float	empty_float;
 
 entity	newmis;			// launch_spike sets this after spawning it
@@ -33,9 +34,7 @@ float		skill;
 //
 // world fields (FIXME: make globals)
 //
-.string		wad;
 .string 	map;
-.float		worldtype;	// 0=medieval 1=metal 2=base
 
 //================================================
 
