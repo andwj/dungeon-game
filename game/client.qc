@@ -16,6 +16,7 @@ void () W_WeaponFrame;
 void() W_SetCurrentAmmo;
 void() player_pain;
 void() player_stand1;
+void() Player_Jump;
 
 float	modelindex_eyes, modelindex_player;
 
@@ -454,13 +455,11 @@ PutClientInServer
 called each time a player is spawned
 ============
 */
-void() PlayerDie;
-
 
 // andrewj: this is called by the server for each new map.
 //          the only persistent data from last map are in 'parmXX' globals
 //          (which need to be decoded here, even for very first map).
-void() PutClientInServer =
+void PutClientInServer()
 {
 	local	entity spot;
 
@@ -489,7 +488,7 @@ void() PutClientInServer =
 
 	self.attack_finished = time;
 	self.th_pain = player_pain;
-	self.th_die = PlayerDie;
+//???	self.th_die = Player_Die;
 	
 	self.deadflag = DEAD_NO;
 // paustime is set by teleporters to keep the player from moving a while
@@ -518,7 +517,7 @@ void() PutClientInServer =
 	{
 		makevectors(self.angles);
 	}
-};
+}
 
 
 /*
@@ -704,169 +703,6 @@ void() PlayerDeathThink =
 };
 
 
-void() PlayerJump =
-{
-	if (self.flags & FL_WATERJUMP)
-		return;
-	
-	if (self.waterlevel >= 2)
-	{
-		if (self.watertype == CONTENT_WATER)
-			self.velocity_z = 100;
-		else if (self.watertype == CONTENT_SLIME)
-			self.velocity_z = 80;
-		else
-			self.velocity_z = 50;
-
-// play swiming sound
-		if (self.swim_flag < time)
-		{
-			self.swim_flag = time + 1;
-			if (random() < 0.5)
-				sound (self, CHAN_BODY, "misc/water1.wav", 1, ATTN_NORM);
-			else
-				sound (self, CHAN_BODY, "misc/water2.wav", 1, ATTN_NORM);
-		}
-
-		return;
-	}
-
-	if (!(self.flags & FL_ONGROUND))
-		return;
-
-	if ( !(self.flags & FL_JUMPRELEASED) )
-		return;		// don't pogo stick
-
-	self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
-
-	self.flags = self.flags - FL_ONGROUND;	// don't stairwalk
-	
-	self.button2 = 0;
-// player jumping sound
-	sound (self, CHAN_BODY, "player/plyrjmp8.wav", 1, ATTN_NORM);
-	self.velocity_z = self.velocity_z + 270;
-};
-
-
-/*
-===========
-WaterMove
-
-============
-*/
-.float	dmgtime;
-
-void() WaterMove =
-{
-//dprint (ftos(self.waterlevel));
-	if (self.movetype == MOVETYPE_NOCLIP)
-		return;
-	if (self.health < 0)
-		return;
-
-	if (self.waterlevel != 3)
-	{
-		if (self.air_finished < time)
-			sound (self, CHAN_VOICE, "player/gasp2.wav", 1, ATTN_NORM);
-		else if (self.air_finished < time + 9)
-			sound (self, CHAN_VOICE, "player/gasp1.wav", 1, ATTN_NORM);
-		self.air_finished = time + 12;
-		self.dmg = 2;
-	}
-	else if (self.air_finished < time)
-	{	// drown!
-		if (self.pain_finished < time)
-		{
-			self.dmg = self.dmg + 2;
-			if (self.dmg > 15)
-				self.dmg = 10;
-			T_Damage (self, world, world, self.dmg);
-			self.pain_finished = time + 1;
-		}
-	}
-	
-	if (!self.waterlevel)
-	{
-		if (self.flags & FL_INWATER)
-		{	
-			// play leave water sound
-			sound (self, CHAN_BODY, "misc/outwater.wav", 1, ATTN_NORM);
-			self.flags = self.flags - FL_INWATER;
-		}
-		return;
-	}
-
-	if (self.watertype == CONTENT_LAVA)
-	{	// do damage
-		if (self.dmgtime < time)
-		{
-			if (self.radsuit_finished > time)
-				self.dmgtime = time + 1;
-			else
-				self.dmgtime = time + 0.2;
-
-			T_Damage (self, world, world, 10*self.waterlevel);
-		}
-	}
-	else if (self.watertype == CONTENT_SLIME)
-	{	// do damage
-		if (self.dmgtime < time && self.radsuit_finished < time)
-		{
-			self.dmgtime = time + 1;
-			T_Damage (self, world, world, 4*self.waterlevel);
-		}
-	}
-	
-	if ( !(self.flags & FL_INWATER) )
-	{	
-
-// player enter water sound
-
-		if (self.watertype == CONTENT_LAVA)
-			sound (self, CHAN_BODY, "player/inlava.wav", 1, ATTN_NORM);
-		if (self.watertype == CONTENT_WATER)
-			sound (self, CHAN_BODY, "player/inh2o.wav", 1, ATTN_NORM);
-		if (self.watertype == CONTENT_SLIME)
-			sound (self, CHAN_BODY, "player/slimbrn2.wav", 1, ATTN_NORM);
-
-		self.flags = self.flags + FL_INWATER;
-		self.dmgtime = 0;
-	}
-	
-	if (! (self.flags & FL_WATERJUMP) )
-		self.velocity = self.velocity - 0.8*self.waterlevel*frametime*self.velocity;
-};
-
-void() CheckWaterJump =
-{
-	local vector start, end;
-
-// check for a jump-out-of-water
-	makevectors (self.angles);
-	start = self.origin;
-	start_z = start_z + 8; 
-	v_forward_z = 0;
-	normalize(v_forward);
-	end = start + v_forward*24;
-	traceline (start, end, TRUE, self);
-	if (trace_fraction < 1)
-	{	// solid at waist
-		start_z = start_z + self.maxs_z - 8;
-		end = start + v_forward*24;
-		self.movedir = trace_plane_normal * -50;
-		traceline (start, end, TRUE, self);
-		if (trace_fraction == 1)
-		{	// open at eye level
-			self.flags = self.flags | FL_WATERJUMP;
-			self.velocity_z = 225;
-			self.flags = self.flags - (self.flags & FL_JUMPRELEASED);
-			self.teleport_time = time + 2;	// safety net
-			return;
-		}
-	}
-};
-
-
 entity highlighted_ent;
 
 
@@ -913,10 +749,6 @@ void() PlayerPreThink =
 	makevectors (self.v_angle);		// is this still used
 
 	CheckRules ();
-	WaterMove ();
-
-	if (self.waterlevel == 2)
-		CheckWaterJump ();
 
 	if (self.deadflag >= DEAD_DEAD)
 	{
@@ -929,7 +761,7 @@ void() PlayerPreThink =
 
 	if (self.button2)
 	{
-		PlayerJump ();
+		Player_Jump ();
 	}
 	else
 		self.flags = self.flags | FL_JUMPRELEASED;
@@ -1185,258 +1017,6 @@ void() ClientDisconnect =
 	bprint (" frags\n");
 	sound (self, CHAN_BODY, "player/tornoff2.wav", 1, ATTN_NONE);
 	set_suicide_frame ();
-};
-
-/*
-===========
-ClientObituary
-
-called when a player dies
-============
-*/
-void(entity targ, entity attacker) ClientObituary =
-{
-	local	float rnum;
-	local	string deathstring, deathstring2;
-	rnum = random();
-
-	if (targ.classname == "player")
-	{
-		if (attacker.classname == "teledeath")
-		{
-			bprint (targ.netname);
-			bprint (" was telefragged by ");
-			bprint (attacker.owner.netname);
-			bprint ("\n");
-
-			attacker.owner.frags = attacker.owner.frags + 1;
-			return;
-		}
-
-		if (attacker.classname == "teledeath2")
-		{
-			bprint ("Satan's power deflects ");
-			bprint (targ.netname);
-			bprint ("'s telefrag\n");
-
-			targ.frags = targ.frags - 1;
-			return;
-		}
-
-		if (attacker.classname == "player")
-		{
-			if (targ == attacker)
-			{
-				// killed self
-				attacker.frags = attacker.frags - 1;
-				bprint (targ.netname);
-				
-				if (targ.weapon == 64 && targ.waterlevel > 1)
-				{
-					bprint (" discharges into the water.\n");
-					return;
-				}
-				if (targ.weapon == IT_GRENADE_LAUNCHER)
-					bprint (" tries to put the pin back in\n");
-				else
-					bprint (" becomes bored with life\n");
-				return;
-			}
-			else if ( (teamplay == 2) && (targ.team > 0)&&(targ.team == attacker.team) )
-			{
-				if (rnum < 0.25)
-					deathstring = " mows down a teammate\n";
-				else if (rnum < 0.50)
-					deathstring = " checks his glasses\n";
-				else if (rnum < 0.75)
-					deathstring = " gets a frag for the other team\n";
-				else
-					deathstring = " loses another friend\n";
-				bprint (attacker.netname);
-				bprint (deathstring);
-				attacker.frags = attacker.frags - 1;
-				return;
-			}
-			else
-			{
-				attacker.frags = attacker.frags + 1;
-
-				rnum = attacker.weapon;
-				if (rnum == IT_AXE)
-				{
-					deathstring = " was ax-murdered by ";
-					deathstring2 = "\n";
-				}
-				if (rnum == IT_SHOTGUN)
-				{
-					deathstring = " chewed on ";
-					deathstring2 = "'s boomstick\n";
-				}
-				if (rnum == IT_SUPER_SHOTGUN)
-				{
-					deathstring = " ate 2 loads of ";
-					deathstring2 = "'s buckshot\n";
-				}
-				if (rnum == IT_NAILGUN)
-				{
-					deathstring = " was nailed by ";
-					deathstring2 = "\n";
-				}
-				if (rnum == IT_SUPER_NAILGUN)
-				{
-					deathstring = " was punctured by ";
-					deathstring2 = "\n";
-				}
-				if (rnum == IT_GRENADE_LAUNCHER)
-				{
-					deathstring = " eats ";
-					deathstring2 = "'s pineapple\n";
-					if (targ.health < -40)
-					{
-						deathstring = " was gibbed by ";
-						deathstring2 = "'s grenade\n";
-					}
-				}
-				if (rnum == IT_ROCKET_LAUNCHER)
-				{
-					deathstring = " rides ";
-					deathstring2 = "'s rocket\n";
-					if (targ.health < -40)
-					{
-						deathstring = " was gibbed by ";
-						deathstring2 = "'s rocket\n" ;
-					}
-				}
-				if (rnum == IT_LIGHTNING)
-				{
-					deathstring = " accepts ";
-					if (attacker.waterlevel > 1)
-						deathstring2 = "'s discharge\n";
-					else
-						deathstring2 = "'s shaft\n";
-				}
-				bprint (targ.netname);
-				bprint (deathstring);
-				bprint (attacker.netname);
-				bprint (deathstring2);
-			}
-			return;
-		}
-		else
-		{
-			targ.frags = targ.frags - 1;
-			bprint (targ.netname);
-
-			// killed by a montser?
-			if (attacker.flags & FL_MONSTER)
-			{
-				if (attacker.classname == "monster_army")
-					bprint (" was shot by a Grunt\n");
-				if (attacker.classname == "monster_demon1")
-					bprint (" was eviscerated by a Fiend\n");
-				if (attacker.classname == "monster_dog")
-					bprint (" was mauled by a Rottweiler\n");
-				if (attacker.classname == "monster_dragon")
-					bprint (" was fried by a Dragon\n");
-				if (attacker.classname == "monster_enforcer")
-					bprint (" was blasted by an Enforcer\n");
-				if (attacker.classname == "monster_fish")
-					bprint (" was fed to the Rotfish\n");
-				if (attacker.classname == "monster_hell_knight")
-					bprint (" was slain by a Death Knight\n");
-				if (attacker.classname == "monster_knight")
-					bprint (" was slashed by a Knight\n");
-				if (attacker.classname == "monster_ogre")
-					bprint (" was destroyed by an Ogre\n");
-				if (attacker.classname == "monster_oldone")
-					bprint (" became one with Shub-Niggurath\n");
-				if (attacker.classname == "monster_shalrath")
-					bprint (" was exploded by a Vore\n");
-				if (attacker.classname == "monster_shambler")
-					bprint (" was smashed by a Shambler\n");
-				if (attacker.classname == "monster_tarbaby")
-					bprint (" was slimed by a Spawn\n");
-				if (attacker.classname == "monster_vomit")
-					bprint (" was vomited on by a Vomitus\n");
-				if (attacker.classname == "monster_wizard")
-					bprint (" was scragged by a Scrag\n");
-				if (attacker.classname == "monster_zombie")
-					bprint (" joins the Zombies\n");
-
-				return;
-			}
-
-			// tricks and traps
-			if (attacker.classname == "explo_box")
-			{
-				bprint (" blew up\n");
-				return;
-			}
-			if (attacker.solid == SOLID_BSP && attacker != world)
-			{	
-				bprint (" was squished\n");
-				return;
-			}
-			if (attacker.classname == "trap_shooter" || attacker.classname == "trap_spikeshooter")
-			{
-				bprint (" was spiked\n");
-				return;
-			}
-			if (attacker.classname == "fireball")
-			{
-				bprint (" ate a lavaball\n");
-				return;
-			}
-			if (attacker.classname == "trigger_changelevel")
-			{
-				bprint (" tried to leave\n");
-				return;
-			}
-
-			// in-water deaths
-			rnum = targ.watertype;
-			if (rnum == -3)
-			{
-				if (random() < 0.5)
-					bprint (" sleeps with the fishes\n");
-				else
-					bprint (" sucks it down\n");
-				return;
-			}
-			else if (rnum == -4)
-			{
-				if (random() < 0.5)
-					bprint (" gulped a load of slime\n");
-				else
-					bprint (" can't exist on slime alone\n");
-				return;
-			}
-			else if (rnum == -5)
-			{
-				if (targ.health < -15)
-				{
-					bprint (" burst into flames\n");
-					return;
-				}
-				if (random() < 0.5)
-					bprint (" turned into hot slag\n");
-				else
-					bprint (" visits the Volcano God\n");
-				return;
-			}
-
-			// fell to their death?
-			if (targ.deathtype == "falling")
-			{
-				targ.deathtype = "";
-				bprint (" fell to his death\n");
-				return;
-			}
-
-			// hell if I know; he's just dead!!!
-			bprint (" died\n");
-		}
-	}
 };
 
 //--- editor settings ---
