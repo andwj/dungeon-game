@@ -8,6 +8,7 @@ subs.qc
 inventory.qc
 weapons.qc
 
+game.qc
 world.qc
 client.qc
 player.qc
