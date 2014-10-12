@@ -54,15 +54,7 @@ void Draw_Cursor()
 
 void Draw_Title()
 {
-	// FIXME: wrong.....
-
-	vector back_size;
-
-	back_size_x = vid_width / 1.6;
-	back_size_y = vid_height;
-	back_size_z = 0;
-
-	drawpic('0 0 0', "gfx/title", back_size, '1 1 1', 1.0, DRAWFLAG_NORMAL);
+	SCR_DrawBackground("gfx/title", '0 0 0');
 }
 
 

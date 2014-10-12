@@ -27,6 +27,8 @@ float vid_pixelheight;
 float scr_width;
 float scr_height;
 
+vector scr_size;
+
 // current position of mouse pointer (x=0..scr_width, y=0..scr_height)
 vector mouse_pos;
 
@@ -75,12 +77,53 @@ float UpdateScreenSize()
 	if (scr_width < scr_height * 1.25)
 		scr_width = scr_height * 1.25;
 
+	scr_size = '0 0 0';
+	scr_size_x = scr_width;
+	scr_size_y = scr_height;
+
 	cvar_set("vid_conwidth",  ftos(scr_width));
 	cvar_set("vid_conheight", ftos(scr_height));
 
 	mouse_pos = getmousepos();
 
 	return 1;
+}
+
+
+//
+// Draws the picture so it covers most of the screen.
+//
+// It will be scaled so that it vertically filled the screen, and then
+// centered horizontally.  If it does not fit horizontally, the gaps at
+// left/right edges are filled with 'gap_color'.
+//
+// Recommended size of image is 1280x768.
+//
+void SCR_DrawBackground(string pic_name, vector gap_color)
+{
+	vector pic_size;
+
+	pic_size = drawgetimagesize(pic_name);
+
+
+	vector new_size;
+
+	new_size_y = scr_height;
+	new_size_x = scr_height * (pic_size_x / pic_size_y);
+	new_size_z = 0;
+
+	if (new_size_x < scr_width)
+	{
+		// hmmm, optimise this?
+		drawfill('0 0 0', scr_size, gap_color, 1.0, DRAWFLAG_NORMAL);
+	}
+
+
+	vector new_pos = '0 0 0';
+
+	new_pos_x = (scr_width - new_size_x) / 2;
+
+	drawpic(new_pos, pic_name, new_size, '1 1 1', 1.0, DRAWFLAG_NORMAL);
 }
 
 
