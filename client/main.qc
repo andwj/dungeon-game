@@ -30,7 +30,7 @@ void UpdateCameraMode()
 	{
 		cvar_set("cl_prydoncursor", "1");
 
-		// FIXME RESET ANGLE 
+		// FIXME RESET ANGLE ??
 	}
 }
 

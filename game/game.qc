@@ -18,6 +18,7 @@
 //
 
 
+// andrewj: called by server at the end of the world
 void SV_Shutdown()
 {
 	/* nothing needed */
@@ -32,11 +33,15 @@ void StartFrame()
 	framecount = framecount + 1;
 }
 
+
 // andrewj: called by server at end of SV_Physics()
 void EndFrame()
 {
 	/* nothing needed */
 }
+
+
+//------------------------------------------------------------------------
 
 
 //--- editor settings ---

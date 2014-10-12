@@ -13,14 +13,14 @@
 
 void INV_InitialSpawnParms()
 {
-	parm1 = IT_SHOTGUN | IT_AXE;
+	parm1 = 0;
 	parm2 = 100;
 	parm3 = 0;
 	parm4 = 25;
 	parm5 = 0;
 	parm6 = 0;
 	parm7 = 0;
-	parm8 = 1;
+	parm8 = 0;
 	parm9 = 0;
 }
 
@@ -41,7 +41,8 @@ void INV_EncodeSpawnParms()
 
 void INV_DecodeSpawnParms()
 {
-	self.items = parm1;
+	self.items = IT_AXE;
+
 	self.health = parm2;
 	self.armorvalue = parm3;
 	self.ammo_shells = parm4;
