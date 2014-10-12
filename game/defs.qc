@@ -168,9 +168,22 @@ float	AS_MISSILE		= 4;
 .float		volume;
 
 
-// andrewj:
-.string   description;
-.string   icon;
+//
+// andrewj: player inventory
+//
+.float		mana;
+
+.float		i_keys;
+.float		i_weapons;
+.float		i_armor;
+.float		i_misc;
+
+
+//
+// andrewj: item stuff
+//
+.string		description;
+.string		icon;
 
 
 //============================================================================

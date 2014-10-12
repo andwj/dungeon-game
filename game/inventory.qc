@@ -13,44 +13,50 @@
 
 void INV_InitialSpawnParms()
 {
-	parm1 = 0;
-	parm2 = 100;
-	parm3 = 0;
-	parm4 = 25;
-	parm5 = 0;
-	parm6 = 0;
-	parm7 = 0;
-	parm8 = 0;
-	parm9 = 0;
+	parm1 = 100;	/* health */
+	parm2 = 50;		/* mana */
+	parm3 = 0;		/* weapon (0 = bare fists) */
+	parm4 = 0;		/* (not used atm) */
+
+	parm5 = 0;		/* i_keys */
+	parm6 = 0;		/* i_weapons */
+	parm7 = 0;		/* i_armor */
+	parm8 = 0;		/* i_misc */
+
+	/* rest are unused */
+	parm9  = parm10 = parm11 = parm12 = 0;
+	parm13 = parm14 = parm15 = parm16 = 0;
 }
 
 
 void INV_EncodeSpawnParms()
 {
-	parm1 = self.items;
-	parm2 = self.health;
-	parm3 = self.armorvalue;
-	parm4 = self.ammo_shells;
-	parm5 = self.ammo_nails;
-	parm6 = self.ammo_rockets;
-	parm7 = self.ammo_cells;
-	parm8 = self.weapon;
-	parm9 = self.armortype * 100;
+	parm1 = self.health;
+	parm2 = self.mana;
+	parm3 = self.weapon;
+
+	parm5 = self.i_keys;
+	parm6 = self.i_weapons;
+	parm7 = self.i_armor;
+	parm8 = self.i_misc;
 }
 
 
 void INV_DecodeSpawnParms()
 {
-	self.items = IT_AXE;
+	self.health = parm1;
+	self.mana   = parm2;
+	self.weapon = parm3;
 
-	self.health = parm2;
-	self.armorvalue = parm3;
-	self.ammo_shells = parm4;
-	self.ammo_nails = parm5;
-	self.ammo_rockets = parm6;
-	self.ammo_cells = parm7;
-	self.weapon = parm8;
-	self.armortype = parm9 * 0.01;
+	self.i_keys		= parm5;
+	self.i_weapons	= parm6;
+	self.i_armor	= parm7;
+	self.i_misc		= parm8;
+
+	// TODO : compute self.armorvalue
+
+	// keep engine happy
+	self.items = IT_AXE;
 }
 
 //--- editor settings ---
