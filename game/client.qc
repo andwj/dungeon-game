@@ -59,18 +59,10 @@ void() SetChangeParms =
 		self.health = 100;
 	if (self.health < 50)
 		self.health = 50;
-	parm1 = self.items;
-	parm2 = self.health;
-	parm3 = self.armorvalue;
 	if (self.ammo_shells < 25)
-		parm4 = 25;
-	else
-		parm4 = self.ammo_shells;
-	parm5 = self.ammo_nails;
-	parm6 = self.ammo_rockets;
-	parm7 = self.ammo_cells;
-	parm8 = self.weapon;
-	parm9 = self.armortype * 100;
+		self.ammo_shells = 25;
+
+	INV_EncodeSpawnParms();
 };
 
 
@@ -79,36 +71,10 @@ void() SetChangeParms =
 //          NOTE: it never touches the 'self' entity (it is null here).
 void() SetNewParms =
 {
-	parm1 = IT_SHOTGUN | IT_AXE;
-	parm2 = 100;
-	parm3 = 0;
-	parm4 = 25;
-	parm5 = 0;
-	parm6 = 0;
-	parm7 = 0;
-	parm8 = 1;
-	parm9 = 0;
+	INV_InitialSpawnParms();
 };
 
 
-void() DecodeLevelParms =
-{
-	if (serverflags)
-	{
-		if (world.model == "maps/start.bsp")
-			SetNewParms ();		// take away all stuff on starting new episode
-	}
-	
-	self.items = parm1;
-	self.health = parm2;
-	self.armorvalue = parm3;
-	self.ammo_shells = parm4;
-	self.ammo_nails = parm5;
-	self.ammo_rockets = parm6;
-	self.ammo_cells = parm7;
-	self.weapon = parm8;
-	self.armortype = parm9 * 0.01;
-};
 
 /*
 ============
@@ -488,7 +454,6 @@ PutClientInServer
 called each time a player is spawned
 ============
 */
-void() DecodeLevelParms;
 void() PlayerDie;
 
 
@@ -518,7 +483,7 @@ void() PutClientInServer =
 	self.effects = 0;
 	self.invincible_time = 0;
 
-	DecodeLevelParms ();
+	INV_DecodeSpawnParms();
 	
 	W_SetCurrentAmmo ();
 
