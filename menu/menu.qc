@@ -41,7 +41,8 @@ void Menu_Hide()
 {
 	menu_state = MENU_OFF;
 
-	setkeydest(KEY_GAME);
+	if (clientstate() == CS_CONNECTED)
+		setkeydest(KEY_GAME);
 }
 
 
@@ -101,7 +102,7 @@ void m_toggle(float mode)
 
 	if (mode && menu_initialized == 1)
 	{
-		menu_initialized == 2;
+		menu_initialized = 2;
 
 		setkeydest(KEY_MENU);
 		return;
@@ -127,7 +128,10 @@ void m_keydown(float key, float ascii)
 	print("m_keydown = "); print(ftos(key)); print("\n");
 
 	if (menu_state && key == K_ESCAPE)
+	{
 		Menu_Hide();
+		return;
+	}
 
 	if (menu_state == MENU_Main && key >= K_MOUSE1 && key <= K_MOUSE3)
 	{
@@ -136,6 +140,12 @@ void m_keydown(float key, float ascii)
 
 		if (over_button == "test")
 			cmd("\nmap test.obj\n");
+	}
+
+	if (menu_state == MENU_OFF && clientstate() != CS_CONNECTED)
+	{
+		Menu_Show();
+		return;
 	}
 }
 
