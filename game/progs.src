@@ -5,7 +5,9 @@ progs.dat
 
 defs.qc
 subs.qc
+inventory.qc
 weapons.qc
+
 world.qc
 client.qc
 player.qc

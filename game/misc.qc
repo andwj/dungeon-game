@@ -513,11 +513,17 @@ void(string s) SV_ParseClientCommand =
 {
   // 'self' is the client which sent the command
 
-  print("SV_ParseClientCommand: ");
-  print(s);
-  print("\n");
+  print("SV_ParseClientCommand:\n");
 
-  tokenize(s);
+float num = tokenize(s);
+float i;
+
+for (i = 0 ; i < num ; ++i)
+{
+	print("  [");
+	print(argv(i));
+	print("]\n");
+}
 
   if (FALSE /* check stuff...*/)
   {
