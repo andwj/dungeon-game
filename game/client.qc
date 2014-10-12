@@ -40,6 +40,8 @@ void() info_intermission =
 
 
 
+// andrewj: this is called just before the server is killed, and needs to
+//          store persistent stats into the 'parmXX' globals.
 void() SetChangeParms =
 {
 	if (self.health <= 0)
@@ -71,6 +73,10 @@ void() SetChangeParms =
 	parm9 = self.armortype * 100;
 };
 
+
+// andrewj: this is called _once_per_game_ when a client first connects to
+//          the server.  It must set the initial state in 'parmXX' globals.
+//          NOTE: it never touches the 'self' entity (it is null here).
 void() SetNewParms =
 {
 	parm1 = IT_SHOTGUN | IT_AXE;
@@ -83,6 +89,7 @@ void() SetNewParms =
 	parm8 = 1;
 	parm9 = 0;
 };
+
 
 void() DecodeLevelParms =
 {
@@ -485,6 +492,9 @@ void() DecodeLevelParms;
 void() PlayerDie;
 
 
+// andrewj: this is called by the server for each new map.
+//          the only persistent data from last map are in 'parmXX' globals
+//          (which need to be decoded here, even for very first map).
 void() PutClientInServer =
 {
 	local	entity spot;
@@ -1173,6 +1183,9 @@ void() PlayerPostThink =
 ClientConnect
 
 called when a player connects to a server
+
+andrewj: called just before PutClientInServer() -- not sure if there
+         are any circumstances when one is called without the other.
 ============
 */
 void() ClientConnect =
