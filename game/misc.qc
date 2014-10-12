@@ -1,3 +1,14 @@
+//========================================================================
+//
+//  Copyright (C) 1996-1997  Id Software, Inc.
+//  Copyright (C)      2014  Andrew Apted
+//
+//  This code is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published
+//  by the Free Software Foundation; either version 2 of the License,
+//  or (at your option) any later version.
+//
+//========================================================================
 
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for spotlights, etc.
