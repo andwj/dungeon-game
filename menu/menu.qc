@@ -209,6 +209,9 @@ void m_draw()
 	if (menu_state == MENU_OFF)
 		return;
 
+	// darken screen
+	drawfill('0 0 0', scr_size, '0 0 0', 0.5, DRAWFLAG_NORMAL);
+
 	if (menu_state == MENU_Main)
 		Menu_DrawMain();
 
