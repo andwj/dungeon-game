@@ -497,3 +497,23 @@ void() test_gold_key =
   self.icon = "items/gold_key_icon";
 }
 
+
+void(string s) SV_ParseClientCommand =
+{
+  // 'self' is the client which sent the command
+
+  print("SV_ParseClientCommand: ");
+  print(s);
+  print("\n");
+
+  tokenize(s);
+
+  if (FALSE /* check stuff...*/)
+  {
+  }
+  else
+  {
+    clientcommand(self, s);
+  }
+}
+
