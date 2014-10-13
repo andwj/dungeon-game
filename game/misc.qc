@@ -541,7 +541,7 @@ void test_gold_key()
 
 	self.effects = EF_SELECTABLE;
 	self.description = "a shiny golden key";
-	self.icon = "items/gold_key_icon";
+	self.icon_pic = "items/gold_key_icon";
 
 	self.item_kind = ITEM_KEY;
 	self.i_keys = 1;

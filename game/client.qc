@@ -483,6 +483,7 @@ void PutClientInServer()
 	self.invincible_time = 0;
 
 	INV_DecodeSpawnParms(self);
+	INV_SendAllToClient(self);
 	
 	W_SetCurrentAmmo ();
 

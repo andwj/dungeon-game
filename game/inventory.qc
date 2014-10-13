@@ -141,16 +141,16 @@ void INV_UpdateSummary(entity pl)
 	pl.i_armor		= 0;
 	pl.i_misc		= 0;
 
-	entity e;
+	entity slot;
 
-	for (e = pl.inventory ; e ; e = e.chain)
+	for (slot = pl.inventory ; slot ; slot = slot.chain)
 	{
-		if (e.count > 0)
+		if (slot.count > 0)
 		{
-			pl.i_keys		= pl.i_keys		| e.i_keys;
-			pl.i_weapons	= pl.i_weapons	| e.i_weapons;
-			pl.i_armor		= pl.i_armor	| e.i_armor;
-			pl.i_misc		= pl.i_misc		| e.i_misc;
+			pl.i_keys		= pl.i_keys		| slot.i_keys;
+			pl.i_weapons	= pl.i_weapons	| slot.i_weapons;
+			pl.i_armor		= pl.i_armor	| slot.i_armor;
+			pl.i_misc		= pl.i_misc		| slot.i_misc;
 		}
 	}
 }
@@ -165,12 +165,18 @@ void INV_GiveItem(entity pl, entity e)
 
 	slot.count = 1;
 
+	slot.description = e.description;
+	slot.icon_pic = e.icon_pic;
+
 	slot.i_keys		= e.i_keys;
 	slot.i_weapons	= e.i_weapons;
 	slot.i_armor	= e.i_armor;
 	slot.i_misc		= e.i_misc;
 
 	INV_UpdateSummary(pl);
+
+	// update client too
+	stuffcmd(pl, sprintf("\nui_invent %d 1 \"%s\"\n", slot.invent_id, slot.icon_pic));
 }
 
 
@@ -179,6 +185,9 @@ void INV_RemoveItem(entity pl, entity slot)
 	slot.count = 0;
 
 	INV_UpdateSummary(pl);
+
+	// update client too
+	stuffcmd(pl, sprintf("\nui_invent %d 0 \"%s\"\n", slot.invent_id));
 }
 
 
@@ -206,12 +215,20 @@ void INV_Recreate(entity pl)
 }
 
 
-void INV_SendToClient()
+void INV_SendAllToClient(entity pl)
 {
-	// this must be called from a client-related engine callback
-	// (SV_ParseClientCommand etc).  'self' is the client.
+	// send whole inventory to client, including empty slots
+	// (for beginning of a fresh level, or after loading a savegame)
 
-	// TODO : INV_SendToClient()
+	entity slot;
+
+	for (slot = pl.inventory ; slot ; slot = slot.chain)
+	{
+		if (slot.count > 0)
+			stuffcmd(pl, sprintf("\nui_invent %d 0 \"\"\n", slot.invent_id));
+		else
+			stuffcmd(pl, sprintf("\nui_invent %d 1 \"%s\"\n", slot.invent_id, slot.icon_pic));
+	}
 }
 
 

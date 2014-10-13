@@ -196,7 +196,7 @@ float	AS_MISSILE		= 4;
 // andrewj: item stuff
 //
 .string		description;
-.string		icon;
+.string		icon_pic;
 
 .float		item_kind;
 #define ITEM_KEY		1
