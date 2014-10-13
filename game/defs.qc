@@ -185,6 +185,12 @@ float	AS_MISSILE		= 4;
 .string		description;
 .string		icon;
 
+.float		item_kind;
+#define ITEM_KEY		1
+#define ITEM_WEAPON		2
+#define ITEM_ARMOR		3
+#define ITEM_MISC		4
+
 
 // andrewj: for a locked door, this is the item required to unlock it
 .string		lock_item;
