@@ -483,6 +483,40 @@ void() misc_noisemaker =
 
 
 
+void door_hit_top() =
+{
+//	sound (self, CHAN_VOICE, self.noise1, 1, ATTN_NORM);
+	
+	self.state = STATE_TOP;
+
+	print("door hit top\n");
+}
+
+
+void door_go_up()
+{
+	print("door go up\n");
+
+	if (self.state == STATE_UP)
+		return;		// allready going up
+
+	if (self.state == STATE_TOP)
+	{	// reset top wait time
+		self.nextthink = self.ltime + self.wait;
+		return;
+	}
+	
+//	sound (self, CHAN_VOICE, self.noise2, 1, ATTN_NORM);
+	self.state = STATE_UP;
+
+	SUB_CalcMove (self.pos2, self.speed, door_hit_top);
+
+print(sprintf("velocity: %1.4v\n", self.velocity));
+
+//	SUB_UseTargets();
+}
+
+
 // andrewj : TEST CRUD
 
 void test_pachyderme()
@@ -533,12 +567,23 @@ void test_door()
 	self.skin = 0;
 	self.scale = 8;
 	self.solid = SOLID_BBOX;
-	setsize (self, '-16 -16 0', '16 16 56');
+	setsize (self, '-32 -104 0', '32 104 96');
 
 	self.effects = EF_SELECTABLE;
 	self.description = "a locked door";
 
+	// FIXME: use 'i_keys'
 	self.lock_item = "test_gold_key";
+
+	self.movetype = MOVETYPE_PUSH;
+
+	self.movedir = '0 0 1';
+
+	self.pos1 = self.origin;
+	self.pos2 = self.origin + self.movedir * 160;
+	self.speed = 40;
+
+	self.state = STATE_BOTTOM;
 }
 
 

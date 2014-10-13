@@ -1247,9 +1247,26 @@ ImpulseCommands
 
 ============
 */
+void door_go_up();
+
 void() ImpulseCommands =
 {
-	if (self.impulse >= 1 && self.impulse <= 8)
+	float imp = self.impulse;
+	self.impulse = 0;
+
+	if (imp == 8)
+	{
+		entity door = find(world, classname, "test_door");
+
+		if (door && door.state != STATE_UP)
+		{
+			self = door;
+			door_go_up();
+		}
+		return;
+	}
+
+	if (self.impulse >= 1 && self.impulse <= 7)
 		W_ChangeWeapon ();
 
 	if (self.impulse == 9)
