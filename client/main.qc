@@ -47,7 +47,7 @@ void CSQC_Init()
 //  UI_InitStats();
 	UI_CreateInventory();
 
-	registercommand("ui_describe");
+	registercommand("ui_highlight");
 	registercommand("ui_invent");
 
 	// turn on Prydon cursor mode
@@ -69,9 +69,9 @@ float CSQC_ConsoleCommand(string cmd)
 {
 	tokenize(cmd);
 
-	if (argv(0) == "ui_describe")
+	if (argv(0) == "ui_highlight")
 	{
-		CMD_describe();
+		CMD_highlight();
 	}
 	else if (argv(0) == "ui_invent")
 	{

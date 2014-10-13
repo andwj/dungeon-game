@@ -12,14 +12,17 @@
 
 // description for object currently under the cursor
 string obj_description;  // [zoned]
+float  highlight_flags;
 
 // picture for object being dragged
 string obj_drag_pic;     // [zoned]
 
 
-void CMD_describe()
+void CMD_highlight()
 {
-	obj_description = zoned_string(obj_description, argv(1));
+	highlight_flags = stof(argv(1));
+
+	obj_description = zoned_string(obj_description, argv(2));
 }
 
 
