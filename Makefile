@@ -2,9 +2,13 @@
 # Makefile for game / client / menu progs
 #
 
+# compiler options
+FEATURES=-std=gmqcc -fftepp -flno -fno-true-empty-strings -ffalse-empty-strings
+WARNINGS=-Wall -Wno-unused-variable -Wno-field-redeclared
+OPTIMIZE=-O2
+
 # Quake-C compiler to use
-# (we discard output of fteqcc since it creates a log file)
-QCC=fteqcc -O0 > /dev/null
+QCC=../bin/gmqcc $(FEATURES) $(OPTIMIZE) $(WARNINGS)
 
 all: oga/menu.dat oga/progs.dat oga/csprogs.dat
 

@@ -23,7 +23,7 @@ dpdefs/   : definitions for Darkplaces (copied from Darkplaces source)
 
 misc/     : miscellaneous stuff, e.g. packing scripts
 
-Makefile  : makefile for building the QC programs (requires fteqcc)
+Makefile  : makefile for building the QC programs (requires gmqcc)
 
 
 ##Structure underneath oga/ :
