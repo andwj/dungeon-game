@@ -49,6 +49,7 @@ void CSQC_Init()
 
 	registercommand("ui_highlight");
 	registercommand("ui_invent");
+	registercommand("ui_drag");
 
 	// turn on Prydon cursor mode
 	cvar_set("cl_prydoncursor", "1");
@@ -76,6 +77,10 @@ float CSQC_ConsoleCommand(string cmd)
 	else if (argv(0) == "ui_invent")
 	{
 		CMD_invent();
+	}
+	else if (argv(0) == "ui_drag")
+	{
+		CMD_drag();
 	}
 	else
 	{

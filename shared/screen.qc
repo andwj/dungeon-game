@@ -14,7 +14,9 @@
 //       hence it should stay as self-contained as possible.
 //
 
-#define SIZE_NORMAL  '0 0 0'
+#define  SIZE_NORMAL	'0 0 0'
+#define COLOR_NORMAL	'1 1 1'
+#define ALPHA_NORMAL	1.0
 
 // copies of the cvars with the same names
 // (not just for convenience, also to detect when those cvars have changed)

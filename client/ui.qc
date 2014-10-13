@@ -16,6 +16,7 @@ float  highlight_flags;
 
 // picture for object being dragged
 string obj_drag_pic;     // [zoned]
+float  dragging_flags;
 
 
 void CMD_highlight()
@@ -26,13 +27,31 @@ void CMD_highlight()
 }
 
 
+void CMD_drag()
+{
+	dragging_flags = stof(argv(1));
+
+	obj_drag_pic = zoned_string(obj_drag_pic, argv(2));
+}
+
+
+void UI_DrawDragObject()
+{
+	vector size = drawgetimagesize(obj_drag_pic);
+
+	vector pos = mouse_pos - size / 2;
+
+	drawpic(pos, obj_drag_pic, SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+}
+
+
 void UI_DrawDescription()
 {
-	vector scale = '14 14 0';
+	vector size  = '14 14 0';
 	vector pos   = mouse_pos + '0 70 0';
 	vector color = '2 2 2';
 
-	float width = stringwidth(obj_description, FALSE /* colorcodes */, scale);
+	float width = stringwidth(obj_description, FALSE /* colorcodes */, size);
 
 	float clip_x1 = 0;
 	float clip_x2 = scr_width;  // LESS IF INVENTORY IS SHOWN
@@ -49,7 +68,7 @@ void UI_DrawDescription()
 
 	pos_x = pos_x - width * a;
 
-	drawstring(pos, obj_description, scale, color, 1.0 /* alpha */, DRAWFLAG_NORMAL);
+	drawstring(pos, obj_description, size, color, 1.0 /* alpha */, DRAWFLAG_NORMAL);
 }
 
 
@@ -73,7 +92,9 @@ void UI_Draw()
 
 	UI_DrawInventory();
 
-	if (obj_description != "")
+	if (obj_drag_pic != "")
+		UI_DrawDragObject();
+	else if (obj_description != "")
 		UI_DrawDescription();
 }
 
