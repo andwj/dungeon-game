@@ -11,7 +11,50 @@
 //========================================================================
 
 
-void INV_Recount(entity pl);
+void INV_Recreate(entity pl);
+
+
+void INV_Create(entity pl)
+{
+	float ix, iy;
+
+	for (ix = 0 ; ix < INV_BOX_WIDTH  ; ++ix)
+	for (iy = 0 ; iy < INV_BOX_HEIGHT ; ++iy)
+	{
+		entity slot = spawn();
+
+		slot.invent_id = iy * INV_BOX_WIDTH + ix;
+
+		// link it in
+		slot.chain = pl.inventory;
+		pl.inventory = slot;
+	}
+}
+
+
+entity INV_LookupSlot(entity pl, float id)
+{
+	entity e;
+
+	for (e = pl.inventory ; e ; e = e.chain)
+		if (e.invent_id == id)
+			return e;
+
+	error("Inventory slot not found!\n");
+	return nil;  // NOT REACHED
+}
+
+
+entity INV_FindFreeSlot(entity pl)
+{
+	entity e;
+
+	for (e = pl.inventory ; e ; e = e.chain)
+		if (e.count == 0)
+			return e;
+	
+	return nil;
+}
 
 
 void INV_InitialSpawnParms()
@@ -53,10 +96,10 @@ void INV_DecodeSpawnParms(entity pl)
 
 	pl.i_keys		= parm5;
 	pl.i_weapons	= parm6;
-	pl.i_armor	= parm7;
+	pl.i_armor		= parm7;
 	pl.i_misc		= parm8;
 
-	INV_Recount(pl);
+	INV_Recreate(pl);
 
 	// TODO : compute pl.armorvalue
 
@@ -80,15 +123,6 @@ float INV_CountBits(float bits)
 }
 
 
-void INV_Recount(entity pl)
-{
-	pl.inv_count = INV_CountBits(pl.i_keys) +
-				   INV_CountBits(pl.i_weapons) +
-				   INV_CountBits(pl.i_armor) +
-				   INV_CountBits(pl.i_misc);
-}
-
-
 float INV_CheckHasItem(entity pl, entity e)
 {
 	if (pl.i_keys & e.i_keys) return TRUE;
@@ -100,14 +134,84 @@ float INV_CheckHasItem(entity pl, entity e)
 }
 
 
+void INV_UpdateSummary(entity pl)
+{
+	pl.i_keys		= 0;
+	pl.i_weapons	= 0;
+	pl.i_armor		= 0;
+	pl.i_misc		= 0;
+
+	entity e;
+
+	for (e = pl.inventory ; e ; e = e.chain)
+	{
+		if (e.count > 0)
+		{
+			pl.i_keys		= pl.i_keys		| e.i_keys;
+			pl.i_weapons	= pl.i_weapons	| e.i_weapons;
+			pl.i_armor		= pl.i_armor	| e.i_armor;
+			pl.i_misc		= pl.i_misc		| e.i_misc;
+		}
+	}
+}
+
+
 void INV_GiveItem(entity pl, entity e)
 {
-	pl.i_keys		= pl.i_keys		| e.i_keys;
-	pl.i_weapons	= pl.i_weapons	| e.i_weapons;
-	pl.i_armor		= pl.i_armor	| e.i_armor;
-	pl.i_misc		= pl.i_misc		| e.i_misc;
+	entity slot = INV_FindFreeSlot(pl);
 
-	pl.inv_count = pl.inv_count + 1;
+	if (! slot)
+		error("INV_GiveItem : inventory is full!");
+
+	slot.count = 1;
+
+	slot.i_keys		= e.i_keys;
+	slot.i_weapons	= e.i_weapons;
+	slot.i_armor	= e.i_armor;
+	slot.i_misc		= e.i_misc;
+
+	INV_UpdateSummary(pl);
+}
+
+
+void INV_RemoveItem(entity pl, entity slot)
+{
+	slot.count = 0;
+
+	INV_UpdateSummary(pl);
+}
+
+
+//------------------------------------------------------------------------
+
+void INV_RecreateKey(entity pl, float i_keys)
+{
+	// FIXME : INV_RecreateKey
+}
+
+
+void INV_Recreate(entity pl)
+{
+	// recreate the inventory from the decoded spawnparms
+
+	INV_Create(pl);
+
+	float i;
+
+	for (i = 1 ; i <= 1048576 ; i = i * 2)
+		if (pl.i_keys & i)
+			INV_RecreateKey(pl, i);
+
+	// FIXME : i_weapons, i_armor, i_misc
+}
+
+
+void INV_SendToClient()
+{
+	// this must be called from a client-related engine callback
+	// (SV_ParseClientCommand etc).  'self' is the client.
+
+	// TODO : INV_SendToClient()
 }
 
 

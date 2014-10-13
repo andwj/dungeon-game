@@ -36,12 +36,12 @@ void UI_CreateInventory()
 {
 	float ix, iy;
 
-	for (ix = 0 ; ix < 4 ; ++ix)
-	for (iy = 0 ; iy < 4 ; ++iy)
+	for (ix = 0 ; ix < INV_BOX_WIDTH  ; ++ix)
+	for (iy = 0 ; iy < INV_BOX_HEIGHT ; ++iy)
 	{
 		entity box = spawn();
 
-		box.invent_id = iy * 4 + ix;
+		box.invent_id = iy * INV_BOX_WIDTH + ix;
 
 		box.invent_x = ix;
 		box.invent_y = iy;

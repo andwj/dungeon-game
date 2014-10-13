@@ -173,13 +173,23 @@ float	AS_MISSILE		= 4;
 //
 .float		mana;
 
+// list of inventory items held by a player
+.entity		inventory;
+
+// an ID number for each slot in the inventory
+// (for communication between client and server)
+// a slot is used if 'count' field is 1.
+.float		invent_id;
+
+// for an item or inventory slot, one of the bits in i_xxx will be set
+// for the player, these are a summary of owned items.
 .float		i_keys;
 .float		i_weapons;
 .float		i_armor;
 .float		i_misc;
 
-.float		inv_count;	// number of items
-#define INV_MAX_COUNT	16
+
+// TODO : define the items : IK_XXX  IW_XXX  IA_XXX  IM_XXX
 
 
 //

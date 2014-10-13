@@ -16,6 +16,11 @@
  */
 
 
+// inventory box size
+#define INV_BOX_WIDTH	4
+#define INV_BOX_HEIGHT	4
+
+
 // highlight flags
 #define HILT_CAN_PICKUP		1
 #define HILT_CAN_GIVE		2
