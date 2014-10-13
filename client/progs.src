@@ -3,7 +3,7 @@ csprogs.dat
 ../dpdefs/csprogsdefs.qc
 ../dpdefs/keycodes.qc
 
-../menu/screen.qc
+../shared/screen.qc
 
 invent.qc
 ui.qc
