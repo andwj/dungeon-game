@@ -32,6 +32,21 @@ void CMD_drag()
 	dragging_flags = stof(argv(1));
 
 	obj_drag_pic = zoned_string(obj_drag_pic, argv(2));
+
+	// while dragging, show the "grab" hand cursor
+	if (obj_drag_pic)
+		cvar_set("cl_prydoncursor", "2");
+	else
+		cvar_set("cl_prydoncursor", "1");
+}
+
+
+void UI_ClearDrag()
+{
+	obj_drag_pic = zoned_string(obj_drag_pic, "");
+
+	if (cvar("cl_prydoncursor") > 1)
+		cvar_set("cl_prydoncursor", "1");
 }
 
 
@@ -39,7 +54,7 @@ void UI_DrawDragObject()
 {
 	vector size = drawgetimagesize(obj_drag_pic);
 
-	vector pos = mouse_pos - size / 2;
+	vector pos = mouse_pos - size * 0.64;
 
 	drawpic(pos, obj_drag_pic, SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 }
