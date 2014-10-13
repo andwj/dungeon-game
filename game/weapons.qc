@@ -1247,8 +1247,6 @@ ImpulseCommands
 
 ============
 */
-void door_go_up();
-
 void() ImpulseCommands =
 {
 	float imp = self.impulse;
@@ -1256,12 +1254,16 @@ void() ImpulseCommands =
 
 	if (imp == 8)
 	{
-		entity door = find(world, classname, "test_door");
+		entity lock = find(world, classname, "test_lock");
 
-		if (door && door.state != STATE_UP)
+		if (lock && (lock.effects & EF_SELECTABLE))
 		{
-			self = door;
-			door_go_up();
+			lock.effects = lock.effects - EF_SELECTABLE;
+
+			activator = self;
+
+			self = lock;
+			SUB_UseTargets();
 		}
 		return;
 	}

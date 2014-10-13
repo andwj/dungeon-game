@@ -572,7 +572,6 @@ void test_door()
 	self.effects = EF_SELECTABLE;
 	self.description = "a locked door";
 
-	// FIXME: use 'i_keys'
 	self.lock_item = "test_gold_key";
 
 	self.movetype = MOVETYPE_PUSH;
@@ -584,6 +583,7 @@ void test_door()
 	self.speed = 40;
 
 	self.state = STATE_BOTTOM;
+	self.use = door_go_up;
 }
 
 
