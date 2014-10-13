@@ -48,6 +48,7 @@ void CSQC_Init()
 	UI_CreateInventory();
 
 	registercommand("ui_describe");
+	registercommand("ui_invent");
 
 	// turn on Prydon cursor mode
 	cvar_set("cl_prydoncursor", "1");

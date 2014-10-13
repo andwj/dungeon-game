@@ -46,8 +46,6 @@ void UI_CreateInventory()
 		box.invent_x = ix;
 		box.invent_y = iy;
 
-box.invent_pic = "items/gold_key_icon";
-
 		// link it in
 		box.chain = inventory_head;
 		inventory_head = box;
