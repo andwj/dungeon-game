@@ -624,6 +624,16 @@ void()	player_die_ax9	=	[	$axdeth9,	player_die_ax9	] {PlayerDead();};
 
 //------------------------------------------------------------------------
 
+
+/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 24)
+The normal starting point for a level.
+*/
+void() info_player_start =
+{
+};
+
+
+
 void Player_Jump()
 {
 	if (self.flags & FL_WATERJUMP)
