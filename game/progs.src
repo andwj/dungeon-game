@@ -3,6 +3,8 @@ progs.dat
 ../dpdefs/progsdefs.qc
 ../dpdefs/dpextensions.qc
 
+../shared/utils.qc
+
 defs.qc
 subs.qc
 inventory.qc
