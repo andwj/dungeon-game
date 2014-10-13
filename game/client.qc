@@ -282,36 +282,9 @@ void() PlayerDeathThink =
 	self.button0 = 0;
 	self.button1 = 0;
 	self.button2 = 0;
+
 	respawn();
 };
-
-
-entity highlighted_ent;
-
-
-// andrewj: added this
-void CheckHighlightObject()
-{
-	if (! self.cursor_active)
-		return;
-
-	entity trace_ent = self.cursor_trace_ent;
-
-	if (trace_ent && ! (trace_ent.effects & EF_SELECTABLE))
-		trace_ent = nil;
-
-	if (trace_ent == highlighted_ent)
-		return;
-
-	highlighted_ent = trace_ent;
-
-	// send description to client CSQC (empty if NO ent)
-
-	if (highlighted_ent)
-		stuffcmd(self, sprintf("\nui_highlight 1 \"%s\"\n", highlighted_ent.description));
-	else
-		stuffcmd(self, "\nui_highlight 0 \"\"\n");
-}
 
 
 /*
@@ -331,8 +304,6 @@ void() PlayerPreThink =
 
 	if (self.view_ofs == '0 0 0')
 		return;		// intermission or finale
-
-	CheckHighlightObject();
 
 	makevectors (self.v_angle);		// is this still used
 
@@ -536,6 +507,8 @@ void() PlayerPostThink =
 		return;
 
 // do weapon stuff
+
+	INV_ObjectInteraction(self);
 
 	W_WeaponFrame ();
 

@@ -232,5 +232,41 @@ void INV_SendAllToClient(entity pl)
 }
 
 
+//------------------------------------------------------------------------
+//		HIGHLIGHTING and DRAGGING OBJECTS
+//------------------------------------------------------------------------
+
+entity highlighted_ent;  // FIXME PLAYER FIELD
+
+
+void INV_CheckHighlightObject(entity pl)
+{
+	if (! pl.cursor_active)
+		return;
+
+	entity trace_ent = pl.cursor_trace_ent;
+
+	if (trace_ent && ! (trace_ent.effects & EF_SELECTABLE))
+		trace_ent = nil;
+
+	if (trace_ent == highlighted_ent)
+		return;
+
+	highlighted_ent = trace_ent;
+
+	// send description to client CSQC (empty if NO ent)
+
+	if (highlighted_ent)
+		stuffcmd(pl, sprintf("\nui_highlight 1 \"%s\"\n", highlighted_ent.description));
+	else
+		stuffcmd(pl, "\nui_highlight 0 \"\"\n");
+}
+
+
+void INV_ObjectInteraction(entity pl)
+{
+	INV_CheckHighlightObject(pl);
+}
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab
