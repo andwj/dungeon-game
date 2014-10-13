@@ -50,8 +50,9 @@ void CSQC_Init()
 	// turn on Prydon cursor mode
 	cvar_set("cl_prydoncursor", "1");
 
-//???	// ensure we get mouse move events (even with Prydon cursor enabled)
-//???  	setcursormode(1);
+	// ensure we get mouse move events (even with Prydon cursor enabled)
+	// [ getmousepos() does not work without this ]
+  	setcursormode(1);
 }
 
 
