@@ -186,6 +186,10 @@ float	AS_MISSILE		= 4;
 .string		icon;
 
 
+// andrewj: for a locked door, this is the item required to unlock it
+.string		lock_item;
+
+
 //============================================================================
 
 //

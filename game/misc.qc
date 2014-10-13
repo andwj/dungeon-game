@@ -485,27 +485,60 @@ void() misc_noisemaker =
 
 // andrewj : TEST CRUD
 
-void() test_pachyderme =
+void test_pachyderme()
 {
 	precache_model ("progs/pachyderme.mdl");
+
 	setmodel (self, "progs/pachyderme.mdl");
 	self.skin = 0;
-  self.scale = 20;
+	self.scale = 10;
 	setsize (self, '-16 -16 0', '16 16 56');
 }
 
 
-void() test_gold_key =
+void test_gold_key()
 {
 	precache_model ("items/gold_key.mdl");
 
 	setmodel (self, "items/gold_key.mdl");
 	self.skin = 0;
-  self.scale = 1;
+	self.scale = 1;
 	setsize (self, '-16 -16 0', '16 16 56');
-  self.effects = EF_SELECTABLE;
-  self.description = "a shiny golden key";
-  self.icon = "items/gold_key_icon";
+
+	self.effects = EF_SELECTABLE;
+	self.description = "a shiny golden key";
+	self.icon = "items/gold_key_icon";
+}
+
+
+void test_lock()
+{
+	precache_model ("models/lock_ph.mdl");
+
+	setmodel (self, "models/lock_ph.mdl");
+	self.skin = 0;
+	self.scale = 1;
+	setsize (self, '-16 -16 0', '16 16 56');
+
+	self.effects = EF_SELECTABLE;
+	self.description = "a golden lock";
+}
+
+
+void test_door()
+{
+	precache_model ("models/door_ph.mdl");
+
+	setmodel (self, "models/door_ph.mdl");
+	self.skin = 0;
+	self.scale = 8;
+	self.solid = SOLID_BBOX;
+	setsize (self, '-16 -16 0', '16 16 56');
+
+	self.effects = EF_SELECTABLE;
+	self.description = "a locked door";
+
+	self.lock_item = "test_gold_key";
 }
 
 
