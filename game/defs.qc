@@ -178,6 +178,9 @@ float	AS_MISSILE		= 4;
 .float		i_armor;
 .float		i_misc;
 
+.float		inv_count;	// number of items
+#define INV_MAX_COUNT	16
+
 
 //
 // andrewj: item stuff

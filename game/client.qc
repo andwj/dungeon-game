@@ -63,7 +63,7 @@ void() SetChangeParms =
 	if (self.ammo_shells < 25)
 		self.ammo_shells = 25;
 
-	INV_EncodeSpawnParms();
+	INV_EncodeSpawnParms(self);
 };
 
 
@@ -482,7 +482,7 @@ void PutClientInServer()
 	self.effects = 0;
 	self.invincible_time = 0;
 
-	INV_DecodeSpawnParms();
+	INV_DecodeSpawnParms(self);
 	
 	W_SetCurrentAmmo ();
 
