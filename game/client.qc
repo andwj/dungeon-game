@@ -726,9 +726,9 @@ void CheckHighlightObject()
 	// send description to client CSQC (empty if NO ent)
 
 	if (highlighted_ent)
-		localcmd(sprintf("\nui_highlight 0 \"%s\"\n", highlighted_ent.description));
+		stuffcmd(self, sprintf("\nui_highlight 1 \"%s\"\n", highlighted_ent.description));
 	else
-		localcmd("\nui_highlight 0 \"\"\n");
+		stuffcmd(self, "\nui_highlight 0 \"\"\n");
 }
 
 
