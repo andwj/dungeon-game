@@ -16,11 +16,14 @@
 
 
 // the inventory we show is stored using entities
-.string invent_pic;   // empty if no entity there
-.string invent_desc;  // description
+.float invent_id;
 
-.float invent_x;	// box coord (also serves as ID number)
+.float invent_x;	// drawing coord
 .float invent_y;	//
+
+.string invent_pic;   // empty if no entity there
+
+//??  .string invent_desc;  // description
 
 .float invent_flags;
 
@@ -38,6 +41,8 @@ void UI_CreateInventory()
 	{
 		entity box = spawn();
 
+		box.invent_id = iy * 4 + ix;
+
 		box.invent_x = ix;
 		box.invent_y = iy;
 
@@ -50,16 +55,29 @@ box.invent_pic = "items/gold_key_icon";
 }
 
 
-entity UI_GetInventorySlot(float ix, float iy)
+entity UI_GetInventorySlot(float id)
 {
 	entity e;
 
 	for (e = inventory_head ; e ; e = e.chain)
-		if (e.invent_x == ix && e.invent_y == iy)
+		if (e.invent_id == id)
 			return e;
 	
 	error("Inventory slot not found!\n");
 	return inventory_head;
+}
+
+
+// handle the "ui_invent" command from the game (on server)
+void UI_CMD_invent()
+{
+	float id = stof(argv(1));
+
+	entity slot = UI_GetInventorySlot(id);
+
+	slot.invent_flags = stof(argv(2));
+
+	slot.invent_pic = zoned_string(slot.invent_pic, argv(3));
 }
 
 
