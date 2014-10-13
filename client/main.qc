@@ -24,11 +24,13 @@ void UpdateCameraMode()
 
 	if (enable)
 	{
+		setcursormode(0);
 		cvar_set("cl_prydoncursor", "0");
 	}
 	else
 	{
 		cvar_set("cl_prydoncursor", "1");
+		setcursormode(1);
 
 		// FIXME RESET ANGLE ??
 	}
