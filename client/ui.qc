@@ -11,27 +11,15 @@
 
 
 // description for object currently under the cursor
-// NOTE : will be strzone'd (if not empty) so use carefully!
-string obj_description;
+string obj_description;  // [zoned]
 
-string obj_drag_pic;
+// picture for object being dragged
+string obj_drag_pic;     // [zoned]
 
 
-void UI_CMD_describe(string cmd)
+void CMD_describe()
 {
-	if (obj_description != "")
-	{
-		strunzone(obj_description);
-		obj_description = "";
-	}
-
-	// rest of the command line is the description
-	string desc = substring(cmd, 12, 200);
-
-	if (desc == "")
-		return;
-
-	obj_description = strzone(desc);
+	obj_description = zoned_string(obj_description, argv(1));
 }
 
 

@@ -67,11 +67,20 @@ float CSQC_ConsoleCommand(string cmd)
 
 	if (argv(0) == "ui_describe")
 	{
-		UI_CMD_describe(cmd);
-		return 1;
+		CMD_describe();
+	}
+	else if (argv(0) == "ui_invent")
+	{
+		CMD_invent();
+	}
+	else
+	{
+		// unknown command
+		return 0;
 	}
 
-	return 0;
+	// known command
+	return 1;
 }
 
 

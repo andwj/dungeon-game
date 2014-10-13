@@ -21,7 +21,7 @@
 .float invent_x;	// drawing coord
 .float invent_y;	//
 
-.string invent_pic;   // empty if no entity there
+.string invent_pic;   // [zoned]  empty if no entity there
 
 //??  .string invent_desc;  // description
 
@@ -69,7 +69,7 @@ entity UI_GetInventorySlot(float id)
 
 
 // handle the "ui_invent" command from the game (on server)
-void UI_CMD_invent()
+void CMD_invent()
 {
 	float id = stof(argv(1));
 
