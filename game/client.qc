@@ -709,20 +709,25 @@ entity highlighted_ent;
 // andrewj: added this
 void CheckHighlightObject()
 {
-  if (! self.cursor_active)
-    return;
+	if (! self.cursor_active)
+		return;
 
-  if (self.cursor_trace_ent == highlighted_ent)
-    return;
+	entity trace_ent = self.cursor_trace_ent;
 
-  highlighted_ent = self.cursor_trace_ent;
+	if (trace_ent && ! (trace_ent.effects & EF_SELECTABLE))
+		trace_ent = nil;
 
-  // send description to client CSQC (empty if NO ent)
+	if (trace_ent == highlighted_ent)
+		return;
 
-  if (highlighted_ent)
-    localcmd(sprintf("\nui_describe \"%s\"\n", highlighted_ent.description));
-  else
-    localcmd("\nui_describe \"\"\n");
+	highlighted_ent = trace_ent;
+
+	// send description to client CSQC (empty if NO ent)
+
+	if (highlighted_ent)
+		localcmd(sprintf("\nui_describe \"%s\"\n", highlighted_ent.description));
+	else
+		localcmd("\nui_describe \"\"\n");
 }
 
 
@@ -744,7 +749,7 @@ void() PlayerPreThink =
 	if (self.view_ofs == '0 0 0')
 		return;		// intermission or finale
 
-  CheckHighlightObject();
+	CheckHighlightObject();
 
 	makevectors (self.v_angle);		// is this still used
 
