@@ -16,6 +16,10 @@
  */
 
 
+// for aesthetics
+typedef float	bool;
+
+
 // store result of tokenize() here
 float argc;
 
