@@ -320,6 +320,20 @@ void INV_CheckBeginDrag(entity pl)
 }
 
 
+void INV_CheckDrop(entity pl)
+{
+	if (! pl.button0)
+	{
+		// FIXME : if (dropping to world) ...
+
+		stuffcmd(pl, "\nui_drop\n");
+
+		// FIXME : remember it !!!!  [ new field ]
+		pl.drag_obj = nil;
+	}
+}
+
+
 void INV_ObjectInteraction(entity pl)
 {
 	if (! pl.cursor_active)
@@ -327,7 +341,7 @@ void INV_ObjectInteraction(entity pl)
 
 	if (pl.drag_obj)
 	{
-		// FIXME : check for MB1 release
+		INV_CheckDrop(pl);
 	}
 	else
 	{

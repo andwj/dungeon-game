@@ -58,7 +58,7 @@ void CMD_drop()
 
 	if (id >= 0)
 	{
-		localcmd("\ncmd invent_get %d\n", id);
+		localcmd(sprintf("\ncmd invent_get %d\n", id));
 	}
 
 	UI_ClearDrag();
