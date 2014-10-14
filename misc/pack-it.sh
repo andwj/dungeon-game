@@ -28,6 +28,8 @@ echo "Copying QC source...."
 cp -a game   $dest/source/game
 cp -a client $dest/source/client
 cp -a menu   $dest/source/menu
+cp -a shared $dest/source/shared
+cp -a dpdefs $dest/source/dpdefs
 
 rm -fv $dest/source/*/fteqcc.log
 
