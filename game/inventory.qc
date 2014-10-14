@@ -156,6 +156,22 @@ void INV_UpdateSummary(entity pl)
 }
 
 
+void INV_KillItem(entity e)
+{
+	e.deadflag = DEAD_DEAD;
+
+	e.effects = EF_NODRAW;
+}
+
+
+void INV_ResurrectItem(entity e)
+{
+	e.deadflag = 0;
+
+	e.effects = EF_SELECTABLE;
+}
+
+
 void INV_GiveItem(entity pl, entity slot, entity e)
 {
 	// if 'slot' is nil, it means we find one
@@ -178,11 +194,11 @@ void INV_GiveItem(entity pl, entity slot, entity e)
 
 	INV_UpdateSummary(pl);
 
-	// keep object around (for when we drop it)
+	// remember the entity (for when we drop it)
 	slot.drag_obj = e;
 
-	// make object invisible
-	e.effects = e.effects | EF_NODRAW;
+	// make object "vanish" and never seen or selectable again
+	INV_KillItem(e);
 
 	// update client too
 	stuffcmd(pl, sprintf("\nui_invent %d 1 \"%s\"\n", slot.invent_id, slot.icon_pic));
@@ -313,7 +329,7 @@ void CMD_invent_get()
 	// if wanted slot is not free, use a free slot
 	if (slot.count > 0)
 		slot = free_slot;
-	
+
 	INV_GiveItem(pl, slot, pl.drag_obj);
 
 	INV_ClearDrag(pl);
