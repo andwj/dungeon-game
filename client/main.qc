@@ -12,11 +12,8 @@
 
 float free_camera;
 
-void UpdateCameraMode()
+void SetCameraMode(float enable)
 {
-	// check for +button8
-	float enable = (input_buttons & 128);
-
 	if (free_camera == enable)
 		return;
 
@@ -32,8 +29,38 @@ void UpdateCameraMode()
 		cvar_set("cl_prydoncursor", "1");
 		setcursormode(1);
 
-		// FIXME RESET ANGLE ??
+		// FIXME RESET ANGLE ?
 	}
+}
+
+
+void CMD_cameramode()
+{
+	if (argv(1) == "1")
+		SetCameraMode(TRUE);
+	else
+		SetCameraMode(FALSE);
+}
+
+
+void CMD_togglecamera()
+{
+	SetCameraMode(! free_camera);
+}
+
+
+void UI_DrawFreeLook()
+{
+	if (! free_camera)
+		return;
+	
+	vector pic_size = drawgetimagesize("gfx/freelook");
+
+	vector pos = '0 25 0';
+
+	pos_x = (scr_width - pic_size_x) / 2;
+
+	drawpic(pos, "gfx/freelook", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 }
 
 
@@ -50,6 +77,10 @@ void CSQC_Init()
 	registercommand("ui_highlight");
 	registercommand("ui_invent");
 	registercommand("ui_drag");
+
+	// stuff for key bindings
+	registercommand("cameramode");
+	registercommand("togglecamera");
 
 	// turn on Prydon cursor mode
 	cvar_set("cl_prydoncursor", "1");
@@ -82,9 +113,18 @@ float CSQC_ConsoleCommand(string cmd)
 	{
 		CMD_drag();
 	}
+	else if (argv(0) == "cameramode")
+	{
+		CMD_cameramode();
+	}
+	else if (argv(0) == "togglecamera")
+	{
+		CMD_togglecamera();
+	}
 	else
 	{
-		// unknown command
+		// oops, unknown command
+		// [ should not happen, we only get registered commands ]
 		return 0;
 	}
 
@@ -96,11 +136,12 @@ float CSQC_ConsoleCommand(string cmd)
 void CSQC_UpdateView(float vwidth, float vheight)
 {
 	UpdateScreenSize();
-	UpdateCameraMode();
 
 	mouse_pos = getmousepos();
 
 	UI_RenderWorld();
+
+	UI_DrawFreeLook();
 
 	UI_Draw();
 }
