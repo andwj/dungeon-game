@@ -34,7 +34,7 @@ void CMD_drag()
 	obj_drag_pic = zoned_string(obj_drag_pic, argv(2));
 
 	// while dragging, show the "grab" hand cursor
-	if (obj_drag_pic)
+	if (dragging_flags)
 		cvar_set("cl_prydoncursor", "2");
 	else
 		cvar_set("cl_prydoncursor", "1");
@@ -47,6 +47,21 @@ void UI_ClearDrag()
 
 	if (cvar("cl_prydoncursor") > 1)
 		cvar_set("cl_prydoncursor", "1");
+}
+
+
+// send by game when user releases mouse, client needs to check if the
+// mouse pointer is over the inventory box
+void CMD_drop()
+{
+	float id = UI_MouseToInventory();
+
+	if (id >= 0)
+	{
+		localcmd("\ncmd invent_get %d\n", id);
+	}
+
+	UI_ClearDrag();
 }
 
 
