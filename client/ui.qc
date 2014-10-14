@@ -87,6 +87,27 @@ void UI_DrawDescription()
 }
 
 
+void UI_DrawHealthBar(vector pos, float w, float h, vector color, vector text_color, float qty)
+{
+qty = 100; //!!! FIXME
+
+	vector size = to_vector(w * qty / 100, h, 0);
+
+	if (size_x > 0)
+		drawfill(pos, size, color, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+	pos_x = pos_x + w;
+	pos_y = pos_y - 4;
+
+	size_y = h * 1.2;
+	size_x = size_y;
+
+	string qty_str = sprintf("%d", max(qty, 0));
+
+	drawstring(pos, qty_str, size, text_color, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+}
+
+
 void UI_DrawStats()
 {
 	vector bg_size = draw_getimagesize("gfx/stat_box");
@@ -97,6 +118,14 @@ void UI_DrawStats()
 	pos_y = scr_height - bg_size_y;
 
 	drawpic(pos, "gfx/stat_box", SIZE_NORMAL, '1 1 1', 1.0, 0);
+
+	pos = pos + '114 100 0';
+
+	UI_DrawHealthBar(pos, 120, 14, '2.0 0.0 0.0', '2.0 0.0 0.0', getstatf(STAT_HEALTH));
+
+	pos = pos + '0 40 0';
+
+	UI_DrawHealthBar(pos, 120, 14, '0.0 1.0 2.0', '0.0 1.0 2.0', getstatf(STAT_HEALTH));
 }
 
 
