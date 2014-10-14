@@ -1,0 +1,51 @@
+
+Drag-n-Drop PROTOCOL
+====================
+
+
+Picking up an object :
+
+(a) GAME: a pick-up-able item is under the cursor, user presses MB1
+    Then: mark it as "dragging", clear EF_SELECTABLE, set EF_NODRAW.
+    Send "ui_drag <where> <picname>" to client.
+
+    where is number : 0 is cancel drag, 1 = pickup, 2 = drop
+
+(b) CLIENT: parse "ui_drag" and then draw this picture underneath
+    the cursor. 
+ 
+(c) GAME: user released MB1, send "ui_drop" to client.
+
+(d) CLIENT: parse "ui_drop" command.  (it implicitly clears the drag state)
+    If 'where' was "pickup" then check if mouse is over inventory, and
+    then send "invent_get <slot>" command to server.
+    [ in other drag modes, do nothing, just clear drag state ]
+
+(d) GAME: handle "invent_get" and update world.
+    Send "ui_invent" command(s) to client for inventory update.
+    No need to send "ui_drag 0" (implied by "ui_drop")
+
+
+Dropping an object (back into the world) :
+
+(a) CLIENT: need to be able to highlight an item in the inventory
+
+(b) CLIENT: if mouse button is pressed, begin drag.
+    Send "invent_drag <slot>" to the game.
+    Do NOT change state yet [ except to prevent sending more "invent_drag" commands ]
+
+(c) GAME: handle "inv_drag" and sets up drag state,
+    Sends "ui_drag <where> <pic>" to client.
+    Also sends "ui_invent" to hide object in inventory.
+
+(d) CLIENT: parse "ui_drag" and starts dragging [ same as GETTING ]
+
+(e) GAME: will check for valid drop points, send "ui_can_drop 0/1"
+
+(f) CLIENT: parse "ui_can_drop" and show it to user [ cursor becomes down arrow ]
+
+(g) GAME: detect user release of MB1.
+    Sends "ui_drag 0" (cancel drag) to client.
+    Place object back in world, set EF_SELECTABLE (etc) and send commands
+    to update inventory.
+
