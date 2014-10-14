@@ -6,6 +6,7 @@ menu.dat
 ../shared/defs.qc
 ../shared/utils.qc
 ../shared/screen.qc
+../shared/gui.qc
 
 menu.qc
 

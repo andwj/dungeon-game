@@ -6,6 +6,7 @@ csprogs.dat
 ../shared/defs.qc
 ../shared/utils.qc
 ../shared/screen.qc
+../shared/gui.qc
 
 invent.qc
 ui.qc
