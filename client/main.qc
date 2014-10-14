@@ -64,6 +64,18 @@ void UI_DrawFreeLook()
 }
 
 
+void UI_RenderWorld()
+{
+	clearscene();
+
+	setproperty(VF_DRAWWORLD, 1);
+
+	addentities(MASK_ENGINE | MASK_ENGINEVIEWMODELS | MASK_NORMAL);
+
+	renderscene();
+}
+
+
 // ------------------------------------------------------------------------
 
 

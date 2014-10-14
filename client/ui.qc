@@ -141,17 +141,5 @@ void UI_Draw()
 }
 
 
-void UI_RenderWorld()
-{
-	clearscene();
-
-	setproperty(VF_DRAWWORLD, 1);
-
-	addentities(MASK_ENGINE | MASK_ENGINEVIEWMODELS | MASK_NORMAL);
-
-	renderscene();
-}
-
-
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab
