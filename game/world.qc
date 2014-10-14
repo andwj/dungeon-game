@@ -29,8 +29,6 @@ World Types:
 //=======================
 void() worldspawn =
 {
-	null_entity = world;
-
 	lastspawn = world;
 	InitBodyQue ();
 

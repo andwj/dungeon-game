@@ -13,8 +13,6 @@
 //
 // globals
 //
-entity		null_entity;	// an alias for 'world'
-
 float	movedist;
 float	gameover;		// set when a rule exits
 
