@@ -270,9 +270,21 @@ void INV_ClearDrag(entity pl)
 }
 
 
+void INV_BeginDrag(entity pl, entity e)
+{
+	pl.drag_obj = e;
+	pl.highlight_obj = nil;
+
+	e.effects = EF_NODRAW;
+
+	// tell client
+	stuffcmd(pl, sprintf("\nui_drag 1 \"%s\"\n", e.icon_pic));
+}
+
+
 void INV_CheckHighlightObject(entity pl)
 {
-	if (! pl.cursor_active)
+	if (pl.drag_obj)
 		return;
 
 	entity trace_ent = pl.cursor_trace_ent;
@@ -294,9 +306,34 @@ void INV_CheckHighlightObject(entity pl)
 }
 
 
+void INV_CheckBeginDrag(entity pl)
+{
+	if (pl.button0 &&
+		pl.highlight_obj &&
+		pl.highlight_obj == pl.cursor_trace_ent &&
+		pl.highlight_obj.icon_pic &&
+		(pl.highlight_obj.effects & EF_SELECTABLE) &&
+		! pl.highlight_obj.deadflag)
+	{
+		INV_BeginDrag(pl, pl.highlight_obj);
+	}
+}
+
+
 void INV_ObjectInteraction(entity pl)
 {
-	INV_CheckHighlightObject(pl);
+	if (! pl.cursor_active)
+		return;
+
+	if (pl.drag_obj)
+	{
+		// FIXME : check for MB1 release
+	}
+	else
+	{
+		INV_CheckBeginDrag(pl);
+		INV_CheckHighlightObject(pl);
+	}
 }
 
 
@@ -306,6 +343,8 @@ void INV_ObjectInteraction(entity pl)
 void CMD_invent_get()
 {
 	entity pl = self;
+
+print(sprintf("CMD_invent_get : %s\n", argv(1)));
 
 	// ignore unless dragging
 	if (! pl.drag_obj)
