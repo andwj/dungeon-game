@@ -174,6 +174,10 @@ float	AS_MISSILE		= 4;
 // list of inventory items held by a player
 .entity		inventory;
 
+// the object being highlighted/dragged by this player
+.entity		highlight_obj;
+.entity		drag_obj;
+
 // an ID number for each slot in the inventory
 // (for communication between client and server)
 // a slot is used if 'count' field is 1.

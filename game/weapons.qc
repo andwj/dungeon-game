@@ -1301,7 +1301,7 @@ void() W_WeaponFrame =
 	ImpulseCommands ();
 	
 // check for attack
-	if (self.button0)
+	if (self.button3)
 	{
 		SuperDamageSound ();
 		W_Attack ();
