@@ -89,8 +89,6 @@ void UI_DrawDescription()
 
 void UI_DrawHealthBar(vector pos, float w, float h, vector color, vector text_color, float qty)
 {
-qty = 100; //!!! FIXME
-
 	vector size = to_vector(w * qty / 100, h, 0);
 
 	if (size_x > 0)
@@ -121,11 +119,11 @@ void UI_DrawStats()
 
 	pos = pos + '114 100 0';
 
-	UI_DrawHealthBar(pos, 120, 14, '2.0 0.0 0.0', '2.0 0.0 0.0', getstatf(STAT_HEALTH));
+	UI_DrawHealthBar(pos, 120, 14, '1.0 0.0 0.0', '2.0 0.0 0.0', getstati(STAT_HEALTH));
 
 	pos = pos + '0 40 0';
 
-	UI_DrawHealthBar(pos, 120, 14, '0.0 1.0 2.0', '0.0 1.0 2.0', getstatf(STAT_HEALTH));
+	UI_DrawHealthBar(pos, 120, 14, '0.3 0.7 1.0', '0.0 1.0 2.0', getstati(STAT_ARMOR));
 }
 
 
