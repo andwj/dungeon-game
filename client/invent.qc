@@ -55,14 +55,14 @@ void UI_CreateInventory()
 
 entity UI_GetInventorySlot(float id)
 {
-	entity e;
+	entity slot;
 
-	for (e = inventory_head ; e ; e = e.chain)
-		if (e.invent_id == id)
-			return e;
+	for (slot = inventory_head ; slot ; slot = slot.chain)
+		if (slot.invent_id == id)
+			return slot;
 	
 	error("Inventory slot not found!\n");
-	return inventory_head;
+	return nil;
 }
 
 
@@ -111,6 +111,41 @@ void UI_DrawInventory()
 
 	for (e = inventory_head ; e ; e = e.chain)
 		UI_DrawItem(pos, e);
+}
+
+
+// 
+// check if mouse is over an inventory box, and return the ID number
+// of the box, or -1 if not over it.
+//
+float UI_MouseToInventory()
+{
+	vector bg_size = draw_getimagesize("gfx/invent_box");
+
+	vector pos = '0 0 0';
+
+	pos_x = scr_width        - bg_size_x;
+	pos_y = scr_height - 200 - bg_size_y;
+
+	pos = pos + '15 70 0';
+
+	float ix = floor((mouse_pos_x - pos_x) / 76);
+	float iy = floor((mouse_pos_y - pos_y) / 64);
+
+	if (ix < 0 || ix >= INV_BOX_WIDTH)  return -1;
+	if (iy < 0 || iy >= INV_BOX_HEIGHT) return -1;
+
+	// find it
+	entity slot;
+
+	for (slot = inventory_head ; slot ; slot = slot.chain)
+	{
+		if (slot.invent_x == ix && slot.invent_y == iy)
+			return slot.invent_id;
+	}
+
+	// uhh, WTF?
+	return -1;
 }
 
 
