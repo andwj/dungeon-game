@@ -49,5 +49,20 @@ string zoned_to_temp(string cur_s)
 }
 
 
+//
+// create a vector from components
+//
+vector to_vector(float x, float y, float z)
+{
+	vector vec;
+
+	vec_x = x;
+	vec_y = y;
+	vec_z = z;
+
+	return vec;
+}
+
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab
