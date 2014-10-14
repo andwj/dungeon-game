@@ -2,6 +2,9 @@
 Drag-n-Drop PROTOCOL
 ====================
 
+Main principle is that the GAME (the server) has the definitive state
+and the CLIENT is being an input/output device (told what to show).
+
 
 Picking up an object :
 
