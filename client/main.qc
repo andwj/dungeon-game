@@ -150,10 +150,11 @@ void CSQC_UpdateView(float vwidth, float vheight)
 
 	mouse_pos = getmousepos();
 
+	UI_CheckMouseOverGUI();
+
 	UI_RenderWorld();
 
 	UI_DrawFreeLook();
-
 	UI_Draw();
 }
 

@@ -141,5 +141,31 @@ void UI_Draw()
 }
 
 
+//
+// Check if mouse pointer is over part of the user interface (especially
+// the inventory box).  When it is, disable ability to select objects.
+//
+bool mouse_over_gui;
+
+void UI_CheckMouseOverGUI()
+{
+	bool old_val = mouse_over_gui;
+
+	// FIXME : proper test !!
+	if (mouse_pos_x > scr_width - 350)
+		mouse_over_gui = TRUE;
+	else
+		mouse_over_gui = FALSE;
+
+	if (mouse_over_gui != old_val)
+	{
+		if (mouse_over_gui)
+			cvar_set("cl_prydoncursor_notrace", "1");
+		else
+			cvar_set("cl_prydoncursor_notrace", "0");
+	}
+}
+
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab
