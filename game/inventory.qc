@@ -156,9 +156,12 @@ void INV_UpdateSummary(entity pl)
 }
 
 
-void INV_GiveItem(entity pl, entity e)
+void INV_GiveItem(entity pl, entity slot, entity e)
 {
-	entity slot = INV_FindFreeSlot(pl);
+	// if 'slot' is nil, it means we find one
+
+	if (! slot)
+		slot = INV_FindFreeSlot(pl);
 
 	if (! slot)
 		error("INV_GiveItem : inventory is full!");
@@ -174,6 +177,12 @@ void INV_GiveItem(entity pl, entity e)
 	slot.i_misc		= e.i_misc;
 
 	INV_UpdateSummary(pl);
+
+	// keep object around (for when we drop it)
+	slot.drag_obj = e;
+
+	// make object invisible
+	e.effects = e.effects | EF_NODRAW;
 
 	// update client too
 	stuffcmd(pl, sprintf("\nui_invent %d 1 \"%s\"\n", slot.invent_id, slot.icon_pic));
@@ -237,6 +246,14 @@ void INV_SendAllToClient(entity pl)
 //------------------------------------------------------------------------
 
 
+void INV_ClearDrag(entity pl)
+{
+	pl.drag_obj = nil;
+
+	stuffcmd(pl, "\nui_drag 0\n");
+}
+
+
 void INV_CheckHighlightObject(entity pl)
 {
 	if (! pl.cursor_active)
@@ -265,6 +282,43 @@ void INV_ObjectInteraction(entity pl)
 {
 	INV_CheckHighlightObject(pl);
 }
+
+
+//
+// client code sends this command when user drops an item in inventory box
+//
+void CMD_invent_get()
+{
+	entity pl = self;
+
+	// ignore unless dragging
+	if (! pl.drag_obj)
+		return;
+
+	entity free_slot = INV_FindFreeSlot(pl);
+
+	// this will not normally happen [ checked before dragging ]
+	if (! free_slot)
+		return;
+
+	// already have the item?
+	if (! INV_CheckHasItem(pl, pl.drag_obj))
+	{
+		centerprint(pl, "You already have that!\n");
+		return;
+	}
+
+	entity slot = INV_LookupSlot(pl, stof(argv(1)));
+
+	// if wanted slot is not free, use a free slot
+	if (slot.count > 0)
+		slot = free_slot;
+	
+	INV_GiveItem(pl, slot, pl.drag_obj);
+
+	INV_ClearDrag(pl);
+}
+
 
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab

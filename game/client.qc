@@ -584,27 +584,18 @@ void() ClientDisconnect =
 
 void(string s) SV_ParseClientCommand =
 {
-  // 'self' is the client which sent the command
+	// 'self' is the client which sent the command
 
-  print("SV_ParseClientCommand:\n");
+	argc = tokenize(s);
 
-float num = tokenize(s);
-float i;
-
-for (i = 0 ; i < num ; ++i)
-{
-	print("  [");
-	print(argv(i));
-	print("]\n");
-}
-
-  if (FALSE /* check stuff...*/)
-  {
-  }
-  else
-  {
-    clientcommand(self, s);
-  }
+	if (argv(0) == "invent_get")
+	{
+		CMD_invent_get();
+	}
+	else
+	{
+		clientcommand(self, s);
+	}
 }
 
 

@@ -71,8 +71,7 @@ void CSQC_Init()
 {
 	print("UI Init....\n");
 
-//  UI_InitStats();
-	UI_CreateInventory();
+	INV_Create();
 
 	registercommand("ui_highlight");
 	registercommand("ui_invent");
@@ -99,7 +98,7 @@ void CSQC_Shutdown()
 
 float CSQC_ConsoleCommand(string cmd)
 {
-	tokenize(cmd);
+	argc = tokenize(cmd);
 
 	if (argv(0) == "ui_highlight")
 	{

@@ -32,7 +32,7 @@
 entity inventory_head;
 
 
-void UI_CreateInventory()
+void INV_Create()
 {
 	float ix, iy;
 
@@ -53,7 +53,7 @@ void UI_CreateInventory()
 }
 
 
-entity UI_GetInventorySlot(float id)
+entity INV_LookupSlot(float id)
 {
 	entity slot;
 
@@ -71,7 +71,7 @@ void CMD_invent()
 {
 	float id = stof(argv(1));
 
-	entity slot = UI_GetInventorySlot(id);
+	entity slot = INV_LookupSlot(id);
 
 	slot.invent_flags = stof(argv(2));
 

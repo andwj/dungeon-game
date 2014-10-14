@@ -16,6 +16,10 @@
  */
 
 
+// store result of tokenize() here
+float argc;
+
+
 // inventory box size
 #define INV_BOX_WIDTH	4
 #define INV_BOX_HEIGHT	4
