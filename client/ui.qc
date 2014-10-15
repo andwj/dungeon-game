@@ -150,7 +150,8 @@ void UI_Draw()
 
 	if (obj_drag_pic != "")
 		UI_DrawDragObject();
-	else if (obj_description != "")
+
+	if (obj_description != "")
 		UI_DrawDescription();
 }
 

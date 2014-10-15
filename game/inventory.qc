@@ -273,7 +273,6 @@ void INV_ClearDrag(entity pl)
 void INV_BeginDrag(entity pl, entity e)
 {
 	pl.drag_obj = e;
-	pl.highlight_obj = nil;
 
 	e.effects = EF_NODRAW;
 
@@ -284,12 +283,13 @@ void INV_BeginDrag(entity pl, entity e)
 
 void INV_CheckHighlightObject(entity pl)
 {
-	if (pl.drag_obj)
-		return;
-
 	entity trace_ent = pl.cursor_trace_ent;
 
 	if (trace_ent && ! (trace_ent.effects & EF_SELECTABLE))
+		trace_ent = nil;
+
+	// no description while dragging...
+	if (pl.drag_obj)
 		trace_ent = nil;
 
 	if (trace_ent == pl.highlight_obj)
@@ -300,7 +300,7 @@ void INV_CheckHighlightObject(entity pl)
 	// send description to client CSQC (empty if NO ent)
 
 	if (pl.highlight_obj)
-		stuffcmd(pl, sprintf("\nui_highlight 0 1 \"%s\"\n", pl.highlight_obj.description));
+		stuffcmd(pl, sprintf("\nui_highlight 1 0 \"%s\"\n", pl.highlight_obj.description));
 	else
 		stuffcmd(pl, "\nui_highlight 0 0 \"\"\n");
 }
@@ -380,13 +380,15 @@ void INV_ObjectInteraction(entity pl)
 	else
 	{
 		INV_CheckBeginDrag(pl);
-		INV_CheckHighlightObject(pl);
 	}
+
+	INV_CheckHighlightObject(pl);
 }
 
 
 //
-// client code sends this command when user drops an item in inventory box
+// client code sends this to specify which part of inventory box the
+// mouse pointer is currently over (0 for none).
 //
 void CMD_invent_hl(entity pl)
 {
