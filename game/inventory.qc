@@ -300,9 +300,9 @@ void INV_CheckHighlightObject(entity pl)
 	// send description to client CSQC (empty if NO ent)
 
 	if (pl.highlight_obj)
-		stuffcmd(pl, sprintf("\nui_highlight 1 \"%s\"\n", pl.highlight_obj.description));
+		stuffcmd(pl, sprintf("\nui_highlight 0 1 \"%s\"\n", pl.highlight_obj.description));
 	else
-		stuffcmd(pl, "\nui_highlight 0 \"\"\n");
+		stuffcmd(pl, "\nui_highlight 0 0 \"\"\n");
 }
 
 
