@@ -189,6 +189,8 @@ float	AS_MISSILE		= 4;
 // an ID number for each slot in the inventory
 // (for communication between client and server)
 // a slot is used if 'count' field is 1.
+//
+// For players: ID number where mouse is (0 if not over inventory box)
 .float		invent_id;
 
 // for an item or inventory slot, one of the bits in i_xxx will be set

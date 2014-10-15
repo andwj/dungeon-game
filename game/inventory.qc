@@ -125,12 +125,12 @@ float INV_CountBits(float bits)
 
 float INV_CheckHasItem(entity pl, entity e)
 {
-	if (pl.i_keys & e.i_keys) return TRUE;
-	if (pl.i_weapons & e.i_weapons) return TRUE;
-	if (pl.i_armor & e.i_armor) return TRUE;
-	if (pl.i_misc & e.i_misc) return TRUE;
+	if (pl.i_keys & e.i_keys) return true;
+	if (pl.i_weapons & e.i_weapons) return true;
+	if (pl.i_armor & e.i_armor) return true;
+	if (pl.i_misc & e.i_misc) return true;
 
-	return FALSE;
+	return false;
 }
 
 
@@ -308,6 +308,8 @@ void INV_CheckHighlightObject(entity pl)
 
 void INV_CheckBeginDrag(entity pl)
 {
+	// FIXME: check have free slot...  and not have it already...
+
 	if (pl.button0 &&
 		pl.highlight_obj &&
 		pl.highlight_obj == pl.cursor_trace_ent &&
@@ -320,16 +322,48 @@ void INV_CheckBeginDrag(entity pl)
 }
 
 
+void INV_PickupFromWorld(entity pl, entity obj)
+{
+	entity free_slot = INV_FindFreeSlot(pl);
+
+	// this will not normally happen [ checked before dragging ]
+	if (! free_slot)
+		return;
+
+	// already have the item?
+	if (INV_CheckHasItem(pl, obj))
+	{
+		centerprint(pl, "You already have that!\n");
+		return;
+	}
+
+	entity slot = INV_LookupSlot(pl, pl.invent_id);
+
+	// if wanted slot is not free, use the free slot
+	if (slot.count > 0)
+		slot = free_slot;
+
+	INV_GiveItem(pl, slot, obj);
+}
+
+
 void INV_CheckDrop(entity pl)
 {
 	if (! pl.button0)
 	{
+		entity obj = pl.drag_obj;
+
+		INV_ClearDrag(pl);
+
 		// FIXME : if (dropping to world) ...
 
-		stuffcmd(pl, "\nui_drop\n");
-
-		// FIXME : remember it !!!!  [ new field ]
-		pl.drag_obj = nil;
+		if (pl.invent_id > 0)
+			INV_PickupFromWorld(pl, obj);
+		else
+		{
+			// reset object
+			obj.effects = EF_SELECTABLE;
+		}
 	}
 }
 
@@ -356,37 +390,19 @@ void INV_ObjectInteraction(entity pl)
 //
 void CMD_invent_hl(entity pl)
 {
-print(sprintf("CMD_invent_hl : %s\n", argv(1)));
+	float new_id = stof(argv(1));
 
-/* 
-
-	// ignore unless dragging
-	if (! pl.drag_obj)
+	if (new_id == pl.invent_id)
 		return;
 
-	entity free_slot = INV_FindFreeSlot(pl);
+	pl.invent_id = new_id;
 
-	// this will not normally happen [ checked before dragging ]
-	if (! free_slot)
+	if (new_id <= 0)
 		return;
+	
+	entity slot = INV_LookupSlot(pl, new_id);
 
-	// already have the item?
-	if (! INV_CheckHasItem(pl, pl.drag_obj))
-	{
-		centerprint(pl, "You already have that!\n");
-		return;
-	}
-
-	entity slot = INV_LookupSlot(pl, stof(argv(1)));
-
-	// if wanted slot is not free, use a free slot
-	if (slot.count > 0)
-		slot = free_slot;
-
-	INV_GiveItem(pl, slot, pl.drag_obj);
-
-	INV_ClearDrag(pl);
-*/
+	// TODO : highlight object in inventory ready for dragging
 }
 
 
