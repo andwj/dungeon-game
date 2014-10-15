@@ -570,3 +570,7 @@ string	getextresponse(void) = #624;
 const string cvar_string(string name) = #71;
 const string cvar_defstring(string name) = #89;
 float	stringwidth(string text, float handleColors, vector size) = #468;
+
+//andrewj: added these two
+float findfont(string s) = #356; // find font by fontname and return it's index
+float loadfont(string fontname, string fontmaps, string sizes, float slot, float fix_scale, float fix_voffset) = #357; 
