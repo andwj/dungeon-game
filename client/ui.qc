@@ -10,31 +10,37 @@
 //========================================================================
 
 
+/* --- HIGHLIGHT / DRAGGING STATE --- */
+
 // description for object currently under the cursor
 string obj_description;  // [zoned]
-float  highlight_flags;
+float  highlight_mode;
+float  highlight_slot;
 
 // picture for object being dragged
 string obj_drag_pic;     // [zoned]
-float  dragging_flags;
+float  dragging_mode;
+
+float  can_drop_mode;
 
 
 void CMD_highlight()
 {
-	highlight_flags = stof(argv(1));
+	highlight_mode = stof(argv(1));
+	highlight_slot = stof(argv(2));
 
-	obj_description = zoned_string(obj_description, argv(2));
+	obj_description = zoned_string(obj_description, argv(3));
 }
 
 
 void CMD_drag()
 {
-	dragging_flags = stof(argv(1));
+	dragging_mode = stof(argv(1));
 
 	obj_drag_pic = zoned_string(obj_drag_pic, argv(2));
 
 	// while dragging, show the "grab" hand cursor
-	if (dragging_flags)
+	if (dragging_mode)
 		cvar_set("cl_prydoncursor", "2");
 	else
 		cvar_set("cl_prydoncursor", "1");
@@ -50,18 +56,9 @@ void UI_ClearDrag()
 }
 
 
-// send by game when user releases mouse, client needs to check if the
-// mouse pointer is over the inventory box
-void CMD_drop()
+void CMD_can_drop()
 {
-	float id = UI_MouseToInventory();
-
-	if (id >= 0)
-	{
-		localcmd(sprintf("\ncmd invent_get %d\n", id));
-	}
-
-	UI_ClearDrag();
+	can_drop_mode = stof(argv(1));
 }
 
 
@@ -72,6 +69,8 @@ void UI_DrawDragObject()
 	vector pos = mouse_pos - size * 0.64;
 
 	drawpic(pos, obj_drag_pic, SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+	// FIXME: can_drop_mode : show something
 }
 
 
@@ -179,6 +178,8 @@ void UI_CheckMouseOverGUI()
 		else
 			cvar_set("cl_prydoncursor_notrace", "0");
 	}
+
+	CheckMouseOverInventory();
 }
 
 

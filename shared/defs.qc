@@ -29,9 +29,12 @@ float argc;
 #define INV_BOX_HEIGHT	4
 
 
-// highlight flags
-#define HILT_CAN_PICKUP		1
-#define HILT_CAN_GIVE		2
+// mode values for ui_highlight, ui_drag, ui_can_drop
+#define DRAG_NONE		0
+#define DRAG_INVENT		1
+#define DRAG_WORLD		2
+#define DRAG_USE		3
+#define DRAG_GIVE		4
 
 
 //--- editor settings ---

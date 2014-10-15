@@ -23,7 +23,7 @@ void INV_Create(entity pl)
 	{
 		entity slot = spawn();
 
-		slot.invent_id = iy * INV_BOX_WIDTH + ix;
+		slot.invent_id = 1 + iy * INV_BOX_WIDTH + ix;
 
 		// link it in
 		slot.chain = pl.inventory;
@@ -354,11 +354,11 @@ void INV_ObjectInteraction(entity pl)
 //
 // client code sends this command when user drops an item in inventory box
 //
-void CMD_invent_get()
+void CMD_invent_hl(entity pl)
 {
-	entity pl = self;
+print(sprintf("CMD_invent_hl : %s\n", argv(1)));
 
-print(sprintf("CMD_invent_get : %s\n", argv(1)));
+/* 
 
 	// ignore unless dragging
 	if (! pl.drag_obj)
@@ -386,6 +386,7 @@ print(sprintf("CMD_invent_get : %s\n", argv(1)));
 	INV_GiveItem(pl, slot, pl.drag_obj);
 
 	INV_ClearDrag(pl);
+*/
 }
 
 

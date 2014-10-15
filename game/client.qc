@@ -588,9 +588,9 @@ void(string s) SV_ParseClientCommand =
 
 	argc = tokenize(s);
 
-	if (argv(0) == "invent_get")
+	if (argv(0) == "invent_hl")
 	{
-		CMD_invent_get();
+		CMD_invent_hl(self);
 	}
 	else
 	{

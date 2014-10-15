@@ -31,6 +31,9 @@
 // list of inventory objects
 entity inventory_head;
 
+// slot ID that mouse is currently over, zero if none
+float inv_mouse_slot;
+
 
 void INV_Create()
 {
@@ -41,7 +44,7 @@ void INV_Create()
 	{
 		entity box = spawn();
 
-		box.invent_id = iy * INV_BOX_WIDTH + ix;
+		box.invent_id = 1 + iy * INV_BOX_WIDTH + ix;
 
 		box.invent_x = ix;
 		box.invent_y = iy;
@@ -116,7 +119,7 @@ void UI_DrawInventory()
 
 // 
 // check if mouse is over an inventory box, and return the ID number
-// of the box, or -1 if not over it.
+// of the box, or zero if not over it.
 //
 float UI_MouseToInventory()
 {
@@ -132,8 +135,8 @@ float UI_MouseToInventory()
 	float ix = floor((mouse_pos_x - pos_x) / 76);
 	float iy = floor((mouse_pos_y - pos_y) / 64);
 
-	if (ix < 0 || ix >= INV_BOX_WIDTH)  return -1;
-	if (iy < 0 || iy >= INV_BOX_HEIGHT) return -1;
+	if (ix < 0 || ix >= INV_BOX_WIDTH)  return 0;
+	if (iy < 0 || iy >= INV_BOX_HEIGHT) return 0;
 
 	// find it
 	entity slot;
@@ -145,7 +148,21 @@ float UI_MouseToInventory()
 	}
 
 	// uhh, WTF?
-	return -1;
+	return 0;
+}
+
+
+void CheckMouseOverInventory()
+{
+	float id = UI_MouseToInventory();
+
+	if (inv_mouse_slot == id)
+		return;
+
+	inv_mouse_slot = id;
+
+	// tell the server what we are looking at
+	localcmd(sprintf("\ncmd invent_hl %d\n", id));
 }
 
 

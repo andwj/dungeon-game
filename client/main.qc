@@ -88,7 +88,7 @@ void CSQC_Init()
 	registercommand("ui_highlight");
 	registercommand("ui_invent");
 	registercommand("ui_drag");
-	registercommand("ui_drop");
+	registercommand("ui_can_drop");
 
 	// stuff for key bindings
 	registercommand("cameramode");
@@ -125,9 +125,9 @@ float CSQC_ConsoleCommand(string cmd)
 	{
 		CMD_drag();
 	}
-	else if (argv(0) == "ui_drop")
+	else if (argv(0) == "ui_can_drop")
 	{
-		CMD_drop();
+		CMD_can_drop();
 	}
 	else if (argv(0) == "cameramode")
 	{
