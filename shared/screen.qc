@@ -18,6 +18,38 @@
 #define COLOR_NORMAL	'1 1 1'
 #define ALPHA_NORMAL	1.0
 
+
+/* ---- SCREEN SCALING / ASPECT STUFF --- */
+
+//
+// The main principle is to keep the screen 1:1 pixels (no scaling)
+// when the screen is in a certain range, and to scale up when it is
+// above the range, scale down when it is below it (too small).
+//
+// [ that assumes the pixel aspect ratio is equal or close to 1:1 ]
+//
+// The primary criterion to scale or not is based on the HEIGHT of the
+// screen (or window) -- i.e. vid_height.  When it is < MIN_VID_HEIGHT,
+// then we scale down.  When >= (2 * MIN_VID_HEIGHT) then we scale up by
+// a whole number (2, 3 or 4) to prevent blurring pixels.
+//
+// [ there will be an option to never scale up, and an option to
+//   always scale down (make everything as large as possible) ]
+//
+// Horizontally, we also need to ensure there is enough space for UI
+// elements.  We impose a minimum aspect ratio of 5:4.  If the final
+// aspect would be < this, then we squish the screen horizontally.
+//
+// Final width is adjusted for the pixel aspect ratio (vid_pixelheight),
+// unless it is close to 1:1 then we do not apply it.
+//
+// [ there will be an option to always honor the pixel aspect ]
+//
+
+#define MIN_VID_HEIGHT	600
+#define MIN_VID_ASPECT	(5 / 4)
+
+
 // copies of the cvars with the same names
 // (not just for convenience, also to detect when those cvars have changed)
 float vid_width;
@@ -68,7 +100,7 @@ float UpdateScreenSize()
 	//    3. vid_pixelheight changes final width (i.e. we squish or stretch horizontally
 	//       to account for non-square pixels)
 
-	scr_height = 768;
+	scr_height = MIN_VID_HEIGHT;
 
 	scr_width = scr_height * w / h;
 
