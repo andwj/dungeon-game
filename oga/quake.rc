@@ -1,0 +1,20 @@
+//
+// COMMANDS RUN DURING STARTUP
+//
+
+// load the base configuration
+exec default.cfg
+exec bindings.cfg
+
+// command aliases
+alias exit quit
+
+// load the last saved configuration
+exec config.cfg
+
+// run a user script file (if present)
+exec autoexec.cfg
+
+// process command line statements
+stuffcmds
+
