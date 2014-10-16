@@ -15,6 +15,10 @@ exec config.cfg
 // run a user script file (if present)
 exec autoexec.cfg
 
+// load fonts
+loadfont default fonts/DejaVuSerif.ttf     12 16 20 24 32
+loadfont console fonts/DejaVuSansMono.ttf  12 16 20 24 32
+
 // process command line statements
 stuffcmds
 

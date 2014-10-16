@@ -151,7 +151,7 @@ void draw_text(float x, float y, string text)
 	pos_x = x;
 	pos_y = y;
 
-	vector scale = '25 35 0';
+	vector scale = '35 35 0';
 	vector color = '2 2 2';
 
 	drawstring(pos, text, scale, color, 1.0 /* alpha */, DRAWFLAG_NORMAL);
