@@ -93,7 +93,12 @@ void UI_DrawItem(vector box_pos, entity e)
 	box_pos = box_pos + e.invent_x * '76 0 0';
 	box_pos = box_pos + e.invent_y * '0 64 0';
 
-	drawpic(box_pos, e.invent_pic, '64 64 0', '1 1 1', 1.0, 0);
+	vector color = '1 1 1';
+
+	if (e.invent_id == inv_mouse_slot)
+		color = '2 2 2';
+
+	drawpic(box_pos, e.invent_pic, '64 64 0', color, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 }
 
 
