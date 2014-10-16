@@ -296,12 +296,12 @@ void INV_CheckHighlightObject(entity pl)
 		return;
 
 	if (pl.highlight_obj)
-		pl.highlight_obj.colormod = '2 2 2';
+		pl.highlight_obj.colormod = '1 1 1';
 
 	pl.highlight_obj = trace_ent;
 
 	if (pl.highlight_obj)
-		pl.highlight_obj.colormod = '0.3 0.3 0.3';
+		pl.highlight_obj.colormod = '2 2 2';
 
 	// send description to client CSQC (empty if NO ent)
 
