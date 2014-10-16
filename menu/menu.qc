@@ -164,7 +164,7 @@ void M_TextButton(string button, float x, float y, string text)
 	pos_x = x;
 	pos_y = y;
 
-	vector scale = '25 35 0';
+	vector scale = '35 35 0';
 	vector color = '2 0 0';
 
 	if (mouse_pos_x >= 0)

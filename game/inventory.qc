@@ -276,32 +276,36 @@ void INV_SendAllToClient(entity pl)
 // the 'droptofloor' builtin.  But we do not allow touching any existing
 // entities.
 //
-bool Drop_Trace_test_spot(vector pos)
+bool Drop_Trace_test_spot(vector pos, entity obj)
 {
-	// TODO
+	tracebox(pos, '-12 -12 -2', '12 12 64', pos - '0 0 128', MOVE_NORMAL, obj /* pass_ent */);
 
-	return false;
+	// no solid surface to sit on
+	if (trace_fraction >= 1.0)
+		return false;
+	
+	if (trace_startsolid || trace_allsolid)
+		return false;
+
+	return true;
 }
 
 
-bool Drop_Trace(entity pl)
+bool Drop_Trace(entity pl, entity obj)
 {
-	// validate the cursor trace
-
+	// validate the current cursor trace
 	if (! pl.cursor_active)
 		return false;
 	
 	vector delta = pl.cursor_trace_endpos - pl.cursor_trace_start;
 	float dist = vlen(delta);
 
-print(sprintf("Drop_Trace : %1.0v (%1.0f)\n", delta, dist));
-
 	// too far away ?
-	if (dist > 400)
+	if (dist > 800)
 		return false;
 
 	// too close to camera?
-	if (dist < 100)
+	if (dist < 96)
 		return false;
 
 
@@ -313,11 +317,23 @@ print(sprintf("Drop_Trace : %1.0v (%1.0f)\n", delta, dist));
 	{
 		vector pos = pl.cursor_trace_endpos - delta * back;
 
-		if (Drop_Trace_test_spot(pos)) return true;
-		if (Drop_Trace_test_spot(pos + '0 0 50')) return true;
+		if (Drop_Trace_test_spot(pos, obj)) return true;
+		if (Drop_Trace_test_spot(pos + '0 0 50', obj)) return true;
 	}
 
 	return false;
+}
+
+
+void TEST_DropTrace(entity pl)
+{
+	entity obj = find(world, classname, "test_gold_key");
+
+	if (! obj)
+		return;
+
+	if (Drop_Trace(pl, obj))
+		setorigin(obj, trace_endpos);
 }
 
 
@@ -456,6 +472,10 @@ void INV_ObjectInteraction(entity pl)
 {
 	if (! pl.cursor_active)
 		return;
+
+// TEST
+TEST_DropTrace(pl); return;
+
 
 	if (pl.drag_obj)
 	{
