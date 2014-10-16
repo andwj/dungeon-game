@@ -176,15 +176,28 @@ entity() SelectSpawnPoint =
 	return spot;
 };
 
-/*
-===========
-PutClientInServer
 
-called each time a player is spawned
-============
-*/
+entity MakeDropIndicator()
+{
+	entity e = spawn();
+
+	setmodel(e, "models/arrow.obj");
+
+	e.skin = 0;
+	e.scale = 1;
+
+	e.alpha = 0.7;
+	e.solid = SOLID_NOT;
+	e.effects = EF_NODRAW;
+
+	setsize (e, '-16 -16 0', '16 16 56');
+
+	return e;
+}
+
 
 // andrewj: this is called by the server for each new map.
+//          [ some game code also calls it when respawning ]
 //          the only persistent data from last map are in 'parmXX' globals
 //          (which need to be decoded here, even for very first map).
 void PutClientInServer()
@@ -247,6 +260,9 @@ void PutClientInServer()
 	{
 		makevectors(self.angles);
 	}
+
+	if (! self.drop_indicator)
+		self.drop_indicator = MakeDropIndicator();
 }
 
 

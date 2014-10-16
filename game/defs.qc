@@ -222,6 +222,11 @@ float	AS_MISSILE		= 4;
 .string		lock_item;
 
 
+// andrewj: this entity shows were player may drop an object
+//          (will be EF_NODRAW when not dragging something)
+.entity		drop_indicator;
+
+
 //============================================================================
 
 //
