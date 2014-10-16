@@ -539,7 +539,6 @@ void test_gold_key()
 	self.scale = 1;
 	setsize (self, '-16 -16 0', '16 16 56');
 
-	self.effects = EF_SELECTABLE;
 	self.description = "a shiny golden key";
 	self.icon_pic = "items/gold_key_icon";
 
@@ -557,7 +556,6 @@ void test_lock()
 	self.scale = 1;
 	setsize (self, '-16 -16 0', '16 16 56');
 
-	self.effects = EF_SELECTABLE;
 	self.description = "a golden lock";
 }
 
@@ -572,7 +570,6 @@ void test_door()
 	self.solid = SOLID_BBOX;
 	setsize (self, '-32 -104 0', '32 104 96');
 
-	self.effects = EF_SELECTABLE;
 	self.description = "a locked door";
 
 	self.lock_item = "test_gold_key";

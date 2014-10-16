@@ -168,7 +168,7 @@ void INV_ResurrectItem(entity e)
 {
 	e.deadflag = 0;
 
-	e.effects = EF_SELECTABLE;
+	e.effects = 0;
 }
 
 
@@ -285,7 +285,7 @@ void INV_CheckHighlightObject(entity pl)
 {
 	entity trace_ent = pl.cursor_trace_ent;
 
-	if (trace_ent && ! (trace_ent.effects & EF_SELECTABLE))
+	if (trace_ent && ! trace_ent.description)
 		trace_ent = nil;
 
 	// no description while dragging...
@@ -295,7 +295,13 @@ void INV_CheckHighlightObject(entity pl)
 	if (trace_ent == pl.highlight_obj)
 		return;
 
+	if (pl.highlight_obj)
+		pl.highlight_obj.colormod = '2 2 2';
+
 	pl.highlight_obj = trace_ent;
+
+	if (pl.highlight_obj)
+		pl.highlight_obj.colormod = '0.3 0.3 0.3';
 
 	// send description to client CSQC (empty if NO ent)
 
@@ -314,7 +320,6 @@ void INV_CheckBeginDrag(entity pl)
 		pl.highlight_obj &&
 		pl.highlight_obj == pl.cursor_trace_ent &&
 		pl.highlight_obj.icon_pic &&
-		(pl.highlight_obj.effects & EF_SELECTABLE) &&
 		! pl.highlight_obj.deadflag)
 	{
 		INV_BeginDrag(pl, pl.highlight_obj);
@@ -361,8 +366,8 @@ void INV_CheckDrop(entity pl)
 			INV_PickupFromWorld(pl, obj);
 		else
 		{
-			// reset object
-			obj.effects = EF_SELECTABLE;
+			// cancel drag, reset object
+			obj.effects = 0;
 		}
 	}
 }

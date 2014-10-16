@@ -1256,9 +1256,9 @@ void() ImpulseCommands =
 	{
 		entity lock = find(world, classname, "test_lock");
 
-		if (lock && (lock.effects & EF_SELECTABLE))
+		if (lock && !lock.deadflag)
 		{
-			lock.effects = lock.effects - EF_SELECTABLE;
+			lock.deadflag = DEAD_DEAD;
 
 			activator = self;
 
