@@ -177,20 +177,26 @@ entity() SelectSpawnPoint =
 };
 
 
-entity MakeDropIndicator()
+entity MakeDropIndicator(entity pl)
 {
 	entity e = spawn();
 
-	setmodel(e, "models/arrow.obj");
+	setmodel(e, "models/drop_spot.obj");
 
 	e.skin = 0;
 	e.scale = 1;
 
-	e.alpha = 0.7;
+	e.alpha = 0.25;
 	e.solid = SOLID_NOT;
 	e.effects = EF_NODRAW;
 
 	setsize (e, '-16 -16 0', '16 16 56');
+
+//	e.angles = '90 0 0';
+	e.view_ofs = '0 0 2';
+
+	// only shown to this player
+	e.drawonlytoclient = pl;
 
 	return e;
 }
@@ -262,7 +268,7 @@ void PutClientInServer()
 	}
 
 	if (! self.drop_indicator)
-		self.drop_indicator = MakeDropIndicator();
+		self.drop_indicator = MakeDropIndicator(self);
 }
 
 

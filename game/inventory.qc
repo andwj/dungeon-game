@@ -327,13 +327,18 @@ bool Drop_Trace(entity pl, entity obj)
 
 void TEST_DropTrace(entity pl)
 {
-	entity obj = find(world, classname, "test_gold_key");
+	entity obj = pl.drop_indicator;
 
 	if (! obj)
 		return;
 
 	if (Drop_Trace(pl, obj))
+	{
+		obj.effects = 0;
 		setorigin(obj, trace_endpos);
+	}
+	else
+		obj.effects = EF_NODRAW;
 }
 
 
@@ -473,12 +478,11 @@ void INV_ObjectInteraction(entity pl)
 	if (! pl.cursor_active)
 		return;
 
-// TEST
-TEST_DropTrace(pl); return;
-
-
 	if (pl.drag_obj)
 	{
+if (pl.button0)
+	TEST_DropTrace(pl);
+
 		INV_CheckDrop(pl);
 	}
 	else
