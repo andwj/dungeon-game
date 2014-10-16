@@ -263,6 +263,64 @@ void INV_SendAllToClient(entity pl)
 //------------------------------------------------------------------------
 
 
+//
+// Check whether mouse pointer is pointing at a place where we can drop
+// an object.  Returns 'true' if can drop there, and 'trace_endpos' will
+// contain the new origin for the object.
+//
+// We start with 'cursor_trace_end' position, if valid, and try several
+// points of it coming back towards the camera.  We also try increasing Z
+// coordinate, to account for places too close to the floor.
+//
+// For those coordinates we tracebox downwards, doing logic similar to
+// the 'droptofloor' builtin.  But we do not allow touching any existing
+// entities.
+//
+bool Drop_Trace_test_spot(vector pos)
+{
+	// TODO
+
+	return false;
+}
+
+
+bool Drop_Trace(entity pl)
+{
+	// validate the cursor trace
+
+	if (! pl.cursor_active)
+		return false;
+	
+	vector delta = pl.cursor_trace_endpos - pl.cursor_trace_start;
+	float dist = vlen(delta);
+
+print(sprintf("Drop_Trace : %1.0v (%1.0f)\n", delta, dist));
+
+	// too far away ?
+	if (dist > 400)
+		return false;
+
+	// too close to camera?
+	if (dist < 100)
+		return false;
+
+
+	delta = normalize(delta);
+
+	float back;
+
+	for (back = 16 ; back <= 64 ; back = back + 16)
+	{
+		vector pos = pl.cursor_trace_endpos - delta * back;
+
+		if (Drop_Trace_test_spot(pos)) return true;
+		if (Drop_Trace_test_spot(pos + '0 0 50')) return true;
+	}
+
+	return false;
+}
+
+
 void INV_ClearDrag(entity pl)
 {
 	pl.drag_obj = nil;
