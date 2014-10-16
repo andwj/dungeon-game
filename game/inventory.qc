@@ -24,6 +24,7 @@ void INV_Create(entity pl)
 		entity slot = spawn();
 
 		slot.invent_id = 1 + iy * INV_BOX_WIDTH + ix;
+		slot.owner = pl;
 
 		// link it in
 		slot.chain = pl.inventory;
@@ -195,7 +196,7 @@ void INV_GiveItem(entity pl, entity slot, entity e)
 	INV_UpdateSummary(pl);
 
 	// remember the entity (for when we drop it)
-	slot.drag_obj = e;
+	slot.enemy = e;
 
 	// make object "vanish" and never seen or selectable again
 	INV_KillItem(e);
@@ -316,13 +317,33 @@ void INV_CheckBeginDrag(entity pl)
 {
 	// FIXME: check have free slot...  and not have it already...
 
-	if (pl.button0 &&
-		pl.highlight_obj &&
+	if (! pl.button0)
+		return;
+
+	if (pl.highlight_obj &&
 		pl.highlight_obj == pl.cursor_trace_ent &&
 		pl.highlight_obj.icon_pic &&
 		! pl.highlight_obj.deadflag)
 	{
 		INV_BeginDrag(pl, pl.highlight_obj);
+		return;
+	}
+
+	if (! pl.highlight_obj && pl.invent_id > 0)
+	{
+		entity slot = INV_LookupSlot(pl, pl.invent_id);
+
+		if (slot)
+		if (slot.count > 0 && slot.enemy)
+		{
+			entity e = slot.enemy;
+
+			pl.drag_obj = slot;
+
+			// tell client
+			stuffcmd(pl, sprintf("\nui_drag 2 \"%s\"\n", e.icon_pic));
+			return;
+		}
 	}
 }
 
@@ -403,13 +424,6 @@ void CMD_invent_hl(entity pl)
 		return;
 
 	pl.invent_id = new_id;
-
-	if (new_id <= 0)
-		return;
-	
-	entity slot = INV_LookupSlot(pl, new_id);
-
-	// TODO : highlight object in inventory ready for dragging
 }
 
 

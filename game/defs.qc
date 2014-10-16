@@ -183,6 +183,7 @@ float	AS_MISSILE		= 4;
 .entity		inventory;
 
 // the object being highlighted/dragged by this player
+// 'drag_obj' can be an inventory SLOT entity
 .entity		highlight_obj;
 .entity		drag_obj;
 
