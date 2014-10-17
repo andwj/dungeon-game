@@ -385,7 +385,8 @@ void INV_CheckHighlightObject(entity pl)
 	if (pl.drag_obj)
 	{
 		// check for dragging a KEY to a LOCK (for example)
-		if (trace_ent && trace_ent.lock_item == pl.drag_obj.classname)
+		if (pl.drag_obj.owner &&
+			trace_ent && trace_ent.lock_item == pl.drag_obj.classname)
 		{
 			/* allow it to be highlighted */
 		}
