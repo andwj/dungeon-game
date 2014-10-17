@@ -70,7 +70,7 @@ void UI_RenderWorld()
 
 	setproperty(VF_DRAWWORLD, 1);
 
-	addentities(MASK_ENGINE | MASK_ENGINEVIEWMODELS | MASK_NORMAL);
+	addentities(MASK_ENGINE | 0 /* MASK_ENGINEVIEWMODELS */ | MASK_NORMAL);
 
 	renderscene();
 }
