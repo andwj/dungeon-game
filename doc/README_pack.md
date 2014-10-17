@@ -23,7 +23,7 @@ Windows users can double-click the '`Run`' script.
 Linux users can use the '`Run-linux.sh`' script.  This script can detect a
 Darkplaces which has been installed on the system (e.g. from the 'darkplaces'
 package), but note that versions older than 2013 probably will not work
-properly (that includes the one in Debian Wheezy).
+properly (that includes the package in Debian Wheezy).
 
 You may need to compile the Darkplaces engine yourself.  Make sure that
 your compiled version includes the necessary libraries, for example in
