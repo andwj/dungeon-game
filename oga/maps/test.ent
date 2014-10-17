@@ -21,14 +21,14 @@
 
 {
   "classname" "test_lock"
-  "origin" "134 224 54"
+  "origin" "154 344 54"
   "angle" "180"
   "target" "door1"
 }
 
 {
   "classname" "test_door"
-  "origin" "94 324 8"
+  "origin" "94 224 8"
   "angle" "90"
   "targetname" "door1"
 }
