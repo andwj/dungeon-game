@@ -64,15 +64,19 @@ float scr_height;
 
 vector scr_size;
 
+// set this to 1 to force update of screen (after RESET ALL SETTINGS)
+// the update will happen a few frames later.
+float scr_force_update;
+
 // current position of mouse pointer (x=0..scr_width, y=0..scr_height)
 vector mouse_pos;
 
 
 //
 // Check if video resolution has changed, update our virtual size.
-// Returns 1 if screen did change size, 0 normally.
+// Returns TRUE if screen did change size.
 //
-float UpdateScreenSize()
+bool UpdateScreenSize()
 {
 	float w = cvar("vid_width");
 	float h = cvar("vid_height");
@@ -86,18 +90,24 @@ float UpdateScreenSize()
 	if (p < 0.25) p = 0.25;
 	if (p > 4.00) p = 4.00;
 
-	if (w == vid_width &&
+	if (scr_force_update > 0)
+		scr_force_update = scr_force_update + 1;
+
+	if ((scr_force_update < 3) &&
+		w == vid_width &&
 		h == vid_height &&
 		p == vid_pixelheight &&
 		o == vid_options)
 	{
-		return 0;  // no change
+		return false;  // no change
 	}
 
 	vid_width  = w;
 	vid_height = h;
 	vid_pixelheight = p;
 	vid_options = o;
+
+	scr_force_update = 0;
 
 
 	// --- compute new size of virtual screen ---
@@ -152,7 +162,7 @@ float UpdateScreenSize()
 
 	mouse_pos = getmousepos();
 
-	return 1;
+	return true;
 }
 
 
