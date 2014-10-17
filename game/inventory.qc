@@ -124,12 +124,13 @@ float INV_CountBits(float bits)
 }
 
 
-float INV_CheckHasItem(entity pl, entity e)
+bool INV_CheckHasItem(entity pl, entity e)
 {
-	if (pl.i_keys & e.i_keys) return true;
-	if (pl.i_weapons & e.i_weapons) return true;
-	if (pl.i_armor & e.i_armor) return true;
-	if (pl.i_misc & e.i_misc) return true;
+	entity slot;
+
+	for (slot = pl.inventory ; slot ; slot = slot.chain)
+		if (slot.enemy == e)
+			return true;
 
 	return false;
 }
@@ -157,7 +158,7 @@ void INV_UpdateSummary(entity pl)
 }
 
 
-void INV_KillItem(entity e)
+void INV_HideItem(entity e)
 {
 	e.deadflag = DEAD_DEAD;
 
@@ -165,7 +166,7 @@ void INV_KillItem(entity e)
 }
 
 
-void INV_ResurrectItem(entity e)
+void INV_UnhideItem(entity e)
 {
 	e.deadflag = 0;
 
@@ -198,8 +199,10 @@ void INV_GiveItem(entity pl, entity slot, entity e)
 	// remember the entity (for when we drop it)
 	slot.enemy = e;
 
-	// make object "vanish" and never seen or selectable again
-	INV_KillItem(e);
+	// mark owner of item [used during dragging to world]
+	e.owner = slot;
+
+	INV_HideItem(e);
 
 	// update client too
 	stuffcmd(pl, sprintf("\nui_invent %d 1 \"%s\"\n", slot.invent_id, slot.icon_pic));
@@ -325,16 +328,14 @@ bool Drop_Trace(entity pl, entity obj)
 }
 
 
-void TEST_DropTrace(entity pl)
+void INV_ShowDropSpot(entity pl)
 {
 	entity obj = pl.drop_indicator;
 
-	if (! obj)
-		return;
-
 	if (Drop_Trace(pl, obj))
 	{
-		obj.effects = 0;
+		obj.effects = 0;  // make visible
+
 		setorigin(obj, trace_endpos);
 	}
 	else
@@ -399,6 +400,10 @@ void INV_CheckBeginDrag(entity pl)
 	if (! pl.button0)
 		return;
 
+	// paranoia check (should not happen)
+	if (! pl.drop_indicator)
+		return;
+
 	if (pl.highlight_obj &&
 		pl.highlight_obj == pl.cursor_trace_ent &&
 		pl.highlight_obj.icon_pic &&
@@ -452,24 +457,46 @@ void INV_PickupFromWorld(entity pl, entity obj)
 }
 
 
-void INV_CheckDrop(entity pl)
+void INV_DropToWorld(entity pl, entity obj, vector where)
 {
-	if (! pl.button0)
+	INV_UnhideItem(obj);
+
+	obj.owner = nil;
+
+	setorigin(obj, where);
+}
+
+
+void INV_PerformDrop(entity pl)
+{
+	entity obj = pl.drag_obj;
+
+	INV_ClearDrag(pl);
+
+	if (obj.owner)
 	{
-		entity obj = pl.drag_obj;
+		// dropping to world...
 
-		INV_ClearDrag(pl);
-
-		// FIXME : if (dropping to world) ...
-
-		if (pl.invent_id > 0)
-			INV_PickupFromWorld(pl, obj);
+		if (pl.drop_indicator.effects & EF_NODRAW)
+		{
+			// no valid spot -- cancel
+		}
 		else
 		{
-			// cancel drag, reset object
-			obj.effects = 0;
+			INV_DropToWorld(pl, obj, pl.drop_indicator.origin);
 		}
 	}
+	else if (pl.invent_id > 0)
+	{
+		INV_PickupFromWorld(pl, obj);
+	}
+	else
+	{
+		// cancel a pick-up : unhide object
+		obj.effects = 0;
+	}
+
+	pl.drop_indicator.effects = EF_NODRAW;
 }
 
 
@@ -480,10 +507,10 @@ void INV_ObjectInteraction(entity pl)
 
 	if (pl.drag_obj)
 	{
-if (pl.button0)
-	TEST_DropTrace(pl);
-
-		INV_CheckDrop(pl);
+		if (pl.button0)
+			INV_ShowDropSpot(pl);
+		else
+			INV_PerformDrop(pl);
 	}
 	else
 	{
