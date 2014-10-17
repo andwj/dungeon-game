@@ -125,13 +125,33 @@ void m_keydown(float key, float ascii)
 		return;
 	}
 
-	if (menu_state == MENU_Main && key >= K_MOUSE1 && key <= K_MOUSE3)
+	if (menu_state >= MENU_Main && key >= K_MOUSE1 && key <= K_MOUSE3)
 	{
 		if (over_button == "quit")
 			cmd("\nquit\n");
 
-		if (over_button == "test")
+		else if (over_button == "test")
 			cmd("\nmap test.obj\n");
+
+		else if (over_button == "options")
+			menu_state = MENU_Options;
+
+		else if (over_button == "back")
+			menu_state = MENU_Main;
+
+		else if (over_button == "reset_all")
+		{
+			cmd("cvar_resettodefaults_all;exec default.cfg;vid_restart\n");
+			scr_force_update = 1;
+			Menu_Hide();
+			return;
+		}
+		else if (over_button == "reset_controls")
+		{
+			cmd("exec bindings.cfg\n");
+			Menu_Hide();
+			return;
+		}
 	}
 
 	if (menu_state == MENU_OFF && clientstate() != CS_CONNECTED)
@@ -182,14 +202,28 @@ void M_TextButton(string button, float x, float y, string text)
 }
 
 
-void Menu_DrawMain()
+void Draw_MainMenu()
 {
 	draw_text(320, 100, "MAIN MENU");
 
 	over_button = "";
 
-	M_TextButton("test", 400, 150, "Test Map");
-	M_TextButton("quit", 400, 200, "Quit");
+	M_TextButton("test",    400, 150, "Test Map");
+	M_TextButton("options", 400, 200, "Options");
+	M_TextButton("quit",    400, 300, "Quit");
+}
+
+
+void Draw_OptionsMenu()
+{
+	draw_text(350, 120, "OPTIONS MENU");
+
+	over_button = "";
+
+	M_TextButton("reset_all",      430, 170, "Reset All Settings");
+	M_TextButton("reset_controls", 430, 220, "Reset All Controls");
+
+	M_TextButton("back", 430, 320, "<--- Back");
 }
 
 
@@ -213,7 +247,9 @@ void m_draw()
 	drawfill('0 0 0', scr_size, '0 0 0', 0.5, DRAWFLAG_NORMAL);
 
 	if (menu_state == MENU_Main)
-		Menu_DrawMain();
+		Draw_MainMenu();
+	else if (menu_state == MENU_Options)
+		Draw_OptionsMenu();
 
 	Draw_Cursor();
 }
