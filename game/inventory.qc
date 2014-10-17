@@ -212,6 +212,7 @@ void INV_GiveItem(entity pl, entity slot, entity e)
 void INV_RemoveItem(entity pl, entity slot)
 {
 	slot.count = 0;
+	slot.enemy = nil;
 
 	INV_UpdateSummary(pl);
 
@@ -330,6 +331,10 @@ bool Drop_Trace(entity pl, entity obj)
 
 void INV_ShowDropSpot(entity pl)
 {
+	// don't show it when picking up
+	if (! pl.drag_obj.owner)
+		return;
+
 	entity obj = pl.drop_indicator;
 
 	if (Drop_Trace(pl, obj))
@@ -420,12 +425,12 @@ void INV_CheckBeginDrag(entity pl)
 		if (slot)
 		if (slot.count > 0 && slot.enemy)
 		{
-			entity e = slot.enemy;
+			entity obj = slot.enemy;
 
-			pl.drag_obj = slot;
+			pl.drag_obj = obj;
 
 			// tell client
-			stuffcmd(pl, sprintf("\nui_drag 2 \"%s\"\n", e.icon_pic));
+			stuffcmd(pl, sprintf("\nui_drag 2 \"%s\"\n", obj.icon_pic));
 			return;
 		}
 	}
@@ -459,9 +464,11 @@ void INV_PickupFromWorld(entity pl, entity obj)
 
 void INV_DropToWorld(entity pl, entity obj, vector where)
 {
-	INV_UnhideItem(obj);
+	INV_RemoveItem(pl, obj.owner /* slot */);
 
 	obj.owner = nil;
+
+	INV_UnhideItem(obj);
 
 	setorigin(obj, where);
 }
