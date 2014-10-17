@@ -557,6 +557,8 @@ void test_lock()
 	setsize (self, '-16 -16 0', '16 16 56');
 
 	self.description = "a golden lock";
+
+	self.lock_item = "test_gold_key";
 }
 
 
@@ -571,8 +573,6 @@ void test_door()
 	setsize (self, '-32 -104 0', '32 104 96');
 
 	self.description = "a locked door";
-
-	self.lock_item = "test_gold_key";
 
 	self.movetype = MOVETYPE_PUSH;
 

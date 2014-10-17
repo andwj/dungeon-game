@@ -331,11 +331,17 @@ bool Drop_Trace(entity pl, entity obj)
 
 void INV_ShowDropSpot(entity pl)
 {
+	entity obj = pl.drop_indicator;
+
+	obj.effects = EF_NODRAW;
+	
 	// don't show it when picking up
 	if (! pl.drag_obj.owner)
 		return;
 
-	entity obj = pl.drop_indicator;
+	// don't show it when about to "use" an item (e.g. drop KEY on a LOCK)
+	if (pl.highlight_obj)
+		return;
 
 	if (Drop_Trace(pl, obj))
 	{
@@ -343,8 +349,6 @@ void INV_ShowDropSpot(entity pl)
 
 		setorigin(obj, trace_endpos);
 	}
-	else
-		obj.effects = EF_NODRAW;
 }
 
 
@@ -374,9 +378,20 @@ void INV_CheckHighlightObject(entity pl)
 	if (trace_ent && ! trace_ent.description)
 		trace_ent = nil;
 
+	if (trace_ent && trace_ent.deadflag)
+		trace_ent = nil;
+
 	// no description while dragging...
 	if (pl.drag_obj)
-		trace_ent = nil;
+	{
+		// check for dragging a KEY to a LOCK (for example)
+		if (trace_ent && trace_ent.lock_item == pl.drag_obj.classname)
+		{
+			/* allow it to be highlighted */
+		}
+		else
+			trace_ent = nil;
+	}
 
 	if (trace_ent == pl.highlight_obj)
 		return;
@@ -474,6 +489,26 @@ void INV_DropToWorld(entity pl, entity obj, vector where)
 }
 
 
+void INV_ApplyObject(entity pl, entity obj, entity receiver)
+{
+	INV_RemoveItem(pl, obj.owner);
+
+	obj.owner = nil;
+
+	// we could remove() the entity now, but there is little need
+	INV_HideItem(obj);
+
+	// activate the target object
+	entity old_self = self;
+
+	activator = pl;
+	self = receiver;
+	SUB_UseTargets();
+
+	self = old_self;
+}
+
+
 void INV_PerformDrop(entity pl)
 {
 	entity obj = pl.drag_obj;
@@ -484,7 +519,12 @@ void INV_PerformDrop(entity pl)
 	{
 		// dropping to world...
 
-		if (pl.drop_indicator.effects & EF_NODRAW)
+		if (pl.highlight_obj)
+		{
+			// want to "apply" the object (e.g. KEY on a LOCK)
+			INV_ApplyObject(pl, obj, pl.highlight_obj);
+		}
+		else if (pl.drop_indicator.effects & EF_NODRAW)
 		{
 			// no valid spot -- cancel
 		}

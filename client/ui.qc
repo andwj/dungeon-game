@@ -64,13 +64,11 @@ void CMD_can_drop()
 
 void UI_DrawDragObject()
 {
-	vector size = drawgetimagesize(obj_drag_pic);
+	vector size = drawgetimagesize(obj_drag_pic) / 1.6;
 
 	vector pos = mouse_pos - size * 0.64;
 
-	drawpic(pos, obj_drag_pic, SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
-
-	// FIXME: can_drop_mode : show something
+	drawpic(pos, obj_drag_pic, size, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 }
 
 
