@@ -31,23 +31,6 @@ void(entity bomb, entity attacker, float rad, entity ignore) T_RadiusDamage =
 }
 
 
-// called by worldspawn
-void() W_Precache =
-{
-	precache_sound ("weapons/r_exp3.wav");	// new rocket explosion
-	precache_sound ("weapons/rocket1i.wav");	// spike gun
-	precache_sound ("weapons/sgun1.wav");
-	precache_sound ("weapons/guncock.wav");	// player shotgun
-	precache_sound ("weapons/ric1.wav");	// ricochet (used in c code)
-	precache_sound ("weapons/ric2.wav");	// ricochet (used in c code)
-	precache_sound ("weapons/ric3.wav");	// ricochet (used in c code)
-	precache_sound ("weapons/spike2.wav");	// super spikes
-	precache_sound ("weapons/tink1.wav");	// spikes tink (used in c code)
-	precache_sound ("weapons/grenade.wav");	// grenade launcher
-	precache_sound ("weapons/bounce.wav");		// grenade bounce
-	precache_sound ("weapons/shotgn2.wav");	// super shotgun
-};
-
 float() crandom =
 {
 	return 2*(random() - 0.5);
@@ -1328,6 +1311,11 @@ void() SuperDamageSound =
 	return;
 };
 
+
+// called by worldspawn
+void() W_Precache =
+{
+};
 
 
 //--- editor settings ---
