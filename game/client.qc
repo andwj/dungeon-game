@@ -18,8 +18,6 @@ void() player_pain;
 void() player_stand1;
 void() Player_Jump;
 
-float	modelindex_eyes, modelindex_player;
-
 
 // andrewj: this is called just before the server is killed, and needs to
 //          store persistent stats into the 'parmXX' globals.
@@ -98,7 +96,6 @@ void() ClientKill =
 	bprint (self.netname);
 	bprint (" suicides\n");
 	set_suicide_frame ();
-	self.modelindex = modelindex_player;
 	self.frags = self.frags - 2;	// extra penalty
 	respawn ();
 };
@@ -249,12 +246,7 @@ void PutClientInServer()
 	self.angles = spot.angles;
 	self.fixangle = TRUE;		// turn this way immediately
 
-// oh, this is a hack!
-	setmodel (self, "progs/eyes.mdl");
-	modelindex_eyes = self.modelindex;
-
 	setmodel (self, "progs/player.mdl");
-	modelindex_player = self.modelindex;
 
 	setsize (self, VEC_HULL_MIN, VEC_HULL_MAX);
 	
@@ -408,10 +400,7 @@ void() CheckPowerups =
 		
 	// use the eyes
 		self.frame = 0;
-		self.modelindex = modelindex_eyes;
 	}
-	else
-		self.modelindex = modelindex_player;	// don't use eyes
 
 // invincibility
 	if (self.invincible_finished)

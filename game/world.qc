@@ -41,6 +41,8 @@ void worldspawn()
 	precache_model ("progs/player.mdl");
 
 	precache_model ("progs/v_axe.mdl");
+
+	precache_model ("models/drop_spot.obj");
 	
 
 //
