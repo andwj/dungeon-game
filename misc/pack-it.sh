@@ -30,8 +30,7 @@ cp -a client $dest/source/client
 cp -a menu   $dest/source/menu
 cp -a shared $dest/source/shared
 cp -a dpdefs $dest/source/dpdefs
-
-rm -fv $dest/source/*/fteqcc.log
+cp -a Makefile $dest/source/
 
 #  Documentation
 markdown --html4tags doc/README_pack.md > $dest/README.html
