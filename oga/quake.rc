@@ -16,8 +16,10 @@ exec config.cfg
 exec autoexec.cfg
 
 // load fonts
-loadfont default fonts/DejaVuSerif.ttf     12 16 20 24 32
-loadfont console fonts/DejaVuSansMono.ttf  12 16 20 24 32
+loadfont default fonts/bigchars
+loadfont console fonts/bigchars
+/// loadfont default fonts/DejaVuSerif.ttf     12 16 20 24 32
+/// loadfont console fonts/DejaVuSansMono.ttf  12 16 20 24 32
 
 // process command line statements
 stuffcmds
