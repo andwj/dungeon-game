@@ -7,12 +7,12 @@ This is a snapshot for the OGA (OpenGameArt.org) community dungeon game
 project.  This project has only just begun, so there is not much to see
 yet.
 
-To try this snapshot, you will need a copy of the Darkplaces engine.
-You can download the latest stable release of Darkplaces here:
-
-[Darkplaces download page](http://icculus.org/twilight/darkplaces/download.html)
-
-Unpack the Darkplaces package into the '`bin`' folder.
+IMPORTANT NOTE: all assets in the 'yd' folder are licensed to
+use in this OGA Dungeon-related project _ONLY_.
+These resources are **NOT FREE** to use,
+they are NOT under Creative Commons of any sort.
+Exclusive permission is granted to use them *ONLY* in
+this OGA Dungeon-related Project.
 
 ##Running under Windows
 

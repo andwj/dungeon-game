@@ -5,6 +5,13 @@ This repository contains some code and a few assets for the OGA
 (OpenGameArt.org) community dungeon game project.  The location
 of this repository is subject to change.
 
+IMPORTANT NOTE: all assets in the 'yd' folder are licensed to
+use in this OGA Dungeon-related project _ONLY_.
+These resources are **NOT FREE** to use,
+they are NOT under Creative Commons of any sort.
+Exclusive permission is granted to use them *ONLY* in
+this OGA Dungeon-related Project.
+
 ##Structure of this repository:
 
 game/     : contains server-side QC code for the game
@@ -12,6 +19,8 @@ game/     : contains server-side QC code for the game
 client/   : contains client-side QC (CSQC) code, for user interface
 
 menu/     : contains QC code for the menus
+
+engine/   : contains Darkplaces code (with modifications)
 
 shared/   : contains common code shared by the game/client/menu
 
