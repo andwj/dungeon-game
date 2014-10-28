@@ -130,6 +130,7 @@ OBJ_COMMON= \
 	model_brush.o \
 	model_shared.o \
 	model_sprite.o \
+	model_tmx.o \
 	netconn.o \
 	palette.o \
 	polygon.o \
