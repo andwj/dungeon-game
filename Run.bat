@@ -1,1 +1,1 @@
-bin\darkplaces.exe -customgamedirname1 oga
+bin\darkplaces.exe -customgamedirname1 oga -game yd
