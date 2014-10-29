@@ -490,6 +490,7 @@ dp_model_t *Mod_LoadModel(dp_model_t *mod, qboolean crash, qboolean checkdisk)
 		// call the apropriate loader
 		loadmodel = mod;
 		if (!strcasecmp(FS_FileExtension(mod->name), "obj")) Mod_OBJ_Load(mod, buf, bufend);
+		else if (!strcasecmp(FS_FileExtension(mod->name), "tmx")) Mod_TMX_Load(mod, buf, bufend);
 		else if (!memcmp(buf, "IDPO", 4)) Mod_IDP0_Load(mod, buf, bufend);
 		else if (!memcmp(buf, "IDP2", 4)) Mod_IDP2_Load(mod, buf, bufend);
 		else if (!memcmp(buf, "IDP3", 4)) Mod_IDP3_Load(mod, buf, bufend);

@@ -3728,7 +3728,7 @@ static void Mod_Q1BSP_RoundUpToHullSize(dp_model_t *cmodel, const vec3_t inmins,
 	VectorAdd(inmins, hull->clip_size, outmaxs);
 }
 
-static int Mod_Q1BSP_CreateShadowMesh(dp_model_t *mod)
+int Mod_Q1BSP_CreateShadowMesh(dp_model_t *mod)
 {
 	int j;
 	int numshadowmeshtriangles = 0;
