@@ -26,6 +26,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "wad.h"
 
 
+/* TEST CRUD !!!! */
+
+static const char test_entity_crud[] =
+"{\n"
+"  \"classname\" \"worldspawn\"\n"
+"}\n"
+"{\n"
+"  \"classname\" \"info_player_start\"\n"
+"  \"origin\" \"224 224 90\"\n"
+"  \"angle\" \"0\"\n"
+"}\n"
+"{\n"
+"  \"classname\" \"test_floor\"\n"
+"  \"origin\" \"224 224 0\"\n"
+"}\n"
+"\n"
+"{\n"
+"  \"classname\" \"light\"\n"
+"  \"origin\" \"246 450 90\"\n"
+"  \"light\" \"255 255 255 400\"\n"
+"  \"color\" \"1.6 1.4 1.0\"\n"
+"  \"style\" \"1\"\n"
+"}\n";
+
+
+
 extern int Mod_Q1BSP_CreateShadowMesh(dp_model_t *mod);
 
 
@@ -132,6 +158,10 @@ void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 
   maxs[0] = 40 * 40;
   maxs[1] = 40 * 40;
+
+int test_len = strlen(test_entity_crud);
+loadmodel->brush.entities = (char *)Mem_Alloc(loadmodel->mempool, test_len + 1);
+memcpy(loadmodel->brush.entities, test_entity_crud, test_len + 1);
 
 
 	// now that we have the OBJ data loaded as-is, we can convert it
