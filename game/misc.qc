@@ -600,5 +600,18 @@ void test_torch_wall()
 }
 
 
+void test_floor()
+{
+	precache_model ("pieces/floor.obj");
+
+	setmodel (self, "pieces/floor.obj");
+	self.skin = 0;
+	self.scale = 40;
+	self.solid = SOLID_BBOX;
+
+	setsize (self, '-216 -216 -16', '216 216 0');
+}
+
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab
