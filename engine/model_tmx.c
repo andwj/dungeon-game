@@ -156,8 +156,16 @@ void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 
 	/* TODO: PARSE FILE !!! */
 
-  maxs[0] = 40 * 40;
-  maxs[1] = 40 * 40;
+mod->tmx.width  = 40;
+mod->tmx.height = 40;
+
+#define TMX_SCALE  40.0
+  mins[0] = -1 * TMX_SCALE;
+  maxs[1] = -1 * TMX_SCALE;
+
+  maxs[0] = (1 + mod->tmx.width)  * TMX_SCALE;
+  maxs[1] = (1 + mod->tmx.height) * TMX_SCALE;
+
 
 int test_len = strlen(test_entity_crud);
 loadmodel->brush.entities = (char *)Mem_Alloc(loadmodel->mempool, test_len + 1);
@@ -389,5 +397,23 @@ memcpy(loadmodel->brush.entities, test_entity_crud, test_len + 1);
 
 	mod = loadmodel;
 	Mem_Free(submodelfirstsurface);
+}
+
+
+
+void TMX_LoadPieces(dp_model_t *mod)
+{
+	// already loaded?
+	if (mod->tmx.test_piece)
+		return;
+	
+	mod->tmx.test_piece = Mod_ForName("pieces/column.obj", false, developer.integer > 0, NULL);
+}
+
+
+
+void TMX_CL_LinkPieces(void)
+{
+	// FIXME
 }
 

@@ -3290,6 +3290,10 @@ void SV_SpawnServer (const char *server)
 		return;
 	}
 
+	// andrewj: this didn't seem kosher inside the TMX loading code, do it now
+	if (worldmodel->tmx.width)
+		TMX_LoadPieces(worldmodel);
+
 	Collision_Cache_Reset(true);
 
 	// let's not have any servers with no name

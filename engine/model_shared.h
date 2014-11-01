@@ -946,18 +946,19 @@ model_brushq3_t;
 
 // andrewj: support to load "TMX" files from the Tiled map editor
 #define MAX_TMX_SIZE   128
+#define MAX_TMX_PIECES	256
 
 typedef struct tmx_tile_s
 {
-	struct model_s * floor;
-	struct model_s * ceiling;
+	short floor;
+	short ceiling;
 
-	struct model_s * north;
-	struct model_s * east;
-	struct model_s * south;
-	struct model_s * west;
+	short north;
+	short east;
+	short south;
+	short west;
 
-	struct model_s * corner;	// bottom-left
+	short corner;	// bottom-left
 }
 tmx_tile_t;
 
@@ -966,9 +967,14 @@ typedef struct model_tmx_s
 	int width;
 	int height;
 
-	// indexed by [x][y]
+	// indexed by [y*width + x]
 	// y is bottom up (y = 0 is the bottom-most row)
-	tmx_tile_t tiles[MAX_TMX_SIZE][MAX_TMX_SIZE];
+	tmx_tile_t * tiles;
+
+	int num_pieces;
+	struct model_s ** pieces;  // [0] is a dummy piece (always NULL)
+
+	struct model_s * test_piece;
 }
 model_tmx_t;
 
@@ -1096,7 +1102,7 @@ typedef struct model_s
 	model_brushq2_t	brushq2;
 	*/
 	model_brushq3_t	brushq3;
-  model_tmx_t tmx;
+	model_tmx_t tmx;
 	// flags this model for offseting sounds to the model center (used by brush models)
 	int soundfromcenter;
 
@@ -1267,6 +1273,8 @@ void Mod_IDSP_Load(dp_model_t *mod, void *buffer, void *bufferend);
 void Mod_IDS2_Load(dp_model_t *mod, void *buffer, void *bufferend);
 void Mod_INTERQUAKEMODEL_Load(dp_model_t *mod, void *buffer, void *bufferend);
 void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend);
+
+void TMX_LoadPieces(dp_model_t *mod);
 
 #endif	// MODEL_SHARED_H
 
