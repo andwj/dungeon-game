@@ -78,16 +78,12 @@ void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 	int maxv = 0, numv = 1;
 	int maxvt = 0, numvt = 1;
 	int maxvn = 0, numvn = 1;
-	char *texturenames = NULL;
+
 	float dist, modelradius, modelyawradius, yawradius;
-	float *v = NULL;
-	float *vt = NULL;
-	float *vn = NULL;
 	float mins[3];
 	float maxs[3];
 	float corner[3];
 
-	skinfile_t *skinfiles = NULL;
 	unsigned char *data = NULL;
 	int *submodelfirstsurface;
 	msurface_t *surface;
@@ -133,7 +129,6 @@ void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 	loadmodel->DrawShadowVolume = R_Q1BSP_DrawShadowVolume;
 	loadmodel->DrawLight = R_Q1BSP_DrawLight;
 
-	skinfiles = Mod_LoadSkinFiles();
 	if (loadmodel->numskins < 1)
 		loadmodel->numskins = 1;
 
@@ -234,20 +229,9 @@ memcpy(loadmodel->brush.entities, test_entity_crud, test_len + 1);
 	if (loadmodel->surfmesh.num_vertices <= 65536)
 		loadmodel->surfmesh.data_element3s = (unsigned short *)data;data += loadmodel->surfmesh.num_triangles * sizeof(unsigned short[3]);
 
-	// load the textures
-	for (textureindex = 0;textureindex < numtextures;textureindex++)
-		Mod_BuildAliasSkinsFromSkinFiles(loadmodel->data_textures + textureindex, skinfiles, texturenames + textureindex*MAX_QPATH, texturenames + textureindex*MAX_QPATH);
-	Mod_FreeSkinFiles(skinfiles);
-
 	// set the surface textures to their real values now that we loaded them...
 	for (i = 0;i < loadmodel->num_surfaces;i++)
 		loadmodel->data_surfaces[i].texture = loadmodel->data_textures + (size_t)loadmodel->data_surfaces[i].texture;
-
-	// free data
-	Mem_Free(texturenames);
-	Mem_Free(v);
-	Mem_Free(vt);
-	Mem_Free(vn);
 
 	// make a single combined shadow mesh to allow optimized shadow volume creation
 	Mod_Q1BSP_CreateShadowMesh(loadmodel);
@@ -412,8 +396,40 @@ void TMX_LoadPieces(dp_model_t *mod)
 
 
 
-void TMX_CL_LinkPieces(void)
+//
+// this runs on client, adds visible map pieces to the set of render entities
+//
+void TMX_CL_RelinkPieces(dp_model_t *mod)
 {
-	// FIXME
+	if (! mod->tmx.test_piece)
+		return;
+
+	// TEMP!!!
+	static entity_render_t  render;
+
+	memset(&render, 0, sizeof(render));
+
+	render.model = mod->tmx.test_piece;
+
+	// FIXME : POSITION
+	render.matrix = identitymatrix;
+
+	render.alpha = 1;
+	render.scale = 20;
+
+	VectorSet(render.colormod, 1, 1, 1);
+	VectorSet(render.glowmod,  1, 1, 1);
+
+	render.flags = RENDER_SHADOW;
+
+	if(!r_fullbright.integer)
+		render.flags |= RENDER_LIGHT;
+
+	render.allowdecals = true;
+
+	CL_UpdateRenderEntity(&render);
+
+	if (r_refdef.scene.numentities < r_refdef.scene.maxentities)
+		r_refdef.scene.entities[r_refdef.scene.numentities++] = &render;
 }
 

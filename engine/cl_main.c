@@ -1586,6 +1586,11 @@ static void CL_RelinkWorld(void)
 	CL_UpdateRenderEntity(&ent->render);
 	r_refdef.scene.worldentity = &ent->render;
 	r_refdef.scene.worldmodel = cl.worldmodel;
+
+	// andrewj: add the visible TMX pieces
+	if (cl.worldmodel && cl.worldmodel->tmx.width)
+		TMX_CL_RelinkPieces(cl.worldmodel);
+
 }
 
 static void CL_RelinkStaticEntities(void)
