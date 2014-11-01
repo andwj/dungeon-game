@@ -464,6 +464,8 @@ static void CL_SetupWorldModel(void)
 	prvm_prog_t *prog = CLVM_prog;
 	// update the world model
 	cl.entities[0].render.model = cl.worldmodel = CL_GetModelByIndex(1);
+
+fprintf(stderr, "CL_SetupWorldModel : worldmodel = %p\n", cl.worldmodel);
 	CL_UpdateRenderEntity(&cl.entities[0].render);
 
 	// make sure the cl.worldname and related cvars are set up now that we know the world model name

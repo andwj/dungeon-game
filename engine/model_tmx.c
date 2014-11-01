@@ -34,8 +34,8 @@ static const char test_entity_crud[] =
 "}\n"
 "{\n"
 "  \"classname\" \"info_player_start\"\n"
-"  \"origin\" \"224 224 90\"\n"
-"  \"angle\" \"0\"\n"
+"  \"origin\" \"224 224 40\"\n"
+"  \"angle\" \"215\"\n"
 "}\n"
 "{\n"
 "  \"classname\" \"test_floor\"\n"
@@ -45,7 +45,7 @@ static const char test_entity_crud[] =
 "{\n"
 "  \"classname\" \"light\"\n"
 "  \"origin\" \"246 450 90\"\n"
-"  \"light\" \"255 255 255 400\"\n"
+"  \"light\" \"255 255 255 2000\"\n"
 "  \"color\" \"1.6 1.4 1.0\"\n"
 "  \"style\" \"1\"\n"
 "}\n";
@@ -89,6 +89,9 @@ void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 	msurface_t *surface;
 	msurface_t *tempsurfaces;
 
+
+
+fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 
 
 
@@ -156,10 +159,12 @@ mod->tmx.height = 40;
 
 #define TMX_SCALE  40.0
   mins[0] = -1 * TMX_SCALE;
-  maxs[1] = -1 * TMX_SCALE;
+  mins[1] = -1 * TMX_SCALE;
+  mins[2] = -1024;
 
   maxs[0] = (1 + mod->tmx.width)  * TMX_SCALE;
   maxs[1] = (1 + mod->tmx.height) * TMX_SCALE;
+  maxs[2] = 3072;
 
 
 int test_len = strlen(test_entity_crud);
@@ -392,6 +397,9 @@ void TMX_LoadPieces(dp_model_t *mod)
 		return;
 	
 	mod->tmx.test_piece = Mod_ForName("pieces/column.obj", false, developer.integer > 0, NULL);
+
+fprintf(stderr, "loaded test_piece --> %p  (Draw %p)\n",
+		mod->tmx.test_piece, mod->tmx.test_piece ? mod->tmx.test_piece->Draw : NULL);
 }
 
 
@@ -401,21 +409,29 @@ void TMX_LoadPieces(dp_model_t *mod)
 //
 void TMX_CL_RelinkPieces(dp_model_t *mod)
 {
+	vec3_t origin;
+	vec3_t angles;
+
+	float scale = 100;
+
 	if (! mod->tmx.test_piece)
 		return;
+
 
 	// TEMP!!!
 	static entity_render_t  render;
 
 	memset(&render, 0, sizeof(render));
 
+
 	render.model = mod->tmx.test_piece;
 
-	// FIXME : POSITION
-	render.matrix = identitymatrix;
+	VectorSet(origin, 0, 0, 0);
+	VectorSet(angles, 0, 0, 0);
+
+	Matrix4x4_CreateFromQuakeEntity(&render.matrix, origin[0], origin[1], origin[2], angles[0], angles[1], angles[2], scale);
 
 	render.alpha = 1;
-	render.scale = 20;
 
 	VectorSet(render.colormod, 1, 1, 1);
 	VectorSet(render.glowmod,  1, 1, 1);

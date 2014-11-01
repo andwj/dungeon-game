@@ -7519,6 +7519,8 @@ void Mod_OBJ_Load(dp_model_t *mod, void *buffer, void *bufferend)
 	msurface_t *surface;
 	msurface_t *tempsurfaces;
 
+fprintf(stderr, "Mod_OBJ_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
+
 	memset(&vfirst, 0, sizeof(vfirst));
 	memset(&vprev, 0, sizeof(vprev));
 	memset(&vcurrent, 0, sizeof(vcurrent));
