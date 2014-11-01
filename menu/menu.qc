@@ -131,7 +131,7 @@ void m_keydown(float key, float ascii)
 			cmd("\nquit\n");
 
 		else if (over_button == "test")
-			cmd("\nmap test.obj\n");
+			cmd("\nmap test2.tmx\n");
 
 		else if (over_button == "options")
 			menu_state = MENU_Options;
