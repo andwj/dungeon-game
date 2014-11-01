@@ -3290,9 +3290,7 @@ void SV_SpawnServer (const char *server)
 		return;
 	}
 
-	// andrewj: this didn't seem kosher inside the TMX loading code, do it now
-	if (worldmodel->tmx.width)
-		TMX_LoadPieces(worldmodel);
+fprintf(stderr, "SV_SpawnServer : worldmodel = %p\n", worldmodel);
 
 	Collision_Cache_Reset(true);
 
@@ -3406,6 +3404,10 @@ void SV_SpawnServer (const char *server)
 
 	sv.worldmodel = worldmodel;
 	sv.models[1] = sv.worldmodel;
+
+	// andrewj: this didn't seem kosher inside the TMX loading code, do it now
+	if (worldmodel->tmx.width)
+		TMX_LoadPieces(worldmodel);
 
 //
 // clear world interaction links
