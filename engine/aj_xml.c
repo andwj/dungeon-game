@@ -280,6 +280,14 @@ static void aj_xml_FreeNodeBufs(aj_xml_real_root_t * root)
 #define SYNTAX_ERROR(msg)  do { return NULL; } while(0)
 
 
+int aj_xml_ParseAttribute(aj_xml_real_root_t *root, aj_xml_node_t *node)
+{
+	// returns 1 on success, 0 if hit end of element, -1 on error
+
+	// TODO
+}
+
+
 aj_xml_node_t * aj_xml_ParseElement(aj_xml_real_root_t *root, const char *buf, 
 	aj_xml_node_t * exist_node, int need_bracket);
 {
