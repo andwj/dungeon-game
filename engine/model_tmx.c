@@ -26,6 +26,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "wad.h"
 
 
+// bring in Mini-XML header
+#include <mxml.h>
+
+
 #define TMX_TILE_SIZE	40.0
 
 #define MAX_TMX_ENT_STRING	1048576
@@ -217,10 +221,10 @@ VectorSet(test_origin, 0, 0, 0);
 VectorSet(test_angles, 0, 0, 0);
 TMX_AddStaticEnt(mod, "pieces/column.obj", test_origin, test_angles);
 
-VectorSet(test_origin, 100, 0, 0);
+VectorSet(test_origin, 200, 0, 0);
 TMX_AddStaticEnt(mod, "pieces/column.obj", test_origin, test_angles);
 
-VectorSet(test_origin, 200, 0, 0);
+VectorSet(test_origin, 400, 0, 0);
 TMX_AddStaticEnt(mod, "pieces/column.obj", test_origin, test_angles);
 
 

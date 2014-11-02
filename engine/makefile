@@ -112,6 +112,9 @@ ifeq ($(DP_MAKE_TARGET), linux)
 	DP_LINK_ODE?=dlopen
 	DP_LINK_CRYPTO?=dlopen
 	DP_LINK_CRYPTO_RIJNDAEL?=dlopen
+
+	# andrewj: added Mini-XML
+	DP_LINK_MXML=shared
 endif
 
 # Mac OS X configuration
@@ -314,6 +317,12 @@ endif
 ifeq ($(DP_LINK_ODE), dlopen)
 	LIB_ODE=
 	CFLAGS_ODE=-DUSEODE
+endif
+
+# mini-xml
+ifeq ($(DP_LINK_MXML), shared)
+	LIB_MXML=-lmxml
+	CFLAGS_MXML=
 endif
 
 # d0_blind_id
