@@ -24,8 +24,11 @@ parsing libraries out there (mostly in C++ mind you).
 
 */
 
+#include <stdlib.h>
+
+
 //------------------------------------------------------------------------
-//   STRING MANAGEMENT
+//   STRUCTURES
 //------------------------------------------------------------------------
 
 // usual size of each string buffer  [ FIXME : should be 65536 ]
@@ -33,42 +36,33 @@ parsing libraries out there (mostly in C++ mind you).
 
 typedef struct aj_xml_string_buffer_s
 {
-	// buffer containing strings.
-	// each string is NUL-terminated.
-	char * buffer;
-
 	int used;	// used characters in buffer (including last NUL)
 	int total;	// total size of buffer
 
 	struct aj_xml_string_buffer_s * next;
 
+	// buffer containing strings.
+	// each string is NUL-terminated.
+	// NOTE: this array will contain [total] elements
+	char buffer[4];
+
 } aj_xml_string_buffer_t;
 
 
-//------------------------------------------------------------------------
-//   NODE MANAGEMENT
-//------------------------------------------------------------------------
-
 // usual # of nodes in each node buffer   [ FIXME should be 256 ]
-#define NODE_BUFFER_SIZE	16
+#define NODE_BUFFER_SIZE	10
 
 typedef struct aj_xml_node_buffer_s
 {
-	// buffer containing nodes.
-	aj_xml_node_t * buffer;
-
 	int used;	// used  # of nodes
 	int total;	// total # of nodes in buffer
 
 	struct aj_xml_node_buffer_s * next;
 
+	aj_xml_node_t buffer[1];	// actually contains [total] elements
+
 } aj_xml_node_buffer_t;
 
-
-
-//------------------------------------------------------------------------
-//   REAL ROOT NODE
-//------------------------------------------------------------------------
 
 typedef struct aj_xml_real_root_s
 {
@@ -80,6 +74,71 @@ typedef struct aj_xml_real_root_s
 
 } aj_xml_real_root_t;
 
+
+//------------------------------------------------------------------------
+//   STRING MANAGEMENT
+//------------------------------------------------------------------------
+
+
+
+static void aj_xml_FreeStringBufs(aj_xml_real_root_t * root)
+{
+	while (root->str_bufs)
+	{
+		aj_xml_string_buffer_t *buf = root->str_bufs;
+
+		root->str_bufs = buf->next;
+
+		free((void *)buf);
+	}
+}
+
+
+
+//------------------------------------------------------------------------
+//   NODE MANAGEMENT
+//------------------------------------------------------------------------
+
+static aj_xml_node_t * aj_xml_AllocateNode(aj_xml_real_root_t * root)
+{
+	if (! root->node_bufs || root->node_bufs->used >= root->node_bufs->total)
+	{
+		// this slightly overestimates how much memory we need
+		size_t size = sizeof(aj_xml_node_buffer_t) + NODE_BUFFER_SIZE * sizeof(aj_xml_node_t);
+
+		aj_xml_node_buffer_t * new_buf = (aj_xml_node_buffer_t *) calloc(size);
+
+		if (! new_buf)
+			return;
+
+		new_buf->used  = 0;
+		new_buf->total = NODE_BUFFER_SIZE;
+
+		// link it in
+
+		root->node_bufs = new_buf;
+		new_buf->next   = root;
+	}
+
+	int index = root->node_bufs->used;
+
+	root->node_bufs->used += 1;
+
+	return &root->node_bufs->buffer[index];
+}
+
+
+static void aj_xml_FreeNodeBufs(aj_xml_real_root_t * root)
+{
+	while (root->node_bufs)
+	{
+		aj_xml_node_buffer_t *buf = root->node_bufs;
+
+		root->node_bufs = buf->next;
+
+		free((void *)buf);
+	}
+}
 
 
 //------------------------------------------------------------------------
@@ -100,6 +159,10 @@ aj_xml_node_t * aj_xml_Parse(const char *buffer)
 
 void aj_xml_Free(aj_xml_node_t * root)
 {
+	aj_xml_real_root_t * real_root = (aj_xml_real_root_t *)root;
+
+	aj_xml_FreeStringBufs(real_root->node_bufs);
+	aj_xml_FreeNodeBufs(real_root->node_bufs);
 }
 
 //--- editor settings ---
