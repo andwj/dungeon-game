@@ -25,6 +25,7 @@ parsing libraries out there (mostly in C++ mind you).
 */
 
 #include <stdlib.h>
+#include <string.h>
 
 
 //------------------------------------------------------------------------
@@ -33,6 +34,9 @@ parsing libraries out there (mostly in C++ mind you).
 
 // usual size of each string buffer  [ FIXME : should be 65536 ]
 #define STRING_BUFFER_SIZE  256
+
+// strings over this length we do not bother finding an existing one  [ FIXME : should be 128 ]
+#define STRING_SHORT_LEN  8
 
 typedef struct aj_xml_string_buffer_s
 {
@@ -72,6 +76,9 @@ typedef struct aj_xml_real_root_s
 
 	aj_xml_node_buffer_t * node_bufs;
 
+	// the empty string
+	char null_str[4];
+
 } aj_xml_real_root_t;
 
 
@@ -79,6 +86,124 @@ typedef struct aj_xml_real_root_s
 //   STRING MANAGEMENT
 //------------------------------------------------------------------------
 
+static const char * aj_xml_FindString(aj_xml_real_root_t * root, const char *str, size_t len)
+{
+	aj_xml_string_buffer_t * buf;
+
+	for (buf = root->str_bufs ; buf ; buf = buf->next)
+	{
+		int pos = 0;
+
+		while (pos < buf->used)
+		{
+			const char *check = &buf->buffer[pos];
+
+			if (check[len] == 0 /* same length? */ &&
+				memcmp(check, str, len) == 0 /* same data? */)
+			{
+				return check;  // OK
+			}
+
+			pos = pos + (int)strlen(check) + 1;
+		}
+	}
+
+	return NULL;	// does not exist
+}
+
+
+static aj_xml_node_t * aj_xml_AllocateString(aj_xml_real_root_t * root, int full_len)
+{
+	// Note: 'full_len' includes NUL termination.
+
+	size_t new_size;
+	aj_xml_string_buffer_t * new_buf;
+	aj_xml_string_buffer_t * old_buf;
+
+	// if string is very long, allocate a whole buffer just for it instead of
+	// wasting a lot of space in an existing buffer (plus it may not even fit
+	// inside a normal buffer).
+	if (full_len > STRING_BUFFER_SIZE / 16)
+	{
+		new_size = sizeof(aj_xml_string_buffer_t) + (size_t)full_len;
+
+		new_buf = (aj_xml_string_buffer_t *) calloc(new_size);
+		if (! new_buf)
+			return NULL;  // out of memory
+
+		new_buf->used  = full_len;
+		new_buf->total = full_len;
+
+		// link it in
+		new_buf->next = root->str_bufs;
+		root->str_bufs = new_buf;
+
+		return &new_buf->buffer[0];
+	}
+
+	// see if we can re-use an existing buffer
+	// [ we try them all! ]
+
+	for (old_buf = root->str_bufs ; old_buf ; old_buf = old_buf->next)
+	{
+		if (old_buf->used + full_length <= old_buf->total)
+		{
+			// OK
+
+			int pos = old_buf->used;
+
+			old_buf->used += full_len;
+
+			return &old_buf->buffer[pos];
+		}
+	}
+	
+
+	// no buffer we can re-use : allocate a new one
+
+	{
+		// this slightly overestimates how much memory we need
+		new_size = sizeof(aj_xml_string_buffer_t) + STRING_BUFFER_SIZE;
+
+		new_buf = (aj_xml_string_buffer_t *) calloc(new_size);
+		if (! new_buf)
+			return NULL;	// out of memory
+
+		new_buf->used  = full_len;
+		new_buf->total = STRING_BUFFER_SIZE;
+
+		// link it in
+		new_buf->next = root->str_bufs;
+		root->str_bufs = new_buf;
+
+		return &new_buf->buffer[0];
+	}
+}
+
+
+static const char * aj_xml_Strndup(aj_xml_real_root_t * root, const char *buf, size_t len)
+{
+	const char * new_str;
+
+	// only look for same strings when length is fairly short
+
+	if (len <= STRING_SHORT_LEN)
+	{
+		const char *exist_str = aj_xml_FindString(root, buf, len);
+
+		if (exist_str)
+			return exist_str;
+	}
+
+	new_str = aj_xml_AllocateString(root, len + 1);
+	if (! new_str)
+		return NULL;	// out of memory
+
+	memcpy(new_str, buf, len);
+	new_str[len] = 0;
+
+	return new_str;
+}
 
 
 static void aj_xml_FreeStringBufs(aj_xml_real_root_t * root)
@@ -94,7 +219,6 @@ static void aj_xml_FreeStringBufs(aj_xml_real_root_t * root)
 }
 
 
-
 //------------------------------------------------------------------------
 //   NODE MANAGEMENT
 //------------------------------------------------------------------------
@@ -107,17 +231,16 @@ static aj_xml_node_t * aj_xml_AllocateNode(aj_xml_real_root_t * root)
 		size_t size = sizeof(aj_xml_node_buffer_t) + NODE_BUFFER_SIZE * sizeof(aj_xml_node_t);
 
 		aj_xml_node_buffer_t * new_buf = (aj_xml_node_buffer_t *) calloc(size);
-
 		if (! new_buf)
-			return;
+			return NULL;	// out of memory
 
 		new_buf->used  = 0;
 		new_buf->total = NODE_BUFFER_SIZE;
 
 		// link it in
 
+		new_buf->next   = root->node_bufs;
 		root->node_bufs = new_buf;
-		new_buf->next   = root;
 	}
 
 	int index = root->node_bufs->used;
@@ -150,7 +273,6 @@ static void aj_xml_FreeNodeBufs(aj_xml_real_root_t * root)
 //------------------------------------------------------------------------
 //   API FUNCTIONS
 //------------------------------------------------------------------------
-
 
 aj_xml_node_t * aj_xml_Parse(const char *buffer)
 {
