@@ -26,6 +26,7 @@ parsing libraries out there (mostly in C++ mind you).
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 
 //------------------------------------------------------------------------
@@ -77,7 +78,7 @@ typedef struct aj_xml_real_root_s
 	aj_xml_node_buffer_t * node_bufs;
 
 	// the empty string
-	char null_str[4];
+	char empty_str[4];
 
 } aj_xml_real_root_t;
 
@@ -85,6 +86,9 @@ typedef struct aj_xml_real_root_s
 //------------------------------------------------------------------------
 //   STRING MANAGEMENT
 //------------------------------------------------------------------------
+
+#define OUT_OF_MEMORY(what)  do { return NULL; } while (0)
+
 
 static const char * aj_xml_FindString(aj_xml_real_root_t * root, const char *str, size_t len)
 {
@@ -129,7 +133,7 @@ static aj_xml_node_t * aj_xml_AllocateString(aj_xml_real_root_t * root, int full
 
 		new_buf = (aj_xml_string_buffer_t *) calloc(new_size);
 		if (! new_buf)
-			return NULL;  // out of memory
+			OUT_OF_MEMORY("string buffer");
 
 		new_buf->used  = full_len;
 		new_buf->total = full_len;
@@ -167,7 +171,7 @@ static aj_xml_node_t * aj_xml_AllocateString(aj_xml_real_root_t * root, int full
 
 		new_buf = (aj_xml_string_buffer_t *) calloc(new_size);
 		if (! new_buf)
-			return NULL;	// out of memory
+			OUT_OF_MEMORY("string buffer");
 
 		new_buf->used  = full_len;
 		new_buf->total = STRING_BUFFER_SIZE;
@@ -185,6 +189,9 @@ static const char * aj_xml_Strndup(aj_xml_real_root_t * root, const char *buf, s
 {
 	const char * new_str;
 
+	if (len == 0)
+		return root->empty_str;
+
 	// only look for same strings when length is fairly short
 
 	if (len <= STRING_SHORT_LEN)
@@ -197,7 +204,7 @@ static const char * aj_xml_Strndup(aj_xml_real_root_t * root, const char *buf, s
 
 	new_str = aj_xml_AllocateString(root, len + 1);
 	if (! new_str)
-		return NULL;	// out of memory
+		return NULL;
 
 	memcpy(new_str, buf, len);
 	new_str[len] = 0;
@@ -232,7 +239,7 @@ static aj_xml_node_t * aj_xml_AllocateNode(aj_xml_real_root_t * root)
 
 		aj_xml_node_buffer_t * new_buf = (aj_xml_node_buffer_t *) calloc(size);
 		if (! new_buf)
-			return NULL;	// out of memory
+			OUT_OF_MEMORY("node buffer");
 
 		new_buf->used  = 0;
 		new_buf->total = NODE_BUFFER_SIZE;
@@ -268,6 +275,47 @@ static void aj_xml_FreeNodeBufs(aj_xml_real_root_t * root)
 //   PARSING STUFF
 //------------------------------------------------------------------------
 
+#define SKIP_WHITESPACE(buf)  while (isspace(*buf)) buf++
+
+#define SYNTAX_ERROR(msg)  do { return NULL; } while(0)
+
+
+aj_xml_node_t * aj_xml_ParseElement(aj_xml_real_root_t *root, const char *buf, 
+	aj_xml_node_t * exist_node, int need_bracket);
+{
+	aj_xml_node_t *node;
+
+	// returns 0 on success, negative value on error
+
+	if (need_bracket)
+	{
+		SKIP_WHITESPACE(buf);
+
+		if (*buf != '<')
+			SYNTAX_ERROR("missing < at start");
+
+		buf++;
+	}
+
+	SKIP_WHITESPACE(buf);
+
+	if (exist_node)
+		node = exist_node;
+	else
+	{
+		node = aj_xml_AllocateNode(node);
+		if (! node)
+			return NULL;
+	}
+
+	// TODO : parse element name
+
+	// TODO : parse attributes
+
+	// TODO : parse '/' at end
+
+	// TODO : parse text and children nodes (unless '/' at end)
+}
 
 
 //------------------------------------------------------------------------
@@ -276,6 +324,23 @@ static void aj_xml_FreeNodeBufs(aj_xml_real_root_t * root)
 
 aj_xml_node_t * aj_xml_Parse(const char *buffer)
 {
+	aj_xml_node_t *node;
+
+	// create the root node
+
+	aj_xml_real_root_t * root = calloc(sizeof(aj_xml_real_root_t));
+	if (! root)
+		return OUT_OF_MEMORY("root node");
+
+	node = aj_xml_ParseElement(root, buffer, &root->fake_root, 1 /* need_bracket */);
+	
+	if (! node)
+	{
+		aj_xml_Free(root);
+		return NULL;
+	}
+
+	return &root->fake_root;
 }
 
 
@@ -285,6 +350,10 @@ void aj_xml_Free(aj_xml_node_t * root)
 
 	aj_xml_FreeStringBufs(real_root->node_bufs);
 	aj_xml_FreeNodeBufs(real_root->node_bufs);
+
+	memset((void *)root, -1, sizeof(aj_xml_real_root_t));
+
+	free((void *)real_root);
 }
 
 //--- editor settings ---
