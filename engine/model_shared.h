@@ -950,17 +950,30 @@ model_brushq3_t;
 
 typedef struct tmx_tile_s
 {
-	short floor;
-	short ceiling;
-
-	short north;
-	short east;
-	short south;
-	short west;
-
-	short corner;	// bottom-left
+	char walkable;	// player can visit here
+	char visible;	// player can see this tile
 }
 tmx_tile_t;
+
+typedef struct tmx_piece_s
+{
+	char model_name[64];
+
+	struct model_s * model;
+
+} tmx_piece_t;
+
+typedef struct tmx_static_entity_s
+{
+	tmx_piece_t * piece;
+
+	vec3_t origin;
+	vec3_t angles;
+
+	// link for list in BSP leafs
+	struct tmx_static_entity_t * next;
+}
+tmx_static_entity_t;
 
 typedef struct model_tmx_s
 {
@@ -972,7 +985,10 @@ typedef struct model_tmx_s
 	tmx_tile_t * tiles;
 
 	int num_pieces;
-	struct model_s ** pieces;  // [0] is a dummy piece (always NULL)
+	tmx_piece_t * pieces;
+
+	// FIXME : these should be linked into the BSP tree
+	tmx_static_entity_t * ents;
 
 	struct model_s * test_piece;
 }
