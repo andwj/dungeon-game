@@ -107,6 +107,49 @@ static void TMX_AddStaticEnt(dp_model_t *mod, const char *piece_model, vec3_t or
 }
 
 
+static void TMX_ParseMapProperties(dp_model_t *mod, mxml_node_t *xml_root)
+{
+	mxml_node_t * map_node;
+	mxml_node_t * map_properties;
+
+	const char *value;
+
+
+	// map node should be first child
+
+	map_node = mxmlFindElement(xml_root, xml_root, "map", NULL,NULL, MXML_DESCEND);
+	if (! map_node)
+		Host_Error("Mod_TMX_Load: missing 'map' node in file\n");
+
+	value = mxmlElementGetAttr(map_node, "width");
+	if (! value)
+		Host_Error("Mod_TMX_Load: no 'width' attribute in <map> element\n");
+	
+	mod->tmx.width = atoi(value);
+
+	value = mxmlElementGetAttr(map_node, "height");
+	if (! value)
+		Host_Error("Mod_TMX_Load: no 'height' attribute in <map> element\n");
+
+	mod->tmx.height = atoi(value);
+
+
+	if (mod->tmx.width < 2 || mod->tmx.height < 2)
+		Host_Error("Mod_TMX_Load: map size %dx%d is too small (must be at least 2x2)\n",
+			mod->tmx.width, mod->tmx.height);
+
+	if (mod->tmx.width > MAX_TMX_SIZE || mod->tmx.height > MAX_TMX_SIZE)
+		Host_Error("Mod_TMX_Load: map size %dx%d is too large (must be under %dx%d)\n",
+			mod->tmx.width, mod->tmx.height, MAX_TMX_SIZE, MAX_TMX_SIZE);
+
+
+	// OK if this doesn't exist
+	map_properties = mxmlFindElement(map_node, map_node, "properties", NULL,NULL, MXML_DESCEND);
+
+fprintf(stderr, "map_properties = %p\n", map_properties);
+}
+
+
 void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 {
 	char materialname[MAX_QPATH];
@@ -188,10 +231,19 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	loadmodel->brush.numsubmodels = 1;
 
 
-	/* TODO: PARSE FILE !!! */
+	/* PARSE FILE !!! */
 
-	mod->tmx.width  = 40;
-	mod->tmx.height = 40;
+	mxml_node_t * xml_root;
+
+	xml_root = mxmlLoadString(NULL, (const char *) buffer, MXML_TEXT_CALLBACK);
+
+	if (! xml_root)
+		Host_Error("Mod_TMX_Load: failed to parse XML data\n");
+
+
+	TMX_ParseMapProperties(mod, xml_root);
+
+	Con_Printf("TMX Loader: size of map is %dx%d tiles\n", mod->tmx.width, mod->tmx.height);
 
 	int num_tiles = mod->tmx.width * mod->tmx.height;
 
@@ -233,6 +285,12 @@ int test_len = strlen(test_entity_crud);
 loadmodel->brush.entities = (char *)Mem_Alloc(loadmodel->mempool, test_len + 1);
 memcpy(loadmodel->brush.entities, test_entity_crud, test_len + 1);
 
+
+
+	/* PARSING OF FILE IS DONE */
+
+	mxmlDelete(xml_root);
+	xml_root = NULL;
 
 
 	// now that we have the OBJ data loaded as-is, we can convert it
