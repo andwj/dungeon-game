@@ -70,16 +70,34 @@ static tmx_piece_t * TMX_AddPiece(dp_model_t *mod, const char *name)
 			return &mod->tmx.pieces[i];
 	
 	if (mod->tmx.num_pieces >= MAX_TMX_PIECES)
-		Host_Error("Mod_TMX_Load : too many pieces (>= %d)\n", mod->tmx.num_pieces, MAX_TMX_PIECES);
+		Host_Error("Mod_TMX_Load : too many pieces (>= %d)\n", MAX_TMX_PIECES);
 
 	int new_idx = mod->tmx.num_pieces;
 	mod->tmx.num_pieces += 1;
 
 	strlcpy(mod->tmx.pieces[new_idx].model_name, name, sizeof(mod->tmx.pieces[new_idx].model_name));
 
+	// model is loaded later (by TMX_LoadPieces)
 	mod->tmx.pieces[new_idx].model = NULL;
 
 	return &mod->tmx.pieces[new_idx];
+}
+
+
+static void TMX_AddStaticEnt(dp_model_t *mod, const char *piece_model, vec3_t origin, vec3_t angles)
+{
+	tmx_static_entity_t * ent;
+
+	ent = (tmx_static_entity_t *)Mem_Alloc(mod->mempool, sizeof(tmx_static_entity_t));
+
+	ent->piece = TMX_AddPiece(mod, piece_model);
+
+	VectorCopy(origin, ent->origin);
+	VectorCopy(angles, ent->angles);
+
+	// link in
+	ent->next = mod->tmx.ents;
+	mod->tmx.ents = ent;
 }
 
 
@@ -99,7 +117,6 @@ void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 
 	unsigned char *data = NULL;
 	int *submodelfirstsurface;
-	msurface_t *surface;
 	msurface_t *tempsurfaces;
 
 
@@ -175,7 +192,7 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	mod->tmx.tiles = (tmx_tile_t *)Mem_Alloc(loadmodel->mempool, num_tiles * sizeof(tmx_tile_t));
 
 	mod->tmx.num_pieces = 0;
-	mod->tmx.pieces = (tmx_tile_t *)Mem_Alloc(loadmodel->mempool, MAX_TMX_PIECES * sizeof(tmx_piece_t));
+	mod->tmx.pieces = (tmx_piece_t *)Mem_Alloc(loadmodel->mempool, MAX_TMX_PIECES * sizeof(tmx_piece_t));
 
 	mod->tmx.ents = NULL;
 
@@ -190,9 +207,21 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	maxs[2] = 3072;
 
 
+// MORE TEST STUFF
+
+vec3_t test_origin;
+vec3_t test_angles;
+
+VectorSet(test_origin, 0, 0, 0);
+VectorSet(test_angles, 0, 0, 0);
+TMX_AddStaticEnt(mod, "pieces/column.obj", test_origin, test_angles);
+
+
+
 int test_len = strlen(test_entity_crud);
 loadmodel->brush.entities = (char *)Mem_Alloc(loadmodel->mempool, test_len + 1);
 memcpy(loadmodel->brush.entities, test_entity_crud, test_len + 1);
+
 
 
 	// now that we have the OBJ data loaded as-is, we can convert it
@@ -226,7 +255,7 @@ memcpy(loadmodel->brush.entities, test_entity_crud, test_len + 1);
 	// allocate storage for the worst case number of surfaces, later we resize
 	tempsurfaces = (msurface_t *)Mem_Alloc(loadmodel->mempool, numtextures * loadmodel->brush.numsubmodels * sizeof(msurface_t));
 	submodelfirstsurface = (int *)Mem_Alloc(loadmodel->mempool, (loadmodel->brush.numsubmodels+1) * sizeof(int));
-	surface = tempsurfaces;
+
 	for (submodelindex = 0;submodelindex < loadmodel->brush.numsubmodels;submodelindex++)
 	{
 		submodelfirstsurface[submodelindex] = loadmodel->num_surfaces;
@@ -413,14 +442,21 @@ memcpy(loadmodel->brush.entities, test_entity_crud, test_len + 1);
 
 void TMX_LoadPieces(dp_model_t *mod)
 {
-	// already loaded?
-	if (mod->tmx.test_piece)
-		return;
-	
-	mod->tmx.test_piece = Mod_ForName("pieces/column.obj", false, developer.integer > 0, NULL);
+	int i;
 
-fprintf(stderr, "loaded test_piece --> %p  (Draw %p)\n",
-		mod->tmx.test_piece, mod->tmx.test_piece ? mod->tmx.test_piece->Draw : NULL);
+	// already loaded?
+	if (mod->tmx.loaded_pieces)
+		return;
+
+	for (i = 0 ; i < mod->tmx.num_pieces ; i++)
+	{
+fprintf(stderr, "TMX : loading '%s'\n", mod->tmx.pieces[i].model_name);
+
+		mod->tmx.pieces[i].model = Mod_ForName(mod->tmx.pieces[i].model_name,
+			false, developer.integer > 0, NULL);
+	}
+
+	mod->tmx.loaded_pieces = true;
 }
 
 
@@ -434,9 +470,6 @@ void TMX_CL_RelinkPieces(dp_model_t *mod)
 	vec3_t angles;
 
 	float scale = 100;
-
-	if (! mod->tmx.test_piece)
-		return;
 
 
 	// TEMP!!!

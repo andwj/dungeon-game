@@ -971,7 +971,7 @@ typedef struct tmx_static_entity_s
 	vec3_t angles;
 
 	// link for list in BSP leafs
-	struct tmx_static_entity_t * next;
+	struct tmx_static_entity_s * next;
 }
 tmx_static_entity_t;
 
@@ -986,6 +986,8 @@ typedef struct model_tmx_s
 
 	int num_pieces;
 	tmx_piece_t * pieces;
+
+	qboolean loaded_pieces;
 
 	// FIXME : these should be linked into the BSP tree
 	tmx_static_entity_t * ents;
