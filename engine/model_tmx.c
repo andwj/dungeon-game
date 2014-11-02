@@ -60,21 +60,12 @@ static unsigned char nobsp_pvs[1] = {1};
 
 void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 {
-	const char *textbase = (char *)buffer, *text = textbase;
-	char *s;
-	char *argv[512];
-	char line[1024];
 	char materialname[MAX_QPATH];
-	int i, j, l, numvertices, firstvertex, firsttriangle, elementindex, vertexindex, surfacevertices, surfacetriangles, surfaceelements, submodelindex = 0;
-	int index1, index2, index3;
+	int i, j, l, numvertices, firstvertex, submodelindex = 0;
 
-	int argc;
-	int linelen;
 	int numtriangles = 0;
-	int maxtriangles = 0;
 
-	int linenumber = 0;
-	int maxtextures = 0, numtextures = 0, textureindex = 0;
+	int numtextures = 0;
 	int maxv = 0, numv = 1;
 	int maxvt = 0, numvt = 1;
 	int maxvn = 0, numvn = 1;
@@ -199,8 +190,6 @@ memcpy(loadmodel->brush.entities, test_entity_crud, test_len + 1);
 
 	// gather surface stats for assigning vertex/triangle ranges
 	firstvertex = 0;
-	firsttriangle = 0;
-	elementindex = 0;
 	loadmodel->num_surfaces = 0;
 	// allocate storage for the worst case number of surfaces, later we resize
 	tempsurfaces = (msurface_t *)Mem_Alloc(loadmodel->mempool, numtextures * loadmodel->brush.numsubmodels * sizeof(msurface_t));
