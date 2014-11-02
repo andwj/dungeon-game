@@ -991,8 +991,6 @@ typedef struct model_tmx_s
 
 	// FIXME : these should be linked into the BSP tree
 	tmx_static_entity_t * ents;
-
-	struct model_s * test_piece;
 }
 model_tmx_t;
 

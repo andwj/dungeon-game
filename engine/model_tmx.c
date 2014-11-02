@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "wad.h"
 
 
+#define TMX_TILE_SIZE	40.0
+
 #define MAX_TMX_ENT_STRING	1048576
 
 
@@ -197,13 +199,12 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	mod->tmx.ents = NULL;
 
 
-#define TMX_SCALE  40.0
-	mins[0] = -1 * TMX_SCALE;
-	mins[1] = -1 * TMX_SCALE;
+	mins[0] = -1 * TMX_TILE_SIZE;
+	mins[1] = -1 * TMX_TILE_SIZE;
 	mins[2] = -1024;
 
-	maxs[0] = (1 + mod->tmx.width)  * TMX_SCALE;
-	maxs[1] = (1 + mod->tmx.height) * TMX_SCALE;
+	maxs[0] = (1 + mod->tmx.width)  * TMX_TILE_SIZE;
+	maxs[1] = (1 + mod->tmx.height) * TMX_TILE_SIZE;
 	maxs[2] = 3072;
 
 
@@ -214,6 +215,12 @@ vec3_t test_angles;
 
 VectorSet(test_origin, 0, 0, 0);
 VectorSet(test_angles, 0, 0, 0);
+TMX_AddStaticEnt(mod, "pieces/column.obj", test_origin, test_angles);
+
+VectorSet(test_origin, 100, 0, 0);
+TMX_AddStaticEnt(mod, "pieces/column.obj", test_origin, test_angles);
+
+VectorSet(test_origin, 200, 0, 0);
 TMX_AddStaticEnt(mod, "pieces/column.obj", test_origin, test_angles);
 
 
@@ -460,46 +467,67 @@ fprintf(stderr, "TMX : loading '%s'\n", mod->tmx.pieces[i].model_name);
 }
 
 
+//------------------------------------------------------------------------
+
+
+static int e_index = 0;  // FIXME TEMP CRUD
+
+
+static void TMX_LinkStaticEnt(dp_model_t *mod, tmx_static_entity_t *ent)
+{
+	float scale = 100;
+
+
+	// TEMP!!!
+	static entity_render_t  render_set[10];
+
+	if (e_index >= 10) return;
+
+	entity_render_t *render = &render_set[e_index++];
+
+
+	memset(render, 0, sizeof(render));
+
+
+	render->model = ent->piece->model;
+
+	Matrix4x4_CreateFromQuakeEntity(&render->matrix, ent->origin[0], ent->origin[1], ent->origin[2],
+		ent->angles[0], ent->angles[1], ent->angles[2], scale);
+
+	render->alpha = 1;
+
+	VectorSet(render->colormod, 1, 1, 1);
+	VectorSet(render->glowmod,  1, 1, 1);
+
+	render->flags = RENDER_SHADOW;
+
+	if(!r_fullbright.integer)
+		render->flags |= RENDER_LIGHT;
+
+	render->allowdecals = true;
+
+	CL_UpdateRenderEntity(render);
+
+	if (r_refdef.scene.numentities < r_refdef.scene.maxentities)
+		r_refdef.scene.entities[r_refdef.scene.numentities++] = render;
+}
+
 
 //
 // this runs on client, adds visible map pieces to the set of render entities
 //
 void TMX_CL_RelinkPieces(dp_model_t *mod)
 {
-	vec3_t origin;
-	vec3_t angles;
+	tmx_static_entity_t *ent;
 
-	float scale = 100;
+	e_index = 0;
 
+	for (ent = mod->tmx.ents ; ent ; ent = ent->next)
+	{
+		if (! ent->piece->model)
+			return;
 
-	// TEMP!!!
-	static entity_render_t  render;
-
-	memset(&render, 0, sizeof(render));
-
-
-	render.model = mod->tmx.test_piece;
-
-	VectorSet(origin, 0, 0, 0);
-	VectorSet(angles, 0, 0, 0);
-
-	Matrix4x4_CreateFromQuakeEntity(&render.matrix, origin[0], origin[1], origin[2], angles[0], angles[1], angles[2], scale);
-
-	render.alpha = 1;
-
-	VectorSet(render.colormod, 1, 1, 1);
-	VectorSet(render.glowmod,  1, 1, 1);
-
-	render.flags = RENDER_SHADOW;
-
-	if(!r_fullbright.integer)
-		render.flags |= RENDER_LIGHT;
-
-	render.allowdecals = true;
-
-	CL_UpdateRenderEntity(&render);
-
-	if (r_refdef.scene.numentities < r_refdef.scene.maxentities)
-		r_refdef.scene.entities[r_refdef.scene.numentities++] = &render;
+		TMX_LinkStaticEnt(mod, ent);
+	}
 }
 
