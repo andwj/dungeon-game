@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "wad.h"
 
 
+#define MAX_TMX_ENT_STRING	1048576
+
+
 /* TEST CRUD !!!! */
 
 static const char test_entity_crud[] =
@@ -58,6 +61,28 @@ extern int Mod_Q1BSP_CreateShadowMesh(dp_model_t *mod);
 static unsigned char nobsp_pvs[1] = {1};
 
 
+static tmx_piece_t * TMX_AddPiece(dp_model_t *mod, const char *name)
+{
+	int i;
+
+	for (i = 0 ; i < mod->tmx.num_pieces ; i++)
+		if (strcmp(mod->tmx.pieces[i].model_name, name) == 0)
+			return &mod->tmx.pieces[i];
+	
+	if (mod->tmx.num_pieces >= MAX_TMX_PIECES)
+		Host_Error("Mod_TMX_Load : too many pieces (>= %d)\n", mod->tmx.num_pieces, MAX_TMX_PIECES);
+
+	int new_idx = mod->tmx.num_pieces;
+	mod->tmx.num_pieces += 1;
+
+	strlcpy(mod->tmx.pieces[new_idx].model_name, name, sizeof(mod->tmx.pieces[new_idx].model_name));
+
+	mod->tmx.pieces[new_idx].model = NULL;
+
+	return &mod->tmx.pieces[new_idx];
+}
+
+
 void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 {
 	char materialname[MAX_QPATH];
@@ -66,9 +91,6 @@ void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 	int numtriangles = 0;
 
 	int numtextures = 0;
-	int maxv = 0, numv = 1;
-	int maxvt = 0, numvt = 1;
-	int maxvn = 0, numvn = 1;
 
 	float dist, modelradius, modelyawradius, yawradius;
 	float mins[3];
@@ -145,17 +167,27 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 
 	/* TODO: PARSE FILE !!! */
 
-mod->tmx.width  = 40;
-mod->tmx.height = 40;
+	mod->tmx.width  = 40;
+	mod->tmx.height = 40;
+
+	int num_tiles = mod->tmx.width * mod->tmx.height;
+
+	mod->tmx.tiles = (tmx_tile_t *)Mem_Alloc(loadmodel->mempool, num_tiles * sizeof(tmx_tile_t));
+
+	mod->tmx.num_pieces = 0;
+	mod->tmx.pieces = (tmx_tile_t *)Mem_Alloc(loadmodel->mempool, MAX_TMX_PIECES * sizeof(tmx_piece_t));
+
+	mod->tmx.ents = NULL;
+
 
 #define TMX_SCALE  40.0
-  mins[0] = -1 * TMX_SCALE;
-  mins[1] = -1 * TMX_SCALE;
-  mins[2] = -1024;
+	mins[0] = -1 * TMX_SCALE;
+	mins[1] = -1 * TMX_SCALE;
+	mins[2] = -1024;
 
-  maxs[0] = (1 + mod->tmx.width)  * TMX_SCALE;
-  maxs[1] = (1 + mod->tmx.height) * TMX_SCALE;
-  maxs[2] = 3072;
+	maxs[0] = (1 + mod->tmx.width)  * TMX_SCALE;
+	maxs[1] = (1 + mod->tmx.height) * TMX_SCALE;
+	maxs[2] = 3072;
 
 
 int test_len = strlen(test_entity_crud);
