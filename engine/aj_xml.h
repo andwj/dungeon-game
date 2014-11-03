@@ -66,6 +66,11 @@ aj_xml_node_t * aj_xml_Parse(const char *buffer);
 void aj_xml_Free(aj_xml_node_t * root);
 
 
+//
+// This is for testing
+//
+void aj_xml_Dump(aj_xml_node_t * root);
+
 #endif  /* __AJ_XML_PARSER_API__ */
 
 //--- editor settings ---

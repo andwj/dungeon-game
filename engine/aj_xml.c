@@ -28,6 +28,8 @@ parsing libraries out there (mostly in C++ mind you).
 #include <string.h>
 #include <ctype.h>
 
+#include <stdio.h>
+
 
 //------------------------------------------------------------------------
 //   STRUCTURES
@@ -232,6 +234,10 @@ static void aj_xml_FreeStringBufs(aj_xml_real_root_t * root)
 
 static aj_xml_node_t * aj_xml_AllocateNode(aj_xml_real_root_t * root)
 {
+	int idx;
+
+	aj_xml_node_t *node;
+
 	if (! root->node_bufs || root->node_bufs->used >= root->node_bufs->total)
 	{
 		// this slightly overestimates how much memory we need
@@ -250,11 +256,16 @@ static aj_xml_node_t * aj_xml_AllocateNode(aj_xml_real_root_t * root)
 		root->node_bufs = new_buf;
 	}
 
-	int index = root->node_bufs->used;
+	idx = root->node_bufs->used;
 
 	root->node_bufs->used += 1;
 
-	return &root->node_bufs->buffer[index];
+	node = &root->node_bufs->buffer[idx];
+
+	node->name  = root->empty_str;
+	node->value = root->empty_str;
+
+	return node;
 }
 
 
@@ -362,6 +373,107 @@ void aj_xml_Free(aj_xml_node_t * root)
 	memset((void *)root, -1, sizeof(aj_xml_real_root_t));
 
 	free((void *)real_root);
+}
+
+
+//------------------------------------------------------------------------
+//   TESTING STUFF
+//------------------------------------------------------------------------
+
+#define ESCAPE_STR_LEN  30
+
+static void print_spaces(int indent)
+{
+	for (; indent > 0 ; indent--)
+		printf("  ");
+}
+
+
+static void print_escaped_str(const char *str, int max_len)
+{
+	printf("'");
+
+	while (*str && max_len > 0)
+	{
+		char ch = *str++;
+
+		if (ch == '\r')
+		{
+			// ignore carriage return
+			continue;
+		}
+		else if (ch == '\n')
+		{
+			printf("\\n");
+			max_len -= 2;
+			continue;
+		}
+		else if (ch == '\t')
+		{
+			printf("\\t");
+			max_len -= 2;
+			continue;
+		}
+		else if (ch < 32 || ch > 126)
+		{
+			printf("\x%02x", ch);
+			max_len -= 4;
+			continue;
+		}
+
+		printf("%c", ch);
+		max_len -= 1;
+	}
+
+	if (*str)
+		printf("...");
+
+	printf("'");
+}
+
+
+static void aj_xml_DumpNode(aj_xml_node_t *node, int indent)
+{
+	aj_xml_node_t *child;
+
+	print_spaces(indent);
+	printf("%s = ", node->name[0] ? node->name : "_TEXT_");
+	print_escaped_str(node->value, ESCAPE_STR_LEN);
+	printf("\n");
+
+	print_spaces(indent);
+	printf("{\n");
+
+	indent++;
+
+	// show attributes
+	for (child = node->attributes ; child ; child = child->next)
+	{
+		print_spaces(indent);
+		printf("$%s = ", child->name);
+		print_escaped_str(child->value, ESCAPE_STR_LEN);
+		printf("\n");
+	}
+
+	// show children
+	for (child = node->children ; child ; child = child->next)
+	{
+		aj_xml_DumpNode(child, indent);
+	}
+
+	indent--;
+
+	print_spaces(indent);
+	printf("}\n");
+}
+
+
+void aj_xml_Dump(aj_xml_node_t * root)
+{
+	printf("XML DUMP:\n");
+	printf("---------\n");
+
+	aj_xml_DumpNode(root, 0);
 }
 
 //--- editor settings ---
