@@ -48,7 +48,7 @@ typedef struct aj_xml_string_buffer_s
 
 	struct aj_xml_string_buffer_s * next;
 
-	// buffer containing strings.
+	// buffer containing the strings.
 	// each string is NUL-terminated.
 	// NOTE: this array will contain [total] elements
 	char buffer[4];
@@ -78,6 +78,9 @@ typedef struct aj_xml_real_root_s
 	aj_xml_string_buffer_t  * str_bufs;
 
 	aj_xml_node_buffer_t * node_bufs;
+
+	// current parse position
+	const char *p;
 
 	// the empty string
 	char empty_str[4];
@@ -286,37 +289,60 @@ static void aj_xml_FreeNodeBufs(aj_xml_real_root_t * root)
 //   PARSING STUFF
 //------------------------------------------------------------------------
 
-#define SKIP_WHITESPACE(buf)  while (isspace(*buf)) buf++
+#define SKIP_WHITESPACE(buf)  while (isspace(*(buf))) buf++
 
 #define SYNTAX_ERROR(msg)  do { return NULL; } while(0)
 
 
 int aj_xml_ParseAttribute(aj_xml_real_root_t *root, aj_xml_node_t *node)
 {
-	// returns 1 on success, 0 if hit end of element, -1 on error
+	// returns 0 on success, negative value on error
 
 	// TODO
 }
 
 
-aj_xml_node_t * aj_xml_ParseElement(aj_xml_real_root_t *root, const char *buf, 
-	aj_xml_node_t * exist_node, int need_bracket);
+///---	if (need_bracket)
+///---	{
+///---		SKIP_WHITESPACE(buf);
+///---
+///---		if (*buf != '<')
+///---			SYNTAX_ERROR("missing < at start");
+///---
+///---		buf++;
+///---	}
+
+
+aj_xml_node_t * aj_xml_ParseElement(aj_xml_real_root_t *root,
+	aj_xml_node_t * parent_node)
 {
 	aj_xml_node_t *node;
 
-	// returns 0 on success, negative value on error
+	int self_contained = 0;	  // element ends with />
 
-	if (need_bracket)
+
+	SKIP_WHITESPACE(root->p);
+
+	if (*root->p == 0)
+		return SYNTAX_ERROR("unexpected eof");
+	
+	if (*root->p != '<')
 	{
-		SKIP_WHITESPACE(buf);
+		if (! parent_node)
+			return SYNTAX_ERROR("missing < at start");
 
-		if (*buf != '<')
-			SYNTAX_ERROR("missing < at start");
+		node = aj_xml_ParseText(root);
+		if (! node)
+			return NULL;
 
-		buf++;
+		link_child(&parent_node->children, node);
+
+		SKIP_WHITESPACE(root->p);
+
+		if (*root->p != '<')
+			return SYNTAX_ERROR("hit eof (after text)");
 	}
 
-	SKIP_WHITESPACE(buf);
 
 	if (exist_node)
 		node = exist_node;
@@ -327,13 +353,62 @@ aj_xml_node_t * aj_xml_ParseElement(aj_xml_real_root_t *root, const char *buf,
 			return NULL;
 	}
 
-	// TODO : parse element name
 
-	// TODO : parse attributes
+	/* parse element name */
 
-	// TODO : parse '/' at end
+	const char *elem_name = aj_xml_ParseName(root);
+	if (! elem_name)
+		return NULL;
 
-	// TODO : parse text and children nodes (unless '/' at end)
+	node->name = elem_name;
+
+
+	/* parse attributes */
+
+	while (1)
+	{
+		SKIP_WHITESPACE(root->p);
+
+		if (*root->p == 0)
+			return SYNTAX_ERROR("unclosed element");
+
+		if (*root->p == '>')
+		{
+			root->p++;
+			break;
+		}
+
+		if (*root->p == '/')
+		{
+			root->p++;
+
+			self_contained = 1;
+
+			SKIP_WHITESPACE(root->p);
+
+			if (*root->p != '>')
+				return SYNTAX_ERROR("unclosed element");
+
+			root->p++;
+			break;
+		}
+
+		if (*root->p == '=')
+			return SYNTAX_ERROR("unexpected =");
+
+		int ret = aj_xml_ParseAttribute(root, node);
+		if (ret < 0)
+			return SYNTAX_ERROR("bad attribute");
+	}
+	
+
+	if (self_contained)
+		return node;
+
+
+	/* parse text and children nodes */
+
+
 }
 
 
@@ -351,9 +426,18 @@ aj_xml_node_t * aj_xml_Parse(const char *buffer)
 	if (! root)
 		return OUT_OF_MEMORY("root node");
 
-	node = aj_xml_ParseElement(root, buffer, &root->fake_root, 1 /* need_bracket */);
+	root->p = buffer;
+
+	node = aj_xml_ParseElement(root, NULL /* parent_node */);
 	
 	if (! node)
+	{
+		aj_xml_Free(root);
+		return NULL;
+	}
+
+	// ensure we begin with <?xml> element
+	if (!node->name[0] || (strcmp(node->name, "?xml") != 0))
 	{
 		aj_xml_Free(root);
 		return NULL;
@@ -380,7 +464,7 @@ void aj_xml_Free(aj_xml_node_t * root)
 //   TESTING STUFF
 //------------------------------------------------------------------------
 
-#define ESCAPE_STR_LEN  30
+#define DUMP_VALUE_LEN  30
 
 static void print_spaces(int indent)
 {
@@ -414,7 +498,7 @@ static void print_escaped_str(const char *str, int max_len)
 			max_len -= 2;
 			continue;
 		}
-		else if (ch < 32 || ch > 126)
+		else if (ch < 32 || ch > 126 || ch == ''')
 		{
 			printf("\x%02x", ch);
 			max_len -= 4;
@@ -438,7 +522,7 @@ static void aj_xml_DumpNode(aj_xml_node_t *node, int indent)
 
 	print_spaces(indent);
 	printf("%s = ", node->name[0] ? node->name : "_TEXT_");
-	print_escaped_str(node->value, ESCAPE_STR_LEN);
+	print_escaped_str(node->value, DUMP_VALUE_LEN);
 	printf("\n");
 
 	print_spaces(indent);
@@ -451,7 +535,7 @@ static void aj_xml_DumpNode(aj_xml_node_t *node, int indent)
 	{
 		print_spaces(indent);
 		printf("$%s = ", child->name);
-		print_escaped_str(child->value, ESCAPE_STR_LEN);
+		print_escaped_str(child->value, DUMP_VALUE_LEN);
 		printf("\n");
 	}
 
