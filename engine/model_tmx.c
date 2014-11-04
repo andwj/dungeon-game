@@ -26,8 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "wad.h"
 
 
-// bring in Mini-XML header
-#include <mxml.h>
+// bring in Expat XML parser header
+#include <expat.h>
 
 
 #define TMX_TILE_SIZE	40.0
@@ -107,6 +107,7 @@ static void TMX_AddStaticEnt(dp_model_t *mod, const char *piece_model, vec3_t or
 }
 
 
+#if 0
 static void TMX_ParseMapProperties(dp_model_t *mod, mxml_node_t *xml_root)
 {
 	mxml_node_t * map_node;
@@ -147,6 +148,25 @@ static void TMX_ParseMapProperties(dp_model_t *mod, mxml_node_t *xml_root)
 	map_properties = mxmlFindElement(map_node, map_node, "properties", NULL,NULL, MXML_DESCEND);
 
 fprintf(stderr, "map_properties = %p\n", map_properties);
+}
+#endif
+
+
+static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char **attr)
+{
+  // TODO
+}
+
+
+static void XMLCALL TMX_xml_end_handler(void *priv, const char *el)
+{
+	// TODO
+}
+
+
+static void XMLCALL TMX_xml_text_handler(void *priv, const char *s, int len)
+{
+	// TODO
 }
 
 
@@ -233,17 +253,30 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 
 	/* PARSE FILE !!! */
 
-	mxml_node_t * xml_root;
 
-	xml_root = mxmlLoadString(NULL, (const char *) buffer, MXML_TEXT_CALLBACK);
+	XML_Parser p = XML_ParserCreate(NULL);
+	if (! p)
+		Host_Error("Mod_TMX_Load: out of memory for XML parser\n");
 
-	if (! xml_root)
-		Host_Error("Mod_TMX_Load: failed to parse XML data\n");
+	XML_SetElementHandler(p, TMX_xml_start_handler, TMX_xml_end_handler);
+
+	XML_SetCharacterDataHandler(p, TMX_xml_text_handler);
 
 
-	TMX_ParseMapProperties(mod, xml_root);
+	int length = strlen(buffer);
+
+	if (XML_Parse(p, (const char *)buffer, length, 1 /*isFinal*/) == XML_STATUS_ERROR)
+	{
+		Host_Error("Mod_TMX_Load: XML parse error at line %d:\n%s\n",
+			(int) XML_GetCurrentLineNumber(p),
+			XML_ErrorString(XML_GetErrorCode(p)));
+    }
+
+	XML_ParserFree(p);
+
 
 	Con_Printf("TMX Loader: size of map is %dx%d tiles\n", mod->tmx.width, mod->tmx.height);
+
 
 	int num_tiles = mod->tmx.width * mod->tmx.height;
 
@@ -285,12 +318,6 @@ int test_len = strlen(test_entity_crud);
 loadmodel->brush.entities = (char *)Mem_Alloc(loadmodel->mempool, test_len + 1);
 memcpy(loadmodel->brush.entities, test_entity_crud, test_len + 1);
 
-
-
-	/* PARSING OF FILE IS DONE */
-
-	mxmlDelete(xml_root);
-	xml_root = NULL;
 
 
 	// now that we have the OBJ data loaded as-is, we can convert it
