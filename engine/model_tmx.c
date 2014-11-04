@@ -134,14 +134,13 @@ static void TMX_ParseMapProperties(dp_model_t *mod, mxml_node_t *xml_root)
 
 	mod->tmx.height = atoi(value);
 
-
 	if (mod->tmx.width < 2 || mod->tmx.height < 2)
 		Host_Error("Mod_TMX_Load: map size %dx%d is too small (must be at least 2x2)\n",
-			mod->tmx.width, mod->tmx.height);
+				mod->tmx.width, mod->tmx.height);
 
 	if (mod->tmx.width > MAX_TMX_SIZE || mod->tmx.height > MAX_TMX_SIZE)
 		Host_Error("Mod_TMX_Load: map size %dx%d is too large (must be under %dx%d)\n",
-			mod->tmx.width, mod->tmx.height, MAX_TMX_SIZE, MAX_TMX_SIZE);
+				mod->tmx.width, mod->tmx.height, MAX_TMX_SIZE, MAX_TMX_SIZE);
 
 
 	// OK if this doesn't exist
@@ -152,21 +151,87 @@ fprintf(stderr, "map_properties = %p\n", map_properties);
 #endif
 
 
+typedef enum tmx_container_type_e
+{
+	CONTAINER_NONE = 0,
+	CONTAINER_Tileset,
+	CONTAINER_Layer,
+	CONTAINER_ObjectGroup
+
+} tmx_container_type_t;
+
+
+typedef struct tmx_parse_state_s
+{
+	dp_model_t * mod;
+
+	// current container, possibly none
+	tmx_container_type_t cur_container;
+
+	int reading_data;
+
+	// for reading tile data, this is current position
+	int cur_tile_x;
+	int cur_tile_y;
+
+	// last read object (for properties), -1 for none
+	int last_object;
+
+} tmx_parse_state_t;
+
+
+
 static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char **attr)
 {
-  // TODO
+	tmx_parse_state_t *st = (tmx_parse_state_t *)priv;
+
+	model_tmx_t * tmx = &st->mod->tmx;
+
+	switch (st->cur_container)
+	{
+		case CONTAINER_NONE:
+			// TODO
+			
+		case CONTAINER_Tileset:
+			/* everything in a tileset is currently ignored */
+			return;
+
+		case CONTAINER_Layer:
+			// TODO
+
+		case CONTAINER_ObjectGroup:
+			// TODO
+	}
 }
 
 
 static void XMLCALL TMX_xml_end_handler(void *priv, const char *el)
 {
-	// TODO
+	tmx_parse_state_t *st = (tmx_parse_state_t *)priv;
+
+	model_tmx_t * tmx = &st->mod->tmx;
+
+	st->reading_data = 0;
+
+	if (strcmp(el, "tileset") == 0  ||
+		strcmp(el, "layer") == 0  ||
+		strcmp(el, "objectgroup") == 0)
+	{
+		st->cur_container = CONTAINER_NONE;
+	}
 }
 
 
 static void XMLCALL TMX_xml_text_handler(void *priv, const char *s, int len)
 {
-	// TODO
+	tmx_parse_state_t *st = (tmx_parse_state_t *)priv;
+
+	model_tmx_t * tmx = &st->mod->tmx;
+
+	if (! st->reading_data)
+		return;
+
+	// FIXME : parse <DATA> stuff
 }
 
 
@@ -254,9 +319,19 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	/* PARSE FILE !!! */
 
 
+	tmx_parse_state_t parser_state;
+
+	memset(&parser_state, 0, sizeof(parser_state));
+
+	parser_state.mod = mod;
+	parser_state.last_object = -1;
+
+
 	XML_Parser p = XML_ParserCreate(NULL);
 	if (! p)
 		Host_Error("Mod_TMX_Load: out of memory for XML parser\n");
+
+	XML_SetUserData(p, &parser_state);
 
 	XML_SetElementHandler(p, TMX_xml_start_handler, TMX_xml_end_handler);
 
@@ -275,7 +350,12 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	XML_ParserFree(p);
 
 
+
 	Con_Printf("TMX Loader: size of map is %dx%d tiles\n", mod->tmx.width, mod->tmx.height);
+
+
+
+	Host_Error("BLEH !!\n");
 
 
 	int num_tiles = mod->tmx.width * mod->tmx.height;
