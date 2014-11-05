@@ -186,7 +186,61 @@ static void TMX_GrabLayerName(tmx_parse_state_t *st, const char **attr)
 		const char *value = attr[1];
 
 		if (strcmp(name, "name") == 0)
+		{
 			strlcpy(st->layer_name, value, sizeof(st->layer_name));
+			return;
+		}
+	}
+
+	Host_Error("Mod_TMX_Load: layer/objectgroup lacks a name\n");
+}
+
+
+static void TMX_CheckEncoding(const char **attr)
+{
+	for ( ; *attr ; attr += 2)
+	{
+		const char *name  = attr[0];
+		const char *value = attr[1];
+
+		if (strcmp(name, "encoding") == 0 &&
+			strcmp(value, "csv") == 0)
+		{
+			return;  // OK
+		}
+	}
+
+	Host_Error("Mod_TMX_Load: data not in CSV format\n");
+}
+
+
+static void TMX_ProcessTile(tmx_parse_state_t *st, int gid)
+{
+	model_tmx_t * tmx = &st->mod->tmx;
+
+	int offset = st->cur_tile_y * tmx->width + st->cur_tile_x;
+
+	// check for too much data  [ NOTE: we do not check for insufficient data ]
+	if (st->cur_tile_y >= tmx->height)
+		Host_Error("Mod_TMX_Load: too much tile data\n");
+
+	// high bits of tile numbers can indicate flipping / transpose.
+	// we IGNORE these bits.
+
+	gid &= 0xffffff;
+
+
+	// FIXME
+
+fprintf(stderr, "TILE @ (%d %d) in '%s' --> %d\n", st->cur_tile_x, st->cur_tile_y, st->layer_name, gid);
+
+
+	st->cur_tile_x += 1;
+
+	if (st->cur_tile_x >= tmx->width)
+	{
+		st->cur_tile_x = 0;
+		st->cur_tile_y += 1;
 	}
 }
 
@@ -235,7 +289,7 @@ static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char
 			}
 			else if (strcmp(el, "data") == 0)
 			{
-				// FIXME: check 'encoding' property, error if not present or not "csv"
+				TMX_CheckEncoding(attr);
 
 				st->reading_data = 1;
 				st->cur_tile_x = 0;
@@ -302,10 +356,51 @@ static void XMLCALL TMX_xml_text_handler(void *priv, const char *s, int len)
 
 	model_tmx_t * tmx = &st->mod->tmx;
 
+	char number_buf[64];
+	int number_len;
+
 	if (! st->reading_data)
 		return;
 
-	// FIXME : parse <DATA> stuff
+	// NOTE : we assume that numeric values are never chopped up by the
+	//        buffers which EXPAT gives us.
+
+	while (len > 0)
+	{
+		// skip whitespace or odd characters
+		if (*s <= ' ' || *s >= 127)
+		{
+			s++; len--;
+			continue;
+		}
+
+		// treat commas like whitespace too
+		if (*s == ',')
+		{
+			s++; len--;
+			continue;
+		}
+
+		// parse an integer value
+		number_len = 0;
+
+		while (len > 0 && (isalnum(*s) || *s == '-'))
+		{
+			if (number_len >= (int)sizeof(number_buf) - 2)
+				Host_Error("Mod_TMX_Load: number in <data> chunk too long\n");
+
+			number_buf[number_len++] = *s;
+
+			s++; len--;
+		}
+
+		number_buf[number_len] = 0;
+
+		if (! number_len)
+			Host_Error("Mod_TMX_Load: non-numeric character in <data> chunk\n");
+
+		TMX_ProcessTile(st, atoi(number_buf));
+	}
 }
 
 
