@@ -107,50 +107,6 @@ static void TMX_AddStaticEnt(dp_model_t *mod, const char *piece_model, vec3_t or
 }
 
 
-#if 0
-static void TMX_ParseMapProperties(dp_model_t *mod, mxml_node_t *xml_root)
-{
-	mxml_node_t * map_node;
-	mxml_node_t * map_properties;
-
-	const char *value;
-
-
-	// map node should be first child
-
-	map_node = mxmlFindElement(xml_root, xml_root, "map", NULL,NULL, MXML_DESCEND);
-	if (! map_node)
-		Host_Error("Mod_TMX_Load: missing 'map' node in file\n");
-
-	value = mxmlElementGetAttr(map_node, "width");
-	if (! value)
-		Host_Error("Mod_TMX_Load: no 'width' attribute in <map> element\n");
-	
-	mod->tmx.width = atoi(value);
-
-	value = mxmlElementGetAttr(map_node, "height");
-	if (! value)
-		Host_Error("Mod_TMX_Load: no 'height' attribute in <map> element\n");
-
-	mod->tmx.height = atoi(value);
-
-	if (mod->tmx.width < 2 || mod->tmx.height < 2)
-		Host_Error("Mod_TMX_Load: map size %dx%d is too small (must be at least 2x2)\n",
-				mod->tmx.width, mod->tmx.height);
-
-	if (mod->tmx.width > MAX_TMX_SIZE || mod->tmx.height > MAX_TMX_SIZE)
-		Host_Error("Mod_TMX_Load: map size %dx%d is too large (must be under %dx%d)\n",
-				mod->tmx.width, mod->tmx.height, MAX_TMX_SIZE, MAX_TMX_SIZE);
-
-
-	// OK if this doesn't exist
-	map_properties = mxmlFindElement(map_node, map_node, "properties", NULL,NULL, MXML_DESCEND);
-
-fprintf(stderr, "map_properties = %p\n", map_properties);
-}
-#endif
-
-
 typedef enum tmx_container_type_e
 {
 	CONTAINER_NONE = 0,
@@ -168,6 +124,9 @@ typedef struct tmx_parse_state_s
 	// current container, possibly none
 	tmx_container_type_t container;
 
+	// current layer or objectgroup
+	char layer_name[64];
+
 	// true if we are parsing a <data> element
 	int reading_data;
 
@@ -182,6 +141,56 @@ typedef struct tmx_parse_state_s
 
 
 
+static void TMX_ParseMapElement(tmx_parse_state_t *st, const char **attr)
+{
+	model_tmx_t * tmx = &st->mod->tmx;
+
+	int num_tiles;
+
+
+	for ( ; *attr ; attr += 2)
+	{
+		const char *name  = attr[0];
+		const char *value = attr[1];
+
+		if (strcmp(name, "width") == 0)
+			tmx->width = atoi(value);
+		else if (strcmp(name, "height") == 0)
+			tmx->height = atoi(value);
+	}
+
+	// verify map size
+
+	if (tmx->width < 2 || tmx->height < 2)
+		Host_Error("Mod_TMX_Load: map size %dx%d is too small (must be at least 2x2)\n",
+				tmx->width, tmx->height);
+
+	if (tmx->width > MAX_TMX_SIZE || tmx->height > MAX_TMX_SIZE)
+		Host_Error("Mod_TMX_Load: map size %dx%d is too large (must be under %dx%d)\n",
+				tmx->width, tmx->height, MAX_TMX_SIZE, MAX_TMX_SIZE);
+
+
+	// allocate tile information
+
+	num_tiles = tmx->width * tmx->height;
+
+	tmx->tiles = (tmx_tile_t *)Mem_Alloc(loadmodel->mempool, num_tiles * sizeof(tmx_tile_t));
+}
+
+
+static void TMX_GrabLayerName(tmx_parse_state_t *st, const char **attr)
+{
+	for ( ; *attr ; attr += 2)
+	{
+		const char *name  = attr[0];
+		const char *value = attr[1];
+
+		if (strcmp(name, "name") == 0)
+			strlcpy(st->layer_name, value, sizeof(st->layer_name));
+	}
+}
+
+
 static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char **attr)
 {
 	tmx_parse_state_t *st = (tmx_parse_state_t *)priv;
@@ -193,7 +202,7 @@ static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char
 		case CONTAINER_NONE:
 			if (strcmp(el, "map") == 0)
 			{
-				// FIXME : parse MAP attrs !!
+				TMX_ParseMapElement(st, attr);
 				return;
 			}
 			else if (strcmp(el, "tileset") == 0)
@@ -204,15 +213,13 @@ static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char
 			else if (strcmp(el, "layer") == 0)
 			{
 				st->container = CONTAINER_Layer;
-
-				// FIXME : GRAB 'name' attribute
+				TMX_GrabLayerName(st, attr);
 				return;
 			}
 			else if (strcmp(el, "objectgroup") == 0)
 			{
 				st->container = CONTAINER_ObjectGroup;
-
-				// FIXME : GRAB 'name' ATTR
+				TMX_GrabLayerName(st, attr);
 				return;
 			}
 			break;
@@ -276,6 +283,7 @@ static void XMLCALL TMX_xml_end_handler(void *priv, const char *el)
 	{
 		st->container = CONTAINER_NONE;
 
+		st->layer_name[0] = 0;
 		st->reading_data = 0;
 		st->last_object = -1;
 	}
@@ -318,6 +326,8 @@ void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend)
 	unsigned char *data = NULL;
 	int *submodelfirstsurface;
 	msurface_t *tempsurfaces;
+
+	model_tmx_t *tmx = &mod->tmx;
 
 
 
@@ -382,6 +392,13 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	loadmodel->brush.numsubmodels = 1;
 
 
+	tmx->num_pieces = 0;
+	tmx->pieces = (tmx_piece_t *)Mem_Alloc(loadmodel->mempool, MAX_TMX_PIECES * sizeof(tmx_piece_t));
+
+	tmx->ents = NULL;
+
+
+
 	/* PARSE FILE !!! */
 
 
@@ -416,30 +433,19 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	XML_ParserFree(p);
 
 
-
-	Con_Printf("TMX Loader: size of map is %dx%d tiles\n", mod->tmx.width, mod->tmx.height);
-
-
-
-	Host_Error("BLEH !!\n");
+	if (! tmx->width)
+		Host_Error("Mod_TMX_Load: failed to parse file (no <map> element)\n");
 
 
-	int num_tiles = mod->tmx.width * mod->tmx.height;
-
-	mod->tmx.tiles = (tmx_tile_t *)Mem_Alloc(loadmodel->mempool, num_tiles * sizeof(tmx_tile_t));
-
-	mod->tmx.num_pieces = 0;
-	mod->tmx.pieces = (tmx_piece_t *)Mem_Alloc(loadmodel->mempool, MAX_TMX_PIECES * sizeof(tmx_piece_t));
-
-	mod->tmx.ents = NULL;
+	Con_Printf("TMX Loader: size of map is %dx%d tiles\n", tmx->width, tmx->height);
 
 
 	mins[0] = -1 * TMX_TILE_SIZE;
 	mins[1] = -1 * TMX_TILE_SIZE;
 	mins[2] = -1024;
 
-	maxs[0] = (1 + mod->tmx.width)  * TMX_TILE_SIZE;
-	maxs[1] = (1 + mod->tmx.height) * TMX_TILE_SIZE;
+	maxs[0] = (1 + tmx->width)  * TMX_TILE_SIZE;
+	maxs[1] = (1 + tmx->height) * TMX_TILE_SIZE;
 	maxs[2] = 3072;
 
 
