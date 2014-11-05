@@ -166,8 +166,9 @@ typedef struct tmx_parse_state_s
 	dp_model_t * mod;
 
 	// current container, possibly none
-	tmx_container_type_t cur_container;
+	tmx_container_type_t container;
 
+	// true if we are parsing a <data> element
 	int reading_data;
 
 	// for reading tile data, this is current position
@@ -187,21 +188,79 @@ static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char
 
 	model_tmx_t * tmx = &st->mod->tmx;
 
-	switch (st->cur_container)
+	switch (st->container)
 	{
 		case CONTAINER_NONE:
-			// TODO
+			if (strcmp(el, "map") == 0)
+			{
+				// FIXME : parse MAP attrs !!
+				return;
+			}
+			else if (strcmp(el, "tileset") == 0)
+			{
+				st->container = CONTAINER_Tileset;
+				return;
+			}
+			else if (strcmp(el, "layer") == 0)
+			{
+				st->container = CONTAINER_Layer;
+
+				// FIXME : GRAB 'name' attribute
+				return;
+			}
+			else if (strcmp(el, "objectgroup") == 0)
+			{
+				st->container = CONTAINER_ObjectGroup;
+
+				// FIXME : GRAB 'name' ATTR
+				return;
+			}
+			break;
 			
 		case CONTAINER_Tileset:
 			/* everything in a tileset is currently ignored */
 			return;
 
 		case CONTAINER_Layer:
-			// TODO
+			if (strcmp(el, "property") == 0)
+			{
+				// needed ???
+			}
+			else if (strcmp(el, "data") == 0)
+			{
+				// FIXME: check 'encoding' property, error if not present or not "csv"
+
+				st->reading_data = 1;
+				st->cur_tile_x = 0;
+				st->cur_tile_y = 0;
+				return;
+			}
+			else if (strcmp(el, "tile") == 0)
+				Host_Error("Mod_TMX_Load: data not in CSV format (found <tile> element)\n");
+
+			break;
 
 		case CONTAINER_ObjectGroup:
-			// TODO
+			if (strcmp(el, "property") == 0)
+			{
+				if (st->last_object < 0)
+				{ /* property for whole group : not used */ }
+				else
+				{
+					/* property for the last object */
+					// FIXME
+				}
+			}
+			else if (strcmp(el, "object") == 0)
+			{
+				// FIXME
+			}
+			break;
 	}
+
+	// ignore unknown or unneeded elements
+
+fprintf(stderr, "TMX: skipping <%s>\n", el);
 }
 
 
@@ -211,14 +270,21 @@ static void XMLCALL TMX_xml_end_handler(void *priv, const char *el)
 
 	model_tmx_t * tmx = &st->mod->tmx;
 
-	st->reading_data = 0;
-
 	if (strcmp(el, "tileset") == 0  ||
 		strcmp(el, "layer") == 0  ||
 		strcmp(el, "objectgroup") == 0)
 	{
-		st->cur_container = CONTAINER_NONE;
+		st->container = CONTAINER_NONE;
+
+		st->reading_data = 0;
+		st->last_object = -1;
 	}
+
+	if (strcmp(el, "data") == 0)
+		st->reading_data = 0;
+
+	if (strcmp(el, "object") == 0)
+		st->last_object = -1;
 }
 
 
