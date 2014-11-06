@@ -955,27 +955,8 @@ typedef struct tmx_tile_s
 }
 tmx_tile_t;
 
-typedef struct tmx_piece_s
-{
-	char model_name[64];
-
-	struct model_s * model;
-
-} tmx_piece_t;
-
-typedef struct tmx_static_entity_s
-{
-	tmx_piece_t * piece;
-
-	vec3_t origin;
-	vec3_t angles;
-
-	float scale;
-
-	// link for list in BSP leafs
-	struct tmx_static_entity_s * next;
-}
-tmx_static_entity_t;
+struct tmx_piece_s;
+struct tmx_static_entity_s;
 
 typedef struct model_tmx_s
 {
@@ -987,12 +968,12 @@ typedef struct model_tmx_s
 	tmx_tile_t * tiles;
 
 	int num_pieces;
-	tmx_piece_t * pieces;
+	struct tmx_piece_s * pieces;
 
 	qboolean loaded_pieces;
 
 	// FIXME : these should be linked into the BSP tree
-	tmx_static_entity_t * ents;
+	struct tmx_static_entity_s * ents;
 }
 model_tmx_t;
 

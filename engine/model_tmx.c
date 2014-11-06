@@ -30,9 +30,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <expat.h>
 
 
-#define TMX_TILE_SIZE	40.0
+#define TMX_TILE_SIZE	128.0
 
 #define MAX_TMX_ENT_STRING	1048576
+
+
+typedef struct tmx_piece_s
+{
+	char model_name[64];
+
+	struct model_s * model;
+
+} tmx_piece_t;
+
+
+typedef struct tmx_static_entity_s
+{
+	tmx_piece_t * piece;
+
+	// TODO: keep these three fields?
+	vec3_t origin;
+	vec3_t angles;
+	float scale;
+
+	entity_render_t render;
+
+	// link for list [ FIXME : won't be usable for multiple leafs! ]
+	struct tmx_static_entity_s * next;
+}
+tmx_static_entity_t;
+
 
 
 /* TEST CRUD !!!! */
@@ -238,7 +265,7 @@ fprintf(stderr, "TILE @ (%d %d) in '%s' --> %d\n", st->cur_tile_x, st->cur_tile_
 
 	// do something with it
 
-	if (strcmp(st->layer_name, "floorTiles") == 0)
+	if (strcmp(st->layer_name, "floorTiles") == 0 && gid > 0)
 	{
 		vec3_t origin;
 		vec3_t angles;
@@ -816,17 +843,9 @@ fprintf(stderr, "TMX : loading '%s'\n", mod->tmx.pieces[i].model_name);
 //------------------------------------------------------------------------
 
 
-static int e_index = 0;  // FIXME TEMP CRUD
-
-
 static void TMX_LinkStaticEnt(dp_model_t *mod, tmx_static_entity_t *ent)
 {
-	// TEMP!!!
-	static entity_render_t  render_set[10];
-
-	if (e_index >= 10) return;
-
-	entity_render_t *render = &render_set[e_index++];
+	entity_render_t *render = &ent->render;
 
 
 	memset(render, 0, sizeof(render));
@@ -862,8 +881,6 @@ static void TMX_LinkStaticEnt(dp_model_t *mod, tmx_static_entity_t *ent)
 void TMX_CL_RelinkPieces(dp_model_t *mod)
 {
 	tmx_static_entity_t *ent;
-
-	e_index = 0;
 
 	for (ent = mod->tmx.ents ; ent ; ent = ent->next)
 	{
