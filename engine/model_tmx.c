@@ -30,7 +30,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <expat.h>
 
 
-#define TMX_TILE_SIZE	128.0
+// TODO : make these properties of the TMX <map> element
+#define TMX_TILE_SIZE	256.0
+#define TMX_CEILING_H	(0.5 * TMX_TILE_SIZE)
+
 
 #define MAX_TMX_ENT_STRING	1048576
 
@@ -247,6 +250,9 @@ static void TMX_ProcessTile(tmx_parse_state_t *st, int gid)
 {
 	model_tmx_t * tmx = &st->mod->tmx;
 
+	vec3_t origin;
+	vec3_t angles;
+
 	int offset = st->cur_tile_y * tmx->width + st->cur_tile_x;
 
 	// check for too much data  [ NOTE: we do not check for insufficient data ]
@@ -265,24 +271,31 @@ fprintf(stderr, "TILE @ (%d %d) in '%s' --> %d\n", st->cur_tile_x, st->cur_tile_
 
 	// do something with it
 
+	origin[0] = (st->cur_tile_x + 0.5) * TMX_TILE_SIZE;
+	origin[1] = (tmx->height - 1 - st->cur_tile_y + 0.5) * TMX_TILE_SIZE;
+	origin[2] = 0;
+
+	VectorSet(angles, 0, 0, 0);
+
 	if (strcmp(st->layer_name, "floorTiles") == 0 && gid > 0)
 	{
-		vec3_t origin;
-		vec3_t angles;
-
 		tmx->tiles[offset].walkable = 1;
 		tmx->tiles[offset].visible  = 1;
 
-		origin[0] = (st->cur_tile_x + 0.5) * TMX_TILE_SIZE;
-		origin[1] = (tmx->height - 1 - st->cur_tile_y + 0.5) * TMX_TILE_SIZE;
-		origin[2] = 0;
-
-		VectorSet(angles, 0, 0, 0);
-
 		TMX_AddStaticEnt(st->mod, "pieces/floor.obj", origin, angles);
 	}
-	else
+	else if (strcmp(st->layer_name, "ceilingTiles") == 0 && gid > 0)
 	{
+		origin[2] = TMX_CEILING_H;
+
+		TMX_AddStaticEnt(st->mod, "pieces/ceiling.obj", origin, angles);
+	}
+	else if (strcmp(st->layer_name, "columns") == 0 && gid > 0)
+	{
+		origin[0] += (TMX_TILE_SIZE / 2);
+		origin[1] -= (TMX_TILE_SIZE / 2);
+
+		TMX_AddStaticEnt(st->mod, "pieces/column.obj", origin, angles);
 	}
 
 
