@@ -970,6 +970,8 @@ typedef struct tmx_static_entity_s
 	vec3_t origin;
 	vec3_t angles;
 
+	float scale;
+
 	// link for list in BSP leafs
 	struct tmx_static_entity_s * next;
 }

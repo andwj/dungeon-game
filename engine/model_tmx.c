@@ -101,6 +101,8 @@ static void TMX_AddStaticEnt(dp_model_t *mod, const char *piece_model, vec3_t or
 	VectorCopy(origin, ent->origin);
 	VectorCopy(angles, ent->angles);
 
+	ent->scale = TMX_TILE_SIZE;
+
 	// link in
 	ent->next = mod->tmx.ents;
 	mod->tmx.ents = ent;
@@ -230,9 +232,31 @@ static void TMX_ProcessTile(tmx_parse_state_t *st, int gid)
 	gid &= 0xffffff;
 
 
-	// FIXME
-
+#if 0
 fprintf(stderr, "TILE @ (%d %d) in '%s' --> %d\n", st->cur_tile_x, st->cur_tile_y, st->layer_name, gid);
+#endif
+
+	// do something with it
+
+	if (strcmp(st->layer_name, "floorTiles") == 0)
+	{
+		vec3_t origin;
+		vec3_t angles;
+
+		tmx->tiles[offset].walkable = 1;
+		tmx->tiles[offset].visible  = 1;
+
+		origin[0] = (st->cur_tile_x + 0.5) * TMX_TILE_SIZE;
+		origin[1] = (tmx->height - 1 - st->cur_tile_y + 0.5) * TMX_TILE_SIZE;
+		origin[2] = 0;
+
+		VectorSet(angles, 0, 0, 0);
+
+		TMX_AddStaticEnt(st->mod, "pieces/floor.obj", origin, angles);
+	}
+	else
+	{
+	}
 
 
 	st->cur_tile_x += 1;
@@ -546,20 +570,6 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 
 // MORE TEST STUFF
 
-vec3_t test_origin;
-vec3_t test_angles;
-
-VectorSet(test_origin, 0, 0, 0);
-VectorSet(test_angles, 0, 0, 0);
-TMX_AddStaticEnt(mod, "pieces/column.obj", test_origin, test_angles);
-
-VectorSet(test_origin, 200, 0, 0);
-TMX_AddStaticEnt(mod, "pieces/column.obj", test_origin, test_angles);
-
-VectorSet(test_origin, 400, 0, 0);
-TMX_AddStaticEnt(mod, "pieces/column.obj", test_origin, test_angles);
-
-
 
 int test_len = strlen(test_entity_crud);
 loadmodel->brush.entities = (char *)Mem_Alloc(loadmodel->mempool, test_len + 1);
@@ -811,9 +821,6 @@ static int e_index = 0;  // FIXME TEMP CRUD
 
 static void TMX_LinkStaticEnt(dp_model_t *mod, tmx_static_entity_t *ent)
 {
-	float scale = 100;
-
-
 	// TEMP!!!
 	static entity_render_t  render_set[10];
 
@@ -828,7 +835,7 @@ static void TMX_LinkStaticEnt(dp_model_t *mod, tmx_static_entity_t *ent)
 	render->model = ent->piece->model;
 
 	Matrix4x4_CreateFromQuakeEntity(&render->matrix, ent->origin[0], ent->origin[1], ent->origin[2],
-		ent->angles[0], ent->angles[1], ent->angles[2], scale);
+		ent->angles[0], ent->angles[1], ent->angles[2], ent->scale);
 
 	render->alpha = 1;
 
