@@ -970,8 +970,6 @@ typedef struct model_tmx_s
 	int num_pieces;
 	struct tmx_piece_s * pieces;
 
-	qboolean loaded_pieces;
-
 	// FIXME : these should be linked into the BSP tree
 	struct tmx_static_entity_s * ents;
 }

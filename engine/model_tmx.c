@@ -866,9 +866,9 @@ void TMX_LoadPieces(dp_model_t *mod)
 {
 	int i;
 
-	// already loaded?
-	if (mod->tmx.loaded_pieces)
-		return;
+	// andrewj: always re-lookup the models.
+	// [ previously I had a check like "if (already loaded) return;" but
+	//   it did not work properly when the same map was re-entered. ]
 
 	for (i = 0 ; i < mod->tmx.num_pieces ; i++)
 	{
@@ -877,8 +877,6 @@ fprintf(stderr, "TMX : loading '%s'\n", mod->tmx.pieces[i].model_name);
 		mod->tmx.pieces[i].model = Mod_ForName(mod->tmx.pieces[i].model_name,
 			false, developer.integer > 0, NULL);
 	}
-
-	mod->tmx.loaded_pieces = true;
 }
 
 
