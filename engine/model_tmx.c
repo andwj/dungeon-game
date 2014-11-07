@@ -388,7 +388,7 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 		return;
 
 	real_x = pix_x / (float)st->tile_width  + 0.5;
-	real_y = pix_y / (float)st->tile_height + 0.5;
+	real_y = pix_y / (float)st->tile_height - 0.5;
 
 	real_x = TMX_TILE_SIZE * real_x;
 	real_y = TMX_TILE_SIZE * (st->mod->tmx.height - real_y);
