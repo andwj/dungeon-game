@@ -65,32 +65,6 @@ tmx_static_entity_t;
 
 
 
-/* TEST CRUD !!!! */
-
-static const char test_entity_crud[] =
-"{\n"
-"  \"classname\" \"worldspawn\"\n"
-"}\n"
-"{\n"
-"  \"classname\" \"info_player_start\"\n"
-"  \"origin\" \"224 224 40\"\n"
-"  \"angle\" \"215\"\n"
-"}\n"
-"{\n"
-"  \"classname\" \"test_floor\"\n"
-"  \"origin\" \"224 224 0\"\n"
-"}\n"
-"\n"
-"{\n"
-"  \"classname\" \"light\"\n"
-"  \"origin\" \"246 450 90\"\n"
-"  \"light\" \"255 255 255 2000\"\n"
-"  \"color\" \"1.6 1.4 1.0\"\n"
-"  \"style\" \"1\"\n"
-"}\n";
-
-
-
 extern int Mod_Q1BSP_CreateShadowMesh(dp_model_t *mod);
 
 
