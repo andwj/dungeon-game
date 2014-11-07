@@ -170,8 +170,8 @@ typedef struct tmx_parse_state_s
 	int cur_tile_x;
 	int cur_tile_y;
 
-	// last read object (for properties), -1 for none
-	int last_object;
+	// true when parsing a <object> element
+	int reading_object;
 
 } tmx_parse_state_t;
 
@@ -346,6 +346,18 @@ fprintf(stderr, "TILE @ (%d %d) in '%s' --> %d\n", st->cur_tile_x, st->cur_tile_
 }
 
 
+static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
+{
+	// FIXME !!
+}
+
+
+static void TMX_ProcessObjectProperty(tmx_parse_state_t *st, const char **attr)
+{
+	// FIXME !!
+}
+
+
 static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char **attr)
 {
 	tmx_parse_state_t *st = (tmx_parse_state_t *)priv;
@@ -403,19 +415,14 @@ static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char
 			break;
 
 		case CONTAINER_ObjectGroup:
-			if (strcmp(el, "property") == 0)
+			if (strcmp(el, "object") == 0)
 			{
-				if (st->last_object < 0)
-				{ /* property for whole group : not used */ }
-				else
-				{
-					/* property for the last object */
-					// FIXME
-				}
+				TMX_ProcessObject(st, attr);
 			}
-			else if (strcmp(el, "object") == 0)
+			else if (strcmp(el, "property") == 0)
 			{
-				// FIXME
+				if (st->reading_object)
+					TMX_ProcessObjectProperty(st, attr);
 			}
 			break;
 	}
@@ -440,14 +447,21 @@ static void XMLCALL TMX_xml_end_handler(void *priv, const char *el)
 
 		st->layer_name[0] = 0;
 		st->reading_data = 0;
-		st->last_object = -1;
+		st->reading_object = 0;
 	}
 
 	if (strcmp(el, "data") == 0)
 		st->reading_data = 0;
 
 	if (strcmp(el, "object") == 0)
-		st->last_object = -1;
+	{
+		if (st->reading_object)
+		{
+			// FIXME: close current entity
+		}
+
+		st->reading_object = 0;
+	}
 }
 
 
@@ -603,7 +617,6 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	memset(&parser_state, 0, sizeof(parser_state));
 
 	parser_state.mod = mod;
-	parser_state.last_object = -1;
 
 	parser_state.tile_width  = 32;	// defaults
 	parser_state.tile_height = 32;
