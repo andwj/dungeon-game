@@ -171,11 +171,13 @@ static void TMX_EntityPrintf(tmx_parse_state_t *st, const char *fmt, ...)
 
 	if (line_len >= remain)
 		Host_Error("Mod_TMX_Load: run out of entity string space.\n");
-	
+
 	memcpy(st->ent_s, line, line_len);
 
 	st->ent_s += line_len;
 	st->ent_s[0] = 0;
+
+fprintf(stderr, "@@ ENT: %s", line);
 }
 
 
@@ -369,7 +371,7 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 
 	int i;
 
-	for (i = 0 ; attr[i] ; i += 2)
+	for ( ; *attr ; attr += 2)
 	{
 		const char *name  = attr[0];
 		const char *value = attr[1];
@@ -385,9 +387,11 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 	if (gid <= 0)
 		return;
 
-	real_x = (float)pix_x * TMX_TILE_SIZE / (float)st->tile_width;
-	real_y = (float)(TMX_TILE_SIZE * st->mod->tmx.height) -
-	         (float)pix_y * TMX_TILE_SIZE / (float)st->tile_height;
+	real_x = pix_x / (float)st->tile_width  + 0.5;
+	real_y = pix_y / (float)st->tile_height + 0.5;
+
+	real_x = TMX_TILE_SIZE * real_x;
+	real_y = TMX_TILE_SIZE * (st->mod->tmx.height - real_y);
 
 	switch (gid)
 	{
@@ -414,23 +418,27 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 
 static void TMX_ProcessObjectProperty(tmx_parse_state_t *st, const char **attr)
 {
-	int i;
+	const char *name;
+	const char *value;
 
-	for (i = 0 ; attr[i] ; i += 2)
-	{
-		const char *name  = attr[0];
-		const char *value = attr[1];
+	if (! (attr[0] && strcmp(attr[0], "name") == 0))
+		return;
+
+	if (! (attr[2] && strcmp(attr[2], "value") == 0))
+		return;
+
+	name  = attr[1];
+	value = attr[3];
 	
-		if (strcmp(name, "radius") == 0)
-		{
-			float r = atof(value);
+	if (strcmp(name, "radius") == 0)
+	{
+		float r = atof(value);
 
-			TMX_EntityPrintf(st, "  \"radius\" \"%1.0f\"\n", r * TMX_TILE_SIZE);
-		}
-		else
-		{
-			TMX_EntityPrintf(st, "  \"%s\" \"%s\"\n", name, value);
-		}
+		TMX_EntityPrintf(st, "  \"light\" \"255 255 255 %1.0f\"\n", r * TMX_TILE_SIZE);
+	}
+	else
+	{
+		TMX_EntityPrintf(st, "  \"%s\" \"%s\"\n", name, value);
 	}
 }
 
