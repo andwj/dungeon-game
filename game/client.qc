@@ -213,8 +213,11 @@ void PutClientInServer()
 	self.health = 100;
 	self.armorvalue = 50;
 	self.takedamage = DAMAGE_AIM;
-	self.solid = SOLID_SLIDEBOX;
-	self.movetype = MOVETYPE_WALK;
+
+	// andrewj: no physics with TMX pieces yet -- use no-clip mode
+	self.solid = SOLID_NOT;
+	self.movetype = MOVETYPE_NOCLIP;
+
 	self.show_hostile = 0;
 	self.max_health = 100;
 	self.flags = FL_CLIENT;
