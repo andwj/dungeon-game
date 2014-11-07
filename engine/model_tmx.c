@@ -173,7 +173,37 @@ typedef struct tmx_parse_state_s
 	// true when parsing a <object> element
 	int reading_object;
 
+	// current pointer in entity string buffer
+	char *ent_s;
+	char *ent_end;
+
 } tmx_parse_state_t;
+
+
+static void TMX_EntityPrintf(tmx_parse_state_t *st, const char *fmt, ...)
+{
+	va_list argptr;
+	char line[512];
+
+	size_t line_len;
+	size_t remain;
+
+	va_start(argptr, fmt);
+	dpvsnprintf(line, sizeof(line), fmt, argptr);
+	va_end(argptr);
+
+	line_len = strlen(line);
+	remain = (size_t)(st->ent_end - st->ent_s);
+
+	if (line_len >= remain)
+		Host_Error("Mod_TMX_Load: run out of entity string space.\n");
+	
+	memcpy(st->ent_s, line, line_len);
+
+	st->ent_s += line_len;
+	st->ent_s[0] = 0;
+}
+
 
 
 
@@ -215,6 +245,13 @@ static void TMX_ParseMapElement(tmx_parse_state_t *st, const char **attr)
 	num_tiles = tmx->width * tmx->height;
 
 	tmx->tiles = (tmx_tile_t *)Mem_Alloc(loadmodel->mempool, num_tiles * sizeof(tmx_tile_t));
+
+
+	// create the worldspawn entity
+
+	TMX_EntityPrintf(st, "{\n");
+	TMX_EntityPrintf(st, "  \"classname\" \"worldspawn\"\n");
+	TMX_EntityPrintf(st, "}\n");
 }
 
 
@@ -608,6 +645,8 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	tmx->ents = NULL;
 
 
+	loadmodel->brush.entities = (char *)Mem_Alloc(loadmodel->mempool, MAX_TMX_ENT_STRING);
+
 
 	/* PARSE FILE !!! */
 
@@ -620,6 +659,11 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 
 	parser_state.tile_width  = 32;	// defaults
 	parser_state.tile_height = 32;
+
+	parser_state.ent_s = (char *) loadmodel->brush.entities;
+	parser_state.ent_end = parser_state.ent_s + (MAX_TMX_ENT_STRING - 4);
+
+	parser_state.ent_s[0] = 0;
 
 
 	XML_Parser p = XML_ParserCreate(NULL);
@@ -648,7 +692,6 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	if (! tmx->width)
 		Host_Error("Mod_TMX_Load: failed to parse file (no <map> element)\n");
 
-
 	Con_Printf("TMX Loader: size of map is %dx%d tiles\n", tmx->width, tmx->height);
 
 
@@ -661,12 +704,7 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	maxs[2] = 3072;
 
 
-// MORE TEST STUFF
-
-
-int test_len = strlen(test_entity_crud);
-loadmodel->brush.entities = (char *)Mem_Alloc(loadmodel->mempool, test_len + 1);
-memcpy(loadmodel->brush.entities, test_entity_crud, test_len + 1);
+	/* END OF TMX PARSING */
 
 
 
