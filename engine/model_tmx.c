@@ -159,6 +159,10 @@ typedef struct tmx_parse_state_s
 	// current layer or objectgroup
 	char layer_name[64];
 
+	// these are needed to convert object coordinates (in pixels) to real coords
+	int tile_width;
+	int tile_height;
+
 	// true if we are parsing a <data> element
 	int reading_data;
 
@@ -189,6 +193,10 @@ static void TMX_ParseMapElement(tmx_parse_state_t *st, const char **attr)
 			tmx->width = atoi(value);
 		else if (strcmp(name, "height") == 0)
 			tmx->height = atoi(value);
+		else if (strcmp(name, "tilewidth") == 0)
+			st->tile_width = atoi(value);
+		else if (strcmp(name, "tileheight") == 0)
+			st->tile_height = atoi(value);
 	}
 
 	// verify map size
@@ -342,7 +350,7 @@ static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char
 {
 	tmx_parse_state_t *st = (tmx_parse_state_t *)priv;
 
-	model_tmx_t * tmx = &st->mod->tmx;
+//	model_tmx_t * tmx = &st->mod->tmx;
 
 	switch (st->container)
 	{
@@ -422,7 +430,7 @@ static void XMLCALL TMX_xml_end_handler(void *priv, const char *el)
 {
 	tmx_parse_state_t *st = (tmx_parse_state_t *)priv;
 
-	model_tmx_t * tmx = &st->mod->tmx;
+//	model_tmx_t * tmx = &st->mod->tmx;
 
 	if (strcmp(el, "tileset") == 0  ||
 		strcmp(el, "layer") == 0  ||
@@ -447,7 +455,7 @@ static void XMLCALL TMX_xml_text_handler(void *priv, const char *s, int len)
 {
 	tmx_parse_state_t *st = (tmx_parse_state_t *)priv;
 
-	model_tmx_t * tmx = &st->mod->tmx;
+//	model_tmx_t * tmx = &st->mod->tmx;
 
 	char number_buf[64];
 	int number_len;
@@ -596,6 +604,9 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 
 	parser_state.mod = mod;
 	parser_state.last_object = -1;
+
+	parser_state.tile_width  = 32;	// defaults
+	parser_state.tile_height = 32;
 
 
 	XML_Parser p = XML_ParserCreate(NULL);
