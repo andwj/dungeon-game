@@ -385,13 +385,79 @@ fprintf(stderr, "TILE @ (%d %d) in '%s' --> %d\n", st->cur_tile_x, st->cur_tile_
 
 static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 {
-	// FIXME !!
+	int pix_x = 0;
+	int pix_y = 0;
+
+	float real_x;
+	float real_y;
+
+	int gid = 0;
+
+	int i;
+
+	for (i = 0 ; attr[i] ; i += 2)
+	{
+		const char *name  = attr[0];
+		const char *value = attr[1];
+
+		if (strcmp(name, "x") == 0)
+			pix_x = atoi(value);
+		else if (strcmp(name, "y") == 0)
+			pix_y = atoi(value);
+		else if (strcmp(name, "gid") == 0)
+			gid = atoi(value);
+	}
+
+	if (gid <= 0)
+		return;
+
+	real_x = (float)pix_x * TMX_TILE_SIZE / (float)st->tile_width;
+	real_y = (float)(TMX_TILE_SIZE * st->mod->tmx.height) -
+	         (float)pix_y * TMX_TILE_SIZE / (float)st->tile_height;
+
+	switch (gid)
+	{
+		default:
+			Con_Printf("TMX Loader: unknown object gid #%d\n", gid);
+			return;
+
+		case 42:  /* player */
+			TMX_EntityPrintf(st, "{\n");
+			TMX_EntityPrintf(st, "  \"classname\" \"info_player_start\"\n");
+			TMX_EntityPrintf(st, "  \"origin\" \"%1.0f %1.0f %1.0f\"\n", real_x, real_y, 0);
+			break;
+
+		case 41: /* light */
+			TMX_EntityPrintf(st, "{\n");
+			TMX_EntityPrintf(st, "  \"classname\" \"light\"\n");
+			TMX_EntityPrintf(st, "  \"origin\" \"%1.0f %1.0f %1.0f\"\n", real_x, real_y, TMX_TILE_SIZE / 4.0);
+			break;
+	}
+
+	st->reading_object = 1;
 }
 
 
 static void TMX_ProcessObjectProperty(tmx_parse_state_t *st, const char **attr)
 {
-	// FIXME !!
+	int i;
+
+	for (i = 0 ; attr[i] ; i += 2)
+	{
+		const char *name  = attr[0];
+		const char *value = attr[1];
+	
+		if (strcmp(name, "radius") == 0)
+		{
+			float r = atof(value);
+
+			TMX_EntityPrintf(st, "  \"radius\" \"%1.0f\"\n", r * TMX_TILE_SIZE);
+		}
+		else
+		{
+			TMX_EntityPrintf(st, "  \"%s\" \"%s\"\n", name, value);
+		}
+	}
 }
 
 
@@ -494,7 +560,8 @@ static void XMLCALL TMX_xml_end_handler(void *priv, const char *el)
 	{
 		if (st->reading_object)
 		{
-			// FIXME: close current entity
+			// close current entity
+			TMX_EntityPrintf(st, "}\n");
 		}
 
 		st->reading_object = 0;
@@ -648,7 +715,7 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	loadmodel->brush.entities = (char *)Mem_Alloc(loadmodel->mempool, MAX_TMX_ENT_STRING);
 
 
-	/* PARSE FILE !!! */
+	/* PARSE TMX FILE */
 
 
 	tmx_parse_state_t parser_state;
