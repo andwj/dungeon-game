@@ -315,22 +315,16 @@
 </data>
  </layer>
  <objectgroup name="Light Objects">
-  <object gid="41" x="385" y="544">
+  <object gid="41" x="511" y="672">
    <properties>
     <property name="color" value="2.0 1.5 1.0"/>
-    <property name="radius" value="3.5"/>
+    <property name="light" value="3.5"/>
    </properties>
   </object>
   <object gid="41" x="704" y="448">
    <properties>
-    <property name="radius" value="3.5"/>
+    <property name="light" value="3.5"/>
     <property name="style" value="1"/>
-   </properties>
-  </object>
-  <object gid="41" x="512" y="383">
-   <properties>
-    <property name="color" value="2.0 1.5 1.0"/>
-    <property name="radius" value="3.5"/>
    </properties>
   </object>
  </objectgroup>
@@ -343,9 +337,27 @@
   </object>
  </objectgroup>
  <objectgroup name="Wall-mounted Objects">
-  <object name="torch" gid="44" x="507" y="372"/>
-  <object gid="44" x="369" y="513"/>
-  <object gid="44" x="448" y="558"/>
-  <object gid="44" x="677" y="480"/>
+  <object name="torch" gid="44" x="507" y="372">
+   <properties>
+    <property name="light" value="2.5"/>
+    <property name="style" value="1"/>
+   </properties>
+  </object>
+  <object gid="44" x="369" y="513">
+   <properties>
+    <property name="light" value="2.5"/>
+   </properties>
+  </object>
+  <object gid="44" x="448" y="558">
+   <properties>
+    <property name="light" value="2.5"/>
+   </properties>
+  </object>
+  <object gid="44" x="677" y="480">
+   <properties>
+    <property name="color" value="1.6 1.4 1.0"/>
+    <property name="light" value="2.5"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
