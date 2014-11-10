@@ -53,7 +53,7 @@ void() light =
 {
 	if (!self.targetname)
 	{	// inert light
-		remove(self);
+//		remove(self);
 		return;
 	}
 	
