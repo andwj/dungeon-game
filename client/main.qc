@@ -72,23 +72,23 @@ void UI_DrawFrameAroundView(float tile_w, float tile_h, float frame_y, float pas
 	if (pass > 0)
 	{
 		drawsubpic(to_vector(0, frame_y, 0), '12 10 0', "gfx/borders",
-		           '0 0 0', '12 10 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+		           '0 0 0', '0.04687 0.03906 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 		return;
 	}
 
 	// corners
 
 	drawsubpic(to_vector(0, frame_y, 0), '32 32 0', "gfx/borders",
-			   '0 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+			   '0 0 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
 	drawsubpic(to_vector((tile_w - 1) * 32, frame_y, 0), '32 32 0', "gfx/borders",
-			   '64 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+			   '0.25 0 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
 	drawsubpic(to_vector(0, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/borders",
-			   '0 64 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+			   '0 0.25 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
 	drawsubpic(to_vector((tile_w - 1) * 32, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/borders",
-			   '0.5 0.5 0', '0.5 0.5 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+			   '0.25 0.25 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
 	// sides
 
@@ -97,19 +97,19 @@ void UI_DrawFrameAroundView(float tile_w, float tile_h, float frame_y, float pas
 	for (x = 1 ; x < tile_w - 1 ; ++x)
 	{
 		drawsubpic(to_vector(x * 32, frame_y, 0), '32 32 0', "gfx/borders",
-				   '32 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+				   '0.125 0 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
 		drawsubpic(to_vector(x * 32, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/borders",
-				   '32 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+				   '0.125 0.25 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 	}
 
 	for (y = 1 ; y < tile_h - 1 ; ++y)
 	{
 		drawsubpic(to_vector(0, frame_y + y * 32, 0), '32 32 0', "gfx/borders",
-				   '32 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+				   '0 0.125 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
 		drawsubpic(to_vector((tile_w - 1) * 32, frame_y + y * 32, 0), '32 32 0', "gfx/borders",
-				   '32 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+				   '0.25 0.125 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 	}
 }
 
@@ -123,19 +123,35 @@ void UI_RenderWorld()
 
 	UI_DrawFrameAroundView(tile_w, tile_h, frame_y, 0);
 
+	// render area inside this frame
+	float rend_x1 = 11;
+	float rend_y1 = 10 + frame_y;
+
+	float rend_x2 = tile_w * 32 - 10;
+	float rend_y2 = tile_h * 32 - 9 + frame_y;
+
+	// FIXME !!!!  CALC FOVs PROPERLY !!!!
+
 
 	clearscene();
 
-setproperty(VF_SIZE_X, scr_width - 120);
+	setproperty(VF_MIN_X,  rend_x1);
+	setproperty(VF_MIN_Y,  rend_y1);
+	setproperty(VF_SIZE_X, rend_x2 - rend_x1);
+	setproperty(VF_SIZE_Y, rend_y2 - rend_y1);
 
 	setproperty(VF_DRAWWORLD, 1);
 
 	addentities(MASK_ENGINE | 0 /* MASK_ENGINEVIEWMODELS */ | MASK_NORMAL);
 
-//!!!!	renderscene();
+	renderscene();
 
-setproperty(VF_SIZE_X, scr_width);
 
+	// restore sizes
+	setproperty(VF_MIN_X,  0);
+	setproperty(VF_MIN_Y,  0);
+	setproperty(VF_SIZE_X, scr_width);
+	setproperty(VF_SIZE_Y, scr_height);
 
 	UI_DrawFrameAroundView(tile_w, tile_h, frame_y, 1);
 }
