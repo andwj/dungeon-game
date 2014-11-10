@@ -145,7 +145,8 @@ float	AS_MISSILE		= 4;
 // misc
 //
 .float		cnt; 			// misc flag
-	
+.float		misc1, misc2;
+
 //
 // subs
 //

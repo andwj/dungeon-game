@@ -10,6 +10,14 @@
 //========================================================================
 
 
+void torch_burn()
+{
+	pointparticles(self.misc1, self.origin + '0 -10 22', '0 0 0', 1);
+
+	self.nextthink = time + 0.1;
+}
+
+
 void torch()
 {
 	precache_model ("models/torch_wall.obj");
@@ -18,10 +26,13 @@ void torch()
 	self.skin = 0;
 	self.scale = 0.5;
 
+	self.misc1 = particleeffectnum("AJ_TORCH");
+
 	// dummy
 	setsize (self, '-16 -16 0', '16 16 32');
 
-	// TODO : spawn a light
+	self.nextthink = time + 0.1;
+	self.think = torch_burn;
 }
 
 

@@ -4,15 +4,17 @@
 // by Andrew Apted
 //
 
-effect AJ_FIRE
+effect AJ_TORCH
 type smoke
 blend add
+size 1.5 2.2
+sizeincrease -0.5
 gravity 0
-count 5
-velocity 0 0 10.0
+count 12
+velocityoffset 0 0 10.0
 velocityjitter 0 0 0
 originjitter 5 5 5
 // velocityjitter 0 0 
-color 0x442200 0x774400
-alpha 256 256 5.0
+color 0x550000 0xCC9955
+alpha 256 256 120.0
 
