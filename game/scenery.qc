@@ -10,7 +10,7 @@
 //========================================================================
 
 
-void torch_wall()
+void torch()
 {
 	precache_model ("models/torch_wall.obj");
 
