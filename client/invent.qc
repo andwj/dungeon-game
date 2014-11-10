@@ -108,10 +108,10 @@ void UI_DrawInventory()
 
 	vector pos = '0 0 0';
 
-	pos_x = scr_width        - bg_size_x;
-	pos_y = scr_height - 200 - bg_size_y;
+	pos_x = scr_width  - bg_size_x - 8;
+	pos_y = scr_height - bg_size_y - 40;
 
-	drawpic(pos, "gfx/invent_box", '0 0 0', '1 1 1', 1.0, 0);
+	drawpic(pos, "gfx/invent_box", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
 	/* draw the items */
 

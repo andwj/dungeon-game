@@ -142,7 +142,7 @@ void UI_DrawStats()
 
 void UI_Draw()
 {
-	UI_DrawStats();
+///!!!	UI_DrawStats();
 
 	UI_DrawInventory();
 

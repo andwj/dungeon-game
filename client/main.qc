@@ -241,7 +241,7 @@ void CSQC_UpdateView(float vwidth, float vheight)
 	UI_RenderWorld();
 
 	UI_DrawFreeLook();
-//	UI_Draw();
+	UI_Draw();
 }
 
 
