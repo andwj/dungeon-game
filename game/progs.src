@@ -16,5 +16,6 @@ game.qc
 world.qc
 client.qc
 player.qc
+scenery.qc
 misc.qc
 

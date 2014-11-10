@@ -517,6 +517,7 @@ print(sprintf("velocity: %1.4v\n", self.velocity));
 }
 
 
+
 // andrewj : TEST CRUD
 
 void test_pachyderme()
@@ -584,19 +585,6 @@ void test_door()
 
 	self.state = STATE_BOTTOM;
 	self.use = door_go_up;
-}
-
-
-void test_torch_wall()
-{
-	precache_model ("models/torch_wall.obj");
-
-	setmodel (self, "models/torch_wall.obj");
-	self.skin = 0;
-	self.scale = 300;
-
-	// dummy
-	setsize (self, '-16 -16 0', '16 16 56');
 }
 
 
