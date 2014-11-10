@@ -365,6 +365,20 @@ fprintf(stderr, "TILE @ (%d %d) in '%s' --> %d\n", st->cur_tile_x, st->cur_tile_
 }
 
 
+static void TMX_OriginForTorch(float real_x, float real_y, float real_z, float wx, float wy, /* out */ vec3_t origin)
+{
+	// move point away from wall
+	if (fabs(wx) < fabs(wy))
+		real_x += ((wx < 0) ? -1 : 1) * 20;
+	else
+		real_y += ((wy > 0) ? -1 : 1) * 20;
+
+	origin[0] = real_x;
+	origin[1] = real_y;
+	origin[2] = real_z + 40;
+}
+
+
 static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 {
 	int pix_x = 0;
@@ -431,6 +445,8 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 
 				float angle = 0;
 
+				float real_z = TMX_TILE_SIZE / 4.0;
+
 				if (wx > 0.5) wx = wx - 1.0;
 				if (wy > 0.5) wy = wy - 1.0;
 
@@ -450,8 +466,14 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 
 				TMX_EntityPrintf(st, "{\n");
 				TMX_EntityPrintf(st, "  \"classname\" \"%s\"\n", obj_name);
-				TMX_EntityPrintf(st, "  \"origin\" \"%1.0f %1.0f %1.0f\"\n", real_x, real_y, TMX_TILE_SIZE / 4.0);
+				TMX_EntityPrintf(st, "  \"origin\" \"%1.0f %1.0f %1.0f\"\n", real_x, real_y, real_z);
 				TMX_EntityPrintf(st, "  \"angles\" \"0 %1.0f 0\"\n", angle);
+
+				// possibly create a light source too (for torches)
+				st->pending_light = 1;
+				TMX_OriginForTorch(real_x, real_y, real_z, wx, wy, st->pending_origin);
+				VectorSet(st->pending_color, 1.6, 1.4, 1);
+				st->pending_style = 1;
 			}
 			break;
 	}
@@ -476,12 +498,12 @@ static void TMX_ProcessObjectProperty(tmx_parse_state_t *st, const char **attr)
 	
 	if (strcmp(name, "light") == 0)
 	{
-		float r = atof(value);
+		float r = atof(value) * TMX_TILE_SIZE;
 
 		if (st->pending_light > 0)
 			st->pending_light = (int)r;
 		else
-			TMX_EntityPrintf(st, "  \"light\" \"255 255 255 %1.0f\"\n", r * TMX_TILE_SIZE);
+			TMX_EntityPrintf(st, "  \"light\" \"255 255 255 %1.0f\"\n", r);
 
 		return;
 	}
@@ -496,7 +518,7 @@ static void TMX_ProcessObjectProperty(tmx_parse_state_t *st, const char **attr)
 
 		if (strcmp(name, "color") == 0)
 		{
-			// FIXME
+			sscanf(value, " %f %f %f ", &st->pending_color[0], &st->pending_color[1], &st->pending_color[2]);
 			return;
 		}
 
@@ -614,7 +636,8 @@ static void XMLCALL TMX_xml_end_handler(void *priv, const char *el)
 
 		st->reading_object = 0;
 
-		if (st->pending_light > 0)
+		// this check means we only make a light if we got the "light" property
+		if (st->pending_light > 1)
 		{
 			TMX_EntityPrintf(st, "{\n");
 			TMX_EntityPrintf(st, "  \"classname\"  \"light\"\n");
