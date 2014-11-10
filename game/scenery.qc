@@ -16,7 +16,7 @@ void torch()
 
 	setmodel (self, "models/torch_wall.obj");
 	self.skin = 0;
-	self.scale = 3;
+	self.scale = 0.5;
 
 	// dummy
 	setsize (self, '-16 -16 0', '16 16 32');
