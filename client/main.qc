@@ -64,15 +64,80 @@ void UI_DrawFreeLook()
 }
 
 
+void UI_DrawFrameAroundView(float tile_w, float tile_h, float frame_y, float pass)
+{
+	// pass == 0 before rendering the view, 1 afterwards
+
+	// on second pass just fix up some bits
+	if (pass > 0)
+	{
+		drawsubpic(to_vector(0, frame_y, 0), '12 10 0', "gfx/borders",
+		           '0 0 0', '12 10 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+		return;
+	}
+
+	// corners
+
+	drawsubpic(to_vector(0, frame_y, 0), '32 32 0', "gfx/borders",
+			   '0 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+	drawsubpic(to_vector((tile_w - 1) * 32, frame_y, 0), '32 32 0', "gfx/borders",
+			   '64 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+	drawsubpic(to_vector(0, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/borders",
+			   '0 64 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+	drawsubpic(to_vector((tile_w - 1) * 32, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/borders",
+			   '0.5 0.5 0', '0.5 0.5 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+	// sides
+
+	float x, y;
+
+	for (x = 1 ; x < tile_w - 1 ; ++x)
+	{
+		drawsubpic(to_vector(x * 32, frame_y, 0), '32 32 0', "gfx/borders",
+				   '32 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+		drawsubpic(to_vector(x * 32, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/borders",
+				   '32 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	}
+
+	for (y = 1 ; y < tile_h - 1 ; ++y)
+	{
+		drawsubpic(to_vector(0, frame_y + y * 32, 0), '32 32 0', "gfx/borders",
+				   '32 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+		drawsubpic(to_vector((tile_w - 1) * 32, frame_y + y * 32, 0), '32 32 0', "gfx/borders",
+				   '32 0 0', '32 32 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	}
+}
+
+
 void UI_RenderWorld()
 {
+	float tile_w = floor(scr_width  / 32) - 4;
+	float tile_h = floor(scr_height / 32);
+
+	float frame_y = floor((scr_height - tile_h * 32) / 2);
+
+	UI_DrawFrameAroundView(tile_w, tile_h, frame_y, 0);
+
+
 	clearscene();
+
+setproperty(VF_SIZE_X, scr_width - 120);
 
 	setproperty(VF_DRAWWORLD, 1);
 
 	addentities(MASK_ENGINE | 0 /* MASK_ENGINEVIEWMODELS */ | MASK_NORMAL);
 
-	renderscene();
+//!!!!	renderscene();
+
+setproperty(VF_SIZE_X, scr_width);
+
+
+	UI_DrawFrameAroundView(tile_w, tile_h, frame_y, 1);
 }
 
 
@@ -160,7 +225,7 @@ void CSQC_UpdateView(float vwidth, float vheight)
 	UI_RenderWorld();
 
 	UI_DrawFreeLook();
-	UI_Draw();
+//	UI_Draw();
 }
 
 
