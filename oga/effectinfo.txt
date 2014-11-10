@@ -1,0 +1,18 @@
+//
+// Particle effects
+//
+// by Andrew Apted
+//
+
+effect AJ_FIRE
+type smoke
+blend add
+gravity 0
+count 5
+velocity 0 0 10.0
+velocityjitter 0 0 0
+originjitter 5 5 5
+// velocityjitter 0 0 
+color 0x442200 0x774400
+alpha 256 256 5.0
+
