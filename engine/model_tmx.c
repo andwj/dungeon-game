@@ -590,18 +590,24 @@ static void XMLCALL TMX_xml_start_handler(void *priv, const char *el, const char
 			if (strcmp(el, "object") == 0)
 			{
 				TMX_ProcessObject(st, attr);
+				return;
 			}
 			else if (strcmp(el, "property") == 0)
 			{
 				if (st->reading_object)
 					TMX_ProcessObjectProperty(st, attr);
+				return;
 			}
 			break;
 	}
 
+	// silently ignore this (NOTE: we _do_ handle the <property> elements)
+	if (strcmp(el, "properties") == 0)
+		return;
+
 	// ignore unknown or unneeded elements
 
-fprintf(stderr, "TMX: skipping <%s>\n", el);
+	Con_Printf("TMX: skipping <%s>\n", el);
 }
 
 
@@ -836,7 +842,7 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 		Host_Error("Mod_TMX_Load: XML parse error at line %d:\n%s\n",
 			(int) XML_GetCurrentLineNumber(p),
 			XML_ErrorString(XML_GetErrorCode(p)));
-    }
+	}
 
 	XML_ParserFree(p);
 
