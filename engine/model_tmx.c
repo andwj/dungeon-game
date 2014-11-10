@@ -182,7 +182,6 @@ fprintf(stderr, "@@ ENT: %s", line);
 
 
 
-
 static void TMX_ParseMapElement(tmx_parse_state_t *st, const char **attr)
 {
 	model_tmx_t * tmx = &st->mod->tmx;
@@ -364,12 +363,16 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 	int pix_x = 0;
 	int pix_y = 0;
 
-	float real_x;
-	float real_y;
+	float part_x, part_y;
+	float real_x, real_y;
 
 	int gid = 0;
 
+	char obj_name[64];
+
 //	int i;
+	
+	obj_name[0] = 0;
 
 	for ( ; *attr ; attr += 2)
 	{
@@ -382,16 +385,18 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 			pix_y = atoi(value);
 		else if (strcmp(name, "gid") == 0)
 			gid = atoi(value);
+		else if (strcmp(name, "name") == 0)
+			strlcpy(obj_name, value, sizeof(obj_name));
 	}
 
 	if (gid <= 0)
 		return;
 
-	real_x = pix_x / (float)st->tile_width  + 0.5;
-	real_y = pix_y / (float)st->tile_height - 0.5;
+	part_x = pix_x / (float)st->tile_width  + 0.5;
+	part_y = pix_y / (float)st->tile_height - 0.5;
 
-	real_x = TMX_TILE_SIZE * real_x;
-	real_y = TMX_TILE_SIZE * (st->mod->tmx.height - real_y);
+	real_x = TMX_TILE_SIZE * part_x;
+	real_y = TMX_TILE_SIZE * (st->mod->tmx.height - part_y);
 
 	switch (gid)
 	{
@@ -409,6 +414,38 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 			TMX_EntityPrintf(st, "{\n");
 			TMX_EntityPrintf(st, "  \"classname\" \"light\"\n");
 			TMX_EntityPrintf(st, "  \"origin\" \"%1.0f %1.0f %1.0f\"\n", real_x, real_y, TMX_TILE_SIZE / 4.0);
+			break;
+
+		case 44: /* wall-mounted thing */
+			{
+				// align to the nearest wall
+				float wx = fmod(part_x, 1.0);
+				float wy = fmod(part_y, 1.0);
+
+				float angle = 0;
+
+				if (wx > 0.5) wx = wx - 1.0;
+				if (wy > 0.5) wy = wy - 1.0;
+
+				if (fabs(wx) < fabs(wy))
+				{
+					real_x -= (wx) * TMX_TILE_SIZE;
+					angle = (wx < 0) ? 90 : 270;
+				}
+				else
+				{
+					real_y += (wy) * TMX_TILE_SIZE;
+					angle = (wy < 0) ? 0 : 180;
+				}
+
+				if (! obj_name[0])
+					strlcpy(obj_name, "torch", sizeof(obj_name));
+
+				TMX_EntityPrintf(st, "{\n");
+				TMX_EntityPrintf(st, "  \"classname\" \"%s\"\n", obj_name);
+				TMX_EntityPrintf(st, "  \"origin\" \"%1.0f %1.0f %1.0f\"\n", real_x, real_y, TMX_TILE_SIZE / 4.0);
+				TMX_EntityPrintf(st, "  \"angles\" \"0 %1.0f 0\"\n", angle);
+			}
 			break;
 	}
 
