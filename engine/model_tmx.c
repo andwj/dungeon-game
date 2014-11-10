@@ -369,9 +369,9 @@ static void TMX_OriginForTorch(float real_x, float real_y, float real_z, float w
 {
 	// move point away from wall
 	if (fabs(wx) < fabs(wy))
-		real_x += ((wx < 0) ? -1 : 1) * 20;
+		real_x += ((wx < 0) ? -1 : 1) * 30;
 	else
-		real_y += ((wy > 0) ? -1 : 1) * 20;
+		real_y += ((wy > 0) ? -1 : 1) * 30;
 
 	origin[0] = real_x;
 	origin[1] = real_y;
