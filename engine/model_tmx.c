@@ -151,6 +151,13 @@ typedef struct tmx_parse_state_s
 	char *ent_s;
 	char *ent_end;
 
+	// a pending light entity (while processing an normal object like a wall torch)
+	int pending_light;
+
+	vec3_t pending_origin;
+	vec3_t pending_color;
+	int    pending_style;
+
 } tmx_parse_state_t;
 
 
@@ -467,16 +474,37 @@ static void TMX_ProcessObjectProperty(tmx_parse_state_t *st, const char **attr)
 	name  = attr[1];
 	value = attr[3];
 	
-	if (strcmp(name, "radius") == 0)
+	if (strcmp(name, "light") == 0)
 	{
 		float r = atof(value);
 
-		TMX_EntityPrintf(st, "  \"light\" \"255 255 255 %1.0f\"\n", r * TMX_TILE_SIZE);
+		if (st->pending_light > 0)
+			st->pending_light = (int)r;
+		else
+			TMX_EntityPrintf(st, "  \"light\" \"255 255 255 %1.0f\"\n", r * TMX_TILE_SIZE);
+
+		return;
 	}
-	else
+
+	if (st->pending_light > 0)
 	{
-		TMX_EntityPrintf(st, "  \"%s\" \"%s\"\n", name, value);
+		if (strcmp(name, "style") == 0)
+		{
+			st->pending_style = atoi(value);
+			return;
+		}
+
+		if (strcmp(name, "color") == 0)
+		{
+			// FIXME
+			return;
+		}
+
 	}
+
+	// by default : add property directly to entity
+
+	TMX_EntityPrintf(st, "  \"%s\" \"%s\"\n", name, value);
 }
 
 
@@ -570,6 +598,7 @@ static void XMLCALL TMX_xml_end_handler(void *priv, const char *el)
 		st->layer_name[0] = 0;
 		st->reading_data = 0;
 		st->reading_object = 0;
+		st->pending_light = 0;
 	}
 
 	if (strcmp(el, "data") == 0)
@@ -584,6 +613,20 @@ static void XMLCALL TMX_xml_end_handler(void *priv, const char *el)
 		}
 
 		st->reading_object = 0;
+
+		if (st->pending_light > 0)
+		{
+			TMX_EntityPrintf(st, "{\n");
+			TMX_EntityPrintf(st, "  \"classname\"  \"light\"\n");
+			TMX_EntityPrintf(st, "  \"origin\"  \"%1.0f %1.0f %1.0f\"\n", st->pending_origin[0], st->pending_origin[1], st->pending_origin[2]);
+			TMX_EntityPrintf(st, "  \"light\"  \"255 255 255 %d\"\n", st->pending_light);
+			TMX_EntityPrintf(st, "  \"color\"  \"%1.2f %1.2f %1.2f\"\n", st->pending_color[0], st->pending_color[1], st->pending_color[2]);
+			if (st->pending_style)
+				TMX_EntityPrintf(st, "  \"style\"  \"%d\"\n", st->pending_style);
+			TMX_EntityPrintf(st, "}\n");
+		}
+
+		st->pending_light = 0;
 	}
 }
 
