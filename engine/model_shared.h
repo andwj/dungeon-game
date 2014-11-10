@@ -1271,6 +1271,7 @@ void Mod_IDS2_Load(dp_model_t *mod, void *buffer, void *bufferend);
 void Mod_INTERQUAKEMODEL_Load(dp_model_t *mod, void *buffer, void *bufferend);
 void Mod_TMX_Load(dp_model_t *mod, void *buffer, void *bufferend);
 
+void TMX_MarkPiecesUsed(dp_model_t *mod);
 void TMX_LoadPieces(dp_model_t *mod);
 
 #endif	// MODEL_SHARED_H

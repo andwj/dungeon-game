@@ -369,7 +369,7 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 
 	int gid = 0;
 
-	int i;
+//	int i;
 
 	for ( ; *attr ; attr += 2)
 	{
@@ -971,6 +971,18 @@ fprintf(stderr, "Mod_TMX_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
 	Mem_Free(submodelfirstsurface);
 }
 
+
+
+void TMX_MarkPiecesUsed(dp_model_t *mod)
+{
+	int i;
+
+	for (i = 0 ; i < mod->tmx.num_pieces ; i++)
+	{
+		if (mod->tmx.pieces[i].model)
+			mod->tmx.pieces[i].model->used = true;
+	}
+}
 
 
 void TMX_LoadPieces(dp_model_t *mod)

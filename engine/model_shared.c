@@ -526,6 +526,10 @@ dp_model_t *Mod_LoadModel(dp_model_t *mod, qboolean crash, qboolean checkdisk)
 	// no fatal errors occurred, so this model is ready to use.
 	mod->loaded = true;
 
+	// andrewj: load TMX pieces now
+	if (mod->tmx.width)
+		TMX_LoadPieces(mod);
+
 	SCR_PopLoadingScreen(false);
 
 	return mod;

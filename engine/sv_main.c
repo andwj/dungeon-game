@@ -3402,12 +3402,11 @@ fprintf(stderr, "SV_SpawnServer : worldmodel = %p\n", worldmodel);
 	Mod_ClearUsed();
 	worldmodel->used = true;
 
+	if (worldmodel->tmx.width)
+		TMX_MarkPiecesUsed(worldmodel);
+
 	sv.worldmodel = worldmodel;
 	sv.models[1] = sv.worldmodel;
-
-	// andrewj: this didn't seem kosher inside the TMX loading code, do it now
-	if (worldmodel->tmx.width)
-		TMX_LoadPieces(worldmodel);
 
 //
 // clear world interaction links

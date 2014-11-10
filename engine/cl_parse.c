@@ -472,10 +472,6 @@ fprintf(stderr, "CL_SetupWorldModel : worldmodel = %p\n", cl.worldmodel);
 	// set up csqc world for collision culling
 	if (cl.worldmodel)
 	{
-		// andrewj: this didn't seem kosher inside the TMX loading code, do it now
-		if (cl.worldmodel->tmx.width)
-			TMX_LoadPieces(cl.worldmodel);
-
 		strlcpy(cl.worldname, cl.worldmodel->name, sizeof(cl.worldname));
 		FS_StripExtension(cl.worldname, cl.worldnamenoextension, sizeof(cl.worldnamenoextension));
 		strlcpy(cl.worldbasename, !strncmp(cl.worldnamenoextension, "maps/", 5) ? cl.worldnamenoextension + 5 : cl.worldnamenoextension, sizeof(cl.worldbasename));
