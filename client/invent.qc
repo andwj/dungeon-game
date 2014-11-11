@@ -108,8 +108,8 @@ void UI_DrawInventory()
 
 	vector pos = '0 0 0';
 
-	pos_x = scr_width  - bg_size_x - 8;
-	pos_y = scr_height - bg_size_y - 40;
+	pos_x = scr_width  - 104;
+	pos_y = scr_height - 310;
 
 	drawpic(pos, "gfx/invent_box", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
@@ -119,6 +119,17 @@ void UI_DrawInventory()
 
 	for (e = inventory_head ; e ; e = e.chain)
 		UI_DrawItem(pos, e);
+}
+
+
+void UI_DrawMoveButtons()
+{
+	vector pos = '0 0 0';
+
+	pos_x = scr_width  - 104;
+	pos_y = 40;
+
+	drawpic(pos, "gfx/move_box", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 }
 
 

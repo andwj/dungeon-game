@@ -120,6 +120,14 @@ void UI_DrawHealthBar(vector pos, float w, float h, vector color, vector text_co
 
 void UI_DrawStats()
 {
+	vector pos = '0 0 0';
+
+	pos_x = scr_width - 104;
+	pos_y = scr_height - 400;
+
+	drawpic(pos, "gfx/health_box", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+/*  OLD STUFF
 	vector bg_size = draw_getimagesize("gfx/stat_box");
 
 	vector pos = '0 0 0';
@@ -136,13 +144,16 @@ void UI_DrawStats()
 	pos = pos + '0 40 0';
 
 	UI_DrawHealthBar(pos, 120, 14, '0.3 0.7 1.0', '0.0 1.0 2.0', getstati(STAT_ARMOR));
+*/
 }
 
 
 
 void UI_Draw()
 {
-///!!!	UI_DrawStats();
+	UI_DrawMoveButtons();
+
+	UI_DrawStats();
 
 	UI_DrawInventory();
 
