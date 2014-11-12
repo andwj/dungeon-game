@@ -1,7 +1,7 @@
 //
 // Particle effects
 //
-// by Andrew Apted
+// by Andrew Apted, under CC0 license (public domain)
 //
 
 effect AJ_TORCH
