@@ -18,7 +18,7 @@ void torch_burn()
 }
 
 
-void torch()
+void spawnfunc_torch()
 {
 	precache_model ("models/torch_wall.obj");
 
