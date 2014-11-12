@@ -130,15 +130,27 @@ void UI_RenderWorld()
 	float rend_x2 = tile_w * 32 - 10;
 	float rend_y2 = tile_h * 32 - 9 + frame_y;
 
-	// FIXME !!!!  CALC FOVs PROPERLY !!!!
+	float rend_w  = rend_x2 - rend_x1;
+	float rend_h  = rend_y2 - rend_y1;
+
+	// calculate horizontal FOV  [vertical FOV is hard-coded at 90 degrees]
+
+	float fov_x = atan(rend_w / rend_h) * 360 / PI;
+
+	if (fov_x > 170) fov_x = 170;
+
+///  print(sprintf("rend %1.0f x %1.0f --> fov_x %1.2f\n", rend_w, rend_h, fov_x));
 
 
 	clearscene();
 
 	setproperty(VF_MIN_X,  rend_x1);
 	setproperty(VF_MIN_Y,  rend_y1);
-	setproperty(VF_SIZE_X, rend_x2 - rend_x1);
-	setproperty(VF_SIZE_Y, rend_y2 - rend_y1);
+	setproperty(VF_SIZE_X, rend_w);
+	setproperty(VF_SIZE_Y, rend_h);
+
+	setproperty(VF_FOVX, fov_x);
+	setproperty(VF_FOVY, 90);
 
 	setproperty(VF_DRAWWORLD, 1);
 
