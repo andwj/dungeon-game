@@ -7519,7 +7519,7 @@ void Mod_OBJ_Load(dp_model_t *mod, void *buffer, void *bufferend)
 	msurface_t *surface;
 	msurface_t *tempsurfaces;
 
-fprintf(stderr, "Mod_OBJ_Load : mod=%p loadmodel=%p\n", mod, loadmodel);
+fprintf(stderr, "Mod_OBJ_Load : mod=%p loadmodel=%p name='%s'\n", mod, loadmodel, loadmodel->name);
 
 	memset(&vfirst, 0, sizeof(vfirst));
 	memset(&vprev, 0, sizeof(vprev));
