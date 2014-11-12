@@ -123,7 +123,7 @@ void UI_DrawStats()
 	vector pos = '0 0 0';
 
 	pos_x = scr_width - 104;
-	pos_y = scr_height - 398;
+	pos_y = 202 * scr_height / 600;
 
 	drawpic(pos, "gfx/health_box", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
