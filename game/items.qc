@@ -13,12 +13,18 @@
 
 void spawnfunc_key()
 {
-	precache_model ("models/key1.obj");
+	precache_model("models/key1.obj");
 
-	setmodel (self, "models/key1.obj");
+	setmodel(self, "models/key1.obj");
+
 	self.skin = 0;
 	self.scale = 1;
-	setsize (self, '-16 -16 0', '16 16 36');
+	setsize(self, '-16 -16 0', '16 16 36');
+
+// test crap !!!
+	vector new_org = self.origin;
+	new_org_z = 14;
+	setorigin(self, new_org);
 
 	self.description = "a rusty old key";
 	self.icon_pic = "models/key1_icon";

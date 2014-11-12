@@ -64,7 +64,7 @@ void CMD_can_drop()
 
 void UI_DrawDragObject()
 {
-	vector size = drawgetimagesize(obj_drag_pic) / 1.6;
+	vector size = drawgetimagesize(obj_drag_pic);
 
 	vector pos = mouse_pos - size * 0.64;
 

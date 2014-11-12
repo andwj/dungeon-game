@@ -328,14 +328,6 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="Pickup Objects"/>
- <objectgroup name="Actors">
-  <object gid="42" x="451" y="391">
-   <properties>
-    <property name="angle" value="0"/>
-   </properties>
-  </object>
- </objectgroup>
  <objectgroup name="Wall-mounted Objects">
   <object name="torch" gid="44" x="507" y="372">
    <properties>
@@ -357,6 +349,17 @@
    <properties>
     <property name="color" value="1.6 1.4 1.0"/>
     <property name="light" value="2.5"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="Furniture Objects"/>
+ <objectgroup name="Pickup Objects">
+  <object gid="43" x="525" y="410"/>
+ </objectgroup>
+ <objectgroup name="Actors">
+  <object gid="42" x="451" y="391">
+   <properties>
+    <property name="angle" value="0"/>
    </properties>
   </object>
  </objectgroup>
