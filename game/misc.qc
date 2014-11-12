@@ -531,23 +531,6 @@ void test_pachyderme()
 }
 
 
-void test_gold_key()
-{
-	precache_model ("items/gold_key.mdl");
-
-	setmodel (self, "items/gold_key.mdl");
-	self.skin = 0;
-	self.scale = 1;
-	setsize (self, '-16 -16 0', '16 16 56');
-
-	self.description = "a shiny golden key";
-	self.icon_pic = "items/gold_key_icon";
-
-	self.item_kind = ITEM_KEY;
-	self.i_keys = 1;
-}
-
-
 void test_lock()
 {
 	precache_model ("models/lock_ph.mdl");
