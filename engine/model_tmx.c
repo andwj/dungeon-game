@@ -437,6 +437,22 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 			TMX_EntityPrintf(st, "  \"origin\" \"%1.0f %1.0f %1.0f\"\n", real_x, real_y, TMX_TILE_SIZE / 4.0);
 			break;
 
+    case 43: /* pickup object */
+    case 45: /* furniture */
+      if (! obj_name[0])
+      {
+        if (gid == 43) strlcpy(obj_name, "key",   sizeof(obj_name));
+        if (gid == 45) strlcpy(obj_name, "table", sizeof(obj_name));
+      }
+
+      // pickup objects can "drop" down onto furniture objects
+      float real_z = (gid == 45) ? 0 : TMX_TILE_SIZE / 2.1;
+
+			TMX_EntityPrintf(st, "{\n");
+			TMX_EntityPrintf(st, "  \"classname\" \"%s\"\n", obj_name);
+			TMX_EntityPrintf(st, "  \"origin\" \"%1.0f %1.0f %1.0f\"\n", real_x, real_y, real_z);
+      break;
+
 		case 44: /* wall-mounted thing */
 			{
 				// align to the nearest wall
