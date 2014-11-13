@@ -155,6 +155,39 @@ void UI_DrawHealth()
 }
 
 
+void UI_DrawMoveButtons()
+{
+	vector pos = '0 0 0';
+
+	pos_x = scr_width  - 104;
+	pos_y = 40;
+
+	drawpic(pos, "gfx/move_box", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+
+	/* draw a pressed button */
+
+	float active_button = (time / 2) & 7;  // FIXME !!
+
+	if (active_button == 0)
+		return;
+
+	vector offset = '99 99 99';
+
+	if (active_button == 1) offset = '30 16 0';  /* up */
+	if (active_button == 2) offset = '0 37 0';   /* turn left */
+	if (active_button == 3) offset = '58 37 0';  /* turn right */
+	if (active_button == 4) offset = '0 75 0';  /* left */
+	if (active_button == 5) offset = '58 76 0';  /* right */
+	if (active_button == 6) offset = '30 102 0'; /* down */
+
+	drawsetcliparea(pos_x + offset_x, pos_y + offset_y, 38, 38);
+
+	drawpic(pos, "gfx/move_box_hl", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+	drawresetcliparea();
+}
+
 
 void UI_Draw()
 {

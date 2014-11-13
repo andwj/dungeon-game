@@ -122,17 +122,6 @@ void UI_DrawInventory()
 }
 
 
-void UI_DrawMoveButtons()
-{
-	vector pos = '0 0 0';
-
-	pos_x = scr_width  - 104;
-	pos_y = 40;
-
-	drawpic(pos, "gfx/move_box", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
-}
-
-
 // 
 // check if mouse is over an inventory box, and return the ID number
 // of the box, or zero if not over it.
