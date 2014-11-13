@@ -64,17 +64,19 @@ void UI_DrawFreeLook()
 }
 
 
-void UI_DrawFrameAroundView(float tile_w, float tile_h, float frame_y, float pass)
+void UI_DrawFrameAroundView(float tile_w, float tile_h, float frame_y)
 {
-	// pass == 0 before rendering the view, 1 afterwards
+	// draw black above and below the view
 
-	// on second pass just fix up some bits
-	if (pass > 0)
-	{
-		drawsubpic(to_vector(0, frame_y, 0), '12 10 0', "gfx/borders",
-		           '0 0 0', '0.04687 0.03906 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
-		return;
-	}
+	vector black_size = '0 0 0';
+	black_size_x = tile_w * 32;
+	black_size_y = frame_y + 4;
+
+	drawfill(to_vector(0, -2, 0), black_size, '2.0 0 0', ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	drawfill(to_vector(0, scr_height - frame_y - 2, 0), black_size, '0 2.0 0', ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+	{ return; }  //!!!!
+
 
 	// corners
 
@@ -116,41 +118,35 @@ void UI_DrawFrameAroundView(float tile_w, float tile_h, float frame_y, float pas
 
 void UI_RenderWorld()
 {
-	float tile_w = floor(scr_width  / 32) - 4;
+	float ui_width = 112;
+
+	float tile_w = floor((scr_width - ui_width) / 32);
 	float tile_h = floor(scr_height / 32);
+
+	float rend_w  = tile_w * 32;
+	float rend_h  = scr_height;
 
 	float frame_y = floor((scr_height - tile_h * 32) / 2);
 
-	UI_DrawFrameAroundView(tile_w, tile_h, frame_y, 0);
 
-	// render area inside this frame
-	float rend_x1 = 11;
-	float rend_y1 = 10 + frame_y;
-
-	float rend_x2 = tile_w * 32 - 10;
-	float rend_y2 = tile_h * 32 - 9 + frame_y;
-
-	float rend_w  = rend_x2 - rend_x1;
-	float rend_h  = rend_y2 - rend_y1;
-
-	// calculate horizontal FOV  [vertical FOV is hard-coded at 90 degrees]
+	// calculate horizontal FOV
+	// [ vertical FOV is hard-coded at 90 degrees ]
 
 	float fov_x = atan(rend_w / rend_h) * 360 / PI;
 
-	if (fov_x > 170) fov_x = 170;
+	if (fov_x > 170)
+		fov_x = 170;
 
 ///  print(sprintf("rend %1.0f x %1.0f --> fov_x %1.2f\n", rend_w, rend_h, fov_x));
 
 
 	clearscene();
 
-	setproperty(VF_MIN_X,  rend_x1);
-	setproperty(VF_MIN_Y,  rend_y1);
 	setproperty(VF_SIZE_X, rend_w);
 	setproperty(VF_SIZE_Y, rend_h);
 
-	setproperty(VF_FOVX, fov_x);
 	setproperty(VF_FOVY, 90);
+	setproperty(VF_FOVX, fov_x);
 
 	setproperty(VF_DRAWWORLD, 1);
 
@@ -160,12 +156,10 @@ void UI_RenderWorld()
 
 
 	// restore sizes
-	setproperty(VF_MIN_X,  0);
-	setproperty(VF_MIN_Y,  0);
 	setproperty(VF_SIZE_X, scr_width);
 	setproperty(VF_SIZE_Y, scr_height);
 
-	UI_DrawFrameAroundView(tile_w, tile_h, frame_y, 1);
+	UI_DrawFrameAroundView(tile_w, tile_h, frame_y);
 }
 
 
