@@ -94,13 +94,23 @@ static tmx_piece_t * TMX_AddPiece(dp_model_t *mod, const char *name)
 }
 
 
-static void TMX_AddStaticEnt(dp_model_t *mod, const char *piece_model, vec3_t origin, vec3_t angles)
+static void TMX_AddStaticEnt(dp_model_t *mod, const char *base_name, int gid, int base_gid, vec3_t origin, vec3_t angles)
 {
 	tmx_static_entity_t * ent;
 
+	char piece_name[64];
+
+	if (gid < base_gid || gid > base_gid + 9)
+	{
+		Con_Printf("TMX Loader: ^3tile with gid #%d used on wrong layer\n", gid);
+		return;
+	}
+
+	dpsnprintf(piece_name, sizeof(piece_name), "%s%02d.obj", base_name, gid - base_gid + 1);
+
 	ent = (tmx_static_entity_t *)Mem_Alloc(mod->mempool, sizeof(tmx_static_entity_t));
 
-	ent->piece = TMX_AddPiece(mod, piece_model);
+	ent->piece = TMX_AddPiece(mod, piece_name);
 
 	VectorCopy(origin, ent->origin);
 	VectorCopy(angles, ent->angles);
@@ -311,47 +321,47 @@ fprintf(stderr, "TILE @ (%d %d) in '%s' --> %d\n", st->cur_tile_x, st->cur_tile_
 			tmx->tiles[offset].walkable = 1;
 			tmx->tiles[offset].visible  = 1;
 
-			TMX_AddStaticEnt(st->mod, "pieces/floor.obj", origin, angles);
+			TMX_AddStaticEnt(st->mod, "pieces/floor", gid, 1, origin, angles);
 		}
 		else if (strcmp(st->layer_name, "ceilingTiles") == 0 && gid > 0)
 		{
 			origin[2] = TMX_CEILING_H;
 
-			TMX_AddStaticEnt(st->mod, "pieces/ceiling.obj", origin, angles);
+			TMX_AddStaticEnt(st->mod, "pieces/ceiling", gid, 11, origin, angles);
 		}
 		else if (strcmp(st->layer_name, "columns") == 0)
 		{
 			origin[0] += (TMX_TILE_SIZE / 2);
 			origin[1] -= (TMX_TILE_SIZE / 2);
 
-			TMX_AddStaticEnt(st->mod, "pieces/column.obj", origin, angles);
+			TMX_AddStaticEnt(st->mod, "pieces/column", gid, 31, origin, angles);
 		}
 		else if (strcmp(st->layer_name, "wallTilesN") == 0)
 		{
 			origin[1] -= (TMX_TILE_SIZE / 2);
 			angles[1]  = 180;
 
-			TMX_AddStaticEnt(st->mod, "pieces/wall.obj", origin, angles);
+			TMX_AddStaticEnt(st->mod, "pieces/wall", gid, 21, origin, angles);
 		}
 		else if (strcmp(st->layer_name, "wallTilesS") == 0)
 		{
 			origin[1] += (TMX_TILE_SIZE / 2);
 
-			TMX_AddStaticEnt(st->mod, "pieces/wall.obj", origin, angles);
+			TMX_AddStaticEnt(st->mod, "pieces/wall", gid, 21, origin, angles);
 		}
 		else if (strcmp(st->layer_name, "wallTilesE") == 0)
 		{
 			origin[0] -= (TMX_TILE_SIZE / 2);
 			angles[1]  = 90;
 
-			TMX_AddStaticEnt(st->mod, "pieces/wall.obj", origin, angles);
+			TMX_AddStaticEnt(st->mod, "pieces/wall", gid, 21, origin, angles);
 		}
 		else if (strcmp(st->layer_name, "wallTilesW") == 0)
 		{
 			origin[0] += (TMX_TILE_SIZE / 2);
 			angles[1]  = 270;
 
-			TMX_AddStaticEnt(st->mod, "pieces/wall.obj", origin, angles);
+			TMX_AddStaticEnt(st->mod, "pieces/wall", gid, 21, origin, angles);
 		}
 	}
 
