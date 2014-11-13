@@ -99,52 +99,59 @@ void UI_DrawDescription()
 }
 
 
-void UI_DrawHealthBar(vector pos, float w, float h, vector color, vector text_color, float qty)
+vector UI_ColorForHealth(float h)
 {
-	vector size = to_vector(w * qty / 100, h, 0);
+	vector col1 = '0.8 0 0.1';
+	vector col2 = '0.65 0.65 0.1';
+	vector col3 = '0.1 0.55 0.1';
 
-	if (size_x > 0)
-		drawfill(pos, size, color, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	if (h > 100) return col3;
+	if (h > 55)  return col2 + (col3 - col2) * ((h - 55) / 45);
+	if (h > 10)  return col1 + (col2 - col1) * ((h - 10) / 45);
 
-	pos_x = pos_x + w;
-	pos_y = pos_y - 4;
-
-	size_y = h * 1.2;
-	size_x = size_y;
-
-	string qty_str = sprintf("%d", max(qty, 0));
-
-	drawstring(pos, qty_str, size, text_color, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	return col1;
 }
 
 
-void UI_DrawStats()
+void UI_DrawHealth()
 {
 	vector pos = '0 0 0';
 
 	pos_x = scr_width - 104;
 	pos_y = 202 * scr_height / 600;
 
+
+	float qty = getstati(STAT_HEALTH);
+	if (qty > 100) qty = 100;
+
+	vector bar_size = '0 30 0';
+	bar_size_x = 2 + qty * (84 / 100);
+
+	vector bar_color = UI_ColorForHealth(qty);
+
+	drawfill(pos + '4 28 0', '88 30 0', bar_color * 0.3, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	drawfill(pos + '4 28 0', bar_size,  bar_color, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+
 	drawpic(pos, "gfx/health_box", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
-/*  OLD STUFF
-	vector bg_size = draw_getimagesize("gfx/stat_box");
 
-	vector pos = '0 0 0';
+	/* draw number */
 
-	pos_x = scr_width  - bg_size_x;
-	pos_y = scr_height - bg_size_y;
+	string qty_str;
+	if (qty <= 0)
+		qty_str = "dead";
+	else
+		qty_str = sprintf("%d%%", qty);
 
-	drawpic(pos, "gfx/stat_box", SIZE_NORMAL, '1 1 1', 1.0, 0);
+	vector text_size = '16 16 0';
 
-	pos = pos + '114 100 0';
+	float str_w = stringwidth(qty_str, false, text_size);
 
-	UI_DrawHealthBar(pos, 120, 14, '1.0 0.0 0.0', '2.0 0.0 0.0', getstati(STAT_HEALTH));
+	pos_x = pos_x + (96 - str_w) / 2;
+	pos_y = pos_y + 35;
 
-	pos = pos + '0 40 0';
-
-	UI_DrawHealthBar(pos, 120, 14, '0.3 0.7 1.0', '0.0 1.0 2.0', getstati(STAT_ARMOR));
-*/
+	drawstring(pos, qty_str, text_size, bar_color * 1.7, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 }
 
 
@@ -153,7 +160,7 @@ void UI_Draw()
 {
 	UI_DrawMoveButtons();
 
-	UI_DrawStats();
+	UI_DrawHealth();
 
 	UI_DrawInventory();
 
