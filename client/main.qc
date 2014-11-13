@@ -72,25 +72,23 @@ void UI_DrawFrameAroundView(float tile_w, float tile_h, float frame_y)
 	black_size_x = tile_w * 32;
 	black_size_y = frame_y + 4;
 
-	drawfill(to_vector(0, -2, 0), black_size, '2.0 0 0', ALPHA_NORMAL, DRAWFLAG_NORMAL);
-	drawfill(to_vector(0, scr_height - frame_y - 2, 0), black_size, '0 2.0 0', ALPHA_NORMAL, DRAWFLAG_NORMAL);
-
-	{ return; }  //!!!!
+	drawfill(to_vector(0, -2, 0), black_size, '0 0 0', ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	drawfill(to_vector(0, scr_height - frame_y - 2, 0), black_size, '0 0 0', ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
 
 	// corners
 
-	drawsubpic(to_vector(0, frame_y, 0), '32 32 0', "gfx/borders",
-			   '0 0 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	drawsubpic(to_vector(0, frame_y, 0), '32 32 0', "gfx/view_frame",
+			   '0 0 0', '0.25 0.25 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
-	drawsubpic(to_vector((tile_w - 1) * 32, frame_y, 0), '32 32 0', "gfx/borders",
-			   '0.25 0 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	drawsubpic(to_vector((tile_w - 1) * 32, frame_y, 0), '32 32 0', "gfx/view_frame",
+			   '0.5 0 0', '0.25 0.25 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
-	drawsubpic(to_vector(0, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/borders",
-			   '0 0.25 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	drawsubpic(to_vector(0, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/view_frame",
+			   '0 0.5 0', '0.25 0.25 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
-	drawsubpic(to_vector((tile_w - 1) * 32, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/borders",
-			   '0.25 0.25 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	drawsubpic(to_vector((tile_w - 1) * 32, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/view_frame",
+			   '0.5 0.5 0', '0.25 0.25 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
 	// sides
 
@@ -98,20 +96,20 @@ void UI_DrawFrameAroundView(float tile_w, float tile_h, float frame_y)
 
 	for (x = 1 ; x < tile_w - 1 ; ++x)
 	{
-		drawsubpic(to_vector(x * 32, frame_y, 0), '32 32 0', "gfx/borders",
-				   '0.125 0 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+		drawsubpic(to_vector(x * 32, frame_y, 0), '32 32 0', "gfx/view_frame",
+				   '0.25 0 0', '0.25 0.25 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
-		drawsubpic(to_vector(x * 32, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/borders",
-				   '0.125 0.25 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+		drawsubpic(to_vector(x * 32, frame_y + (tile_h - 1) * 32, 0), '32 32 0', "gfx/view_frame",
+				   '0.25 0.5 0', '0.25 0.25 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 	}
 
 	for (y = 1 ; y < tile_h - 1 ; ++y)
 	{
-		drawsubpic(to_vector(0, frame_y + y * 32, 0), '32 32 0', "gfx/borders",
-				   '0 0.125 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+		drawsubpic(to_vector(0, frame_y + y * 32, 0), '32 32 0', "gfx/view_frame",
+				   '0 0.25 0', '0.25 0.25 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
-		drawsubpic(to_vector((tile_w - 1) * 32, frame_y + y * 32, 0), '32 32 0', "gfx/borders",
-				   '0.25 0.125 0', '0.125 0.125 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+		drawsubpic(to_vector((tile_w - 1) * 32, frame_y + y * 32, 0), '32 32 0', "gfx/view_frame",
+				   '0.5 0.25 0', '0.25 0.25 0', COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 	}
 }
 
