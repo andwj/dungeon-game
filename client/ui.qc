@@ -74,7 +74,7 @@ void UI_DrawDragObject()
 
 void UI_DrawDescription()
 {
-	vector size  = '20 20 0';
+	vector size  = '16 16 0';
 	vector pos   = mouse_pos + '0 70 0';
 	vector color = '2 2 2';
 
