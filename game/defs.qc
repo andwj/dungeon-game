@@ -210,7 +210,7 @@ float	AS_MISSILE		= 4;
 // andrewj: item stuff
 //
 .string		description;
-.string		icon_pic;
+.string		icon_pic;		// we add '_icon' for inventory, '_drag' when dragging
 
 .float		item_kind;
 #define ITEM_KEY		1

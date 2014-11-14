@@ -205,7 +205,7 @@ void INV_GiveItem(entity pl, entity slot, entity e)
 	INV_HideItem(e);
 
 	// update client too
-	stuffcmd(pl, sprintf("\nui_invent %d 1 \"%s\"\n", slot.invent_id, slot.icon_pic));
+	stuffcmd(pl, sprintf("\nui_invent %d 1 \"%s_icon\"\n", slot.invent_id, slot.icon_pic));
 }
 
 
@@ -255,9 +255,9 @@ void INV_SendAllToClient(entity pl)
 	for (slot = pl.inventory ; slot ; slot = slot.chain)
 	{
 		if (slot.count > 0)
-			stuffcmd(pl, sprintf("\nui_invent %d 0 \"\"\n", slot.invent_id));
+			stuffcmd(pl, sprintf("\nui_invent %d 1 \"%s_icon\"\n", slot.invent_id, slot.icon_pic));
 		else
-			stuffcmd(pl, sprintf("\nui_invent %d 1 \"%s\"\n", slot.invent_id, slot.icon_pic));
+			stuffcmd(pl, sprintf("\nui_invent %d 0 \"\"\n", slot.invent_id));
 	}
 }
 
@@ -367,7 +367,7 @@ void INV_BeginDrag(entity pl, entity e)
 	e.effects = EF_NODRAW;
 
 	// tell client
-	stuffcmd(pl, sprintf("\nui_drag 1 \"%s\"\n", e.icon_pic));
+	stuffcmd(pl, sprintf("\nui_drag 1 \"%s_drag\"\n", e.icon_pic));
 }
 
 
@@ -446,7 +446,7 @@ void INV_CheckBeginDrag(entity pl)
 			pl.drag_obj = obj;
 
 			// tell client
-			stuffcmd(pl, sprintf("\nui_drag 2 \"%s\"\n", obj.icon_pic));
+			stuffcmd(pl, sprintf("\nui_drag 2 \"%s_drag\"\n", obj.icon_pic));
 			return;
 		}
 	}

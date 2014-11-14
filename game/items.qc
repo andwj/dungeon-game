@@ -27,7 +27,7 @@ void spawnfunc_key()
 	setorigin(self, new_org);
 
 	self.description = "a rusty old key";
-	self.icon_pic = "models/key1_icon";
+	self.icon_pic = "models/key1";	// '_icon' is appended elsewhere
 
 	self.item_kind = ITEM_KEY;
 	self.i_keys = 1;
