@@ -20,14 +20,14 @@ void torch_burn()
 
 void spawnfunc_torch()
 {
-	precache_model ("models/torch_wall.obj");
+	precache_model("models/torch_wall.obj");
 
-	setmodel (self, "models/torch_wall.obj");
+	setmodel(self, "models/torch_wall.obj");
 	self.skin = 0;
 	self.scale = 0.5;
 
 	// dummy bbox
-	setsize (self, '-16 -16 0', '16 16 32');
+	setsize(self, '-16 -16 0', '16 16 32');
 
 
 	// start fire particles
@@ -43,6 +43,19 @@ void spawnfunc_torch()
 	self.pos1 = self.origin + 10 * v_forward + '0 0 22';
 }
 
+
+void spawnfunc_table()
+{
+	precache_model("models/table.obj");
+
+	setmodel(self, "models/table.obj");
+
+	self.skin = 0;
+	self.scale = 1.0;
+	self.solid = SOLID_BBOX;
+
+	setsize(self, '-76 -16 0', '76 16 40');
+}
 
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab
