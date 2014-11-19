@@ -37,14 +37,19 @@ float inv_mouse_slot;
 
 void INV_Create()
 {
-	float ix, iy;
+	float ix, iy, id;
 
 	for (ix = 0 ; ix < INV_BOX_WIDTH  ; ++ix)
 	for (iy = 0 ; iy < INV_BOX_HEIGHT ; ++iy)
 	{
+		id = 1 + iy * INV_BOX_WIDTH + ix;
+
+		if (id > INV_WIELD_BOX)
+			return;
+
 		entity box = spawn();
 
-		box.invent_id = 1 + iy * INV_BOX_WIDTH + ix;
+		box.invent_id = id;
 
 		box.invent_x = ix;
 		box.invent_y = iy;
@@ -85,18 +90,27 @@ void CMD_invent()
 void UI_DrawItem(vector box_pos, entity e)
 {
 	if (e.invent_pic == "")
+e.invent_pic = "foo";  if (false)
 		return;
 	
 	// TODO if (e.invent_flags & INV_DRAGGING) return;
-
-	box_pos = box_pos + '4 20 0';
-	box_pos = box_pos + e.invent_x * '48 0 0';
-	box_pos = box_pos + e.invent_y * '0 48 0';
 
 	vector color = '1 1 1';
 
 	if (e.invent_id == inv_mouse_slot)
 		color = '2 2 2';
+
+	if (e.invent_id == INV_WIELD_BOX)
+	{
+		box_pos = box_pos + '12 206 0';
+
+		drawpic(box_pos, e.invent_pic, '72 72 0', color, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+		return;
+	}
+
+	box_pos = box_pos + '7 31 0';
+	box_pos = box_pos + e.invent_x * '43 0 0';
+	box_pos = box_pos + e.invent_y * '0 43 0';
 
 	drawpic(box_pos, e.invent_pic, '40 40 0', color, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 }

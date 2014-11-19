@@ -25,8 +25,10 @@ float argc;
 
 
 // inventory box size
-#define INV_BOX_WIDTH	4
-#define INV_BOX_HEIGHT	4
+#define INV_BOX_WIDTH	2
+#define INV_BOX_HEIGHT	5
+
+#define INV_WIELD_BOX	9
 
 
 // mode values for ui_highlight, ui_drag, ui_can_drop

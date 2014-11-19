@@ -16,14 +16,19 @@ void INV_Recreate(entity pl);
 
 void INV_Create(entity pl)
 {
-	float ix, iy;
+	float ix, iy, id;
 
 	for (ix = 0 ; ix < INV_BOX_WIDTH  ; ++ix)
 	for (iy = 0 ; iy < INV_BOX_HEIGHT ; ++iy)
 	{
+		id = 1 + iy * INV_BOX_WIDTH + ix;
+
+		if (id > INV_WIELD_BOX)
+			return;
+
 		entity slot = spawn();
 
-		slot.invent_id = 1 + iy * INV_BOX_WIDTH + ix;
+		slot.invent_id = id;
 		slot.owner = pl;
 
 		// link it in
