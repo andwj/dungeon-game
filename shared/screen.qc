@@ -203,5 +203,14 @@ void SCR_DrawBackground(string pic_name, vector gap_color)
 }
 
 
+float SCR_MouseInBox(vector pos, vector size)
+{
+	if (mouse_pos_x < pos_x || mouse_pos_x >= pos_x + size_x) return false;
+	if (mouse_pos_y < pos_y || mouse_pos_y >= pos_y + size_y) return false;
+
+	return true;
+}
+
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab

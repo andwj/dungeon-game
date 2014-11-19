@@ -155,6 +155,33 @@ void UI_DrawHealth()
 }
 
 
+
+//
+// ---- Move Button Stuff ----
+//
+#define MOVEBUTTON_UP			1
+#define MOVEBUTTON_DOWN			2
+#define MOVEBUTTON_LEFT			3
+#define MOVEBUTTON_RIGHT		4
+#define MOVEBUTTON_TURN_LEFT	5
+#define MOVEBUTTON_TURN_RIGHT	6
+
+
+float UI_TestHighlightMoveButton(vector pos, vector pos2, vector siz)
+{
+	if (! SCR_MouseInBox(pos2, siz))
+		return false;
+
+	drawsetcliparea(pos2_x, pos2_y, siz_x, siz_y);
+
+	drawpic(pos, "gfx/move_box_hl", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+
+	drawresetcliparea();
+
+	return true;
+}
+
+
 void UI_DrawMoveButtons()
 {
 	vector pos = '0 0 0';
@@ -165,27 +192,32 @@ void UI_DrawMoveButtons()
 	drawpic(pos, "gfx/move_box", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
 
 
-	/* draw a pressed button */
+	/* determine which button mouse is over */
 
-	float active_button = (time / 2) & 7;  // FIXME !!
+	float button = 0;
 
-	if (active_button == 0)
-		return;
+	vector siz = '38 38 0';
 
-	vector offset = '99 99 99';
+	if (UI_TestHighlightMoveButton(pos, pos + '30 16 0', siz))
+		button = MOVEBUTTON_UP;
 
-	if (active_button == 1) offset = '30 16 0';  /* up */
-	if (active_button == 2) offset = '0 37 0';   /* turn left */
-	if (active_button == 3) offset = '58 37 0';  /* turn right */
-	if (active_button == 4) offset = '0 75 0';  /* left */
-	if (active_button == 5) offset = '58 76 0';  /* right */
-	if (active_button == 6) offset = '30 102 0'; /* down */
+	else if (UI_TestHighlightMoveButton(pos, pos + '30 102 0', siz))
+		button = MOVEBUTTON_DOWN;
 
-	drawsetcliparea(pos_x + offset_x, pos_y + offset_y, 38, 38);
+	else if (UI_TestHighlightMoveButton(pos, pos + '0 75 0', siz))
+		button = MOVEBUTTON_LEFT;
 
-	drawpic(pos, "gfx/move_box_hl", SIZE_NORMAL, COLOR_NORMAL, ALPHA_NORMAL, DRAWFLAG_NORMAL);
+	else if (UI_TestHighlightMoveButton(pos, pos + '58 76 0', siz))
+		button = MOVEBUTTON_RIGHT;
 
-	drawresetcliparea();
+	else if (UI_TestHighlightMoveButton(pos, pos + '0 37 0', siz))
+		button = MOVEBUTTON_TURN_LEFT;
+
+	else if (UI_TestHighlightMoveButton(pos, pos + '58 37 0', siz))
+		button = MOVEBUTTON_TURN_RIGHT;
+
+
+	// FIXME : handle initial button press : send impulse to client
 }
 
 
