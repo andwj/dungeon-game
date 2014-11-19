@@ -90,9 +90,8 @@ void CMD_invent()
 void UI_DrawItem(vector box_pos, entity e)
 {
 	if (e.invent_pic == "")
-e.invent_pic = "foo";  if (false)
 		return;
-	
+
 	// TODO if (e.invent_flags & INV_DRAGGING) return;
 
 	vector color = '1 1 1';
