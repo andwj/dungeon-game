@@ -146,19 +146,29 @@ float UI_MouseToInventory()
 
 	vector pos = '0 0 0';
 
-	pos_x = scr_width        - bg_size_x;
-	pos_y = scr_height - 200 - bg_size_y;
+	entity slot;
 
-	pos = pos + '15 70 0';
+	pos_x = scr_width  - 104;
+	pos_y = scr_height - 310;
 
-	float ix = floor((mouse_pos_x - pos_x) / 76);
-	float iy = floor((mouse_pos_y - pos_y) / 64);
+	// handle the big box at the bottom
+
+	if (SCR_MouseInBox(pos + '6 202 0', '84 80 0'))
+	{
+		for (slot = inventory_head ; slot ; slot = slot.chain)
+			if (slot.invent_id == INV_WIELD_BOX)
+				return INV_WIELD_BOX;
+	}
+
+	pos = pos + '7 31 0';
+
+	float ix = floor((mouse_pos_x - pos_x) / 43);
+	float iy = floor((mouse_pos_y - pos_y) / 43);
 
 	if (ix < 0 || ix >= INV_BOX_WIDTH)  return 0;
 	if (iy < 0 || iy >= INV_BOX_HEIGHT) return 0;
 
 	// find it
-	entity slot;
 
 	for (slot = inventory_head ; slot ; slot = slot.chain)
 	{
