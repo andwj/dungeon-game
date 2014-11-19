@@ -125,7 +125,7 @@ syn keyword	qcType		void float vector string entity
 syn keyword	qcStructure	typedef
 syn keyword	qcStorageClass	static const
 
-syn keyword     qcConstant      nil
+syn keyword     qcConstant      nil true false
 syn keyword     qcConstant      __LINE__ __FILE__
 
 
