@@ -1224,50 +1224,6 @@ void() QuadCheat =
 	dprint ("quad cheat\n");
 };
 
-/*
-============
-ImpulseCommands
-
-============
-*/
-void() ImpulseCommands =
-{
-	float imp = self.impulse;
-	self.impulse = 0;
-
-	if (imp == 8)
-	{
-		entity lock = find(world, classname, "test_lock");
-
-		if (lock && !lock.deadflag)
-		{
-			lock.deadflag = DEAD_DEAD;
-
-			activator = self;
-
-			self = lock;
-			SUB_UseTargets();
-		}
-		return;
-	}
-
-	if (self.impulse >= 1 && self.impulse <= 7)
-		W_ChangeWeapon ();
-
-	if (self.impulse == 9)
-		CheatCommand ();
-	if (self.impulse == 10)
-		CycleWeaponCommand ();
-	if (self.impulse == 11)
-		ServerflagsCommand ();
-	if (self.impulse == 12)
-		CycleWeaponReverseCommand ();
-
-	if (self.impulse == 255)
-		QuadCheat ();
-		
-	self.impulse = 0;
-};
 
 /*
 ============
@@ -1281,7 +1237,7 @@ void() W_WeaponFrame =
 	if (time < self.attack_finished)
 		return;
 
-	ImpulseCommands ();
+//	ImpulseCommands ();
 	
 // check for attack
 	if (self.button3)

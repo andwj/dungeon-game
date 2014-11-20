@@ -19,6 +19,52 @@ void() player_stand1;
 void() Player_Jump;
 
 
+/* TEST CRUD
+
+	entity lock = find(world, classname, "test_lock");
+	if (lock && !lock.deadflag)
+	{
+		lock.deadflag = DEAD_DEAD;
+
+		activator = self;
+
+		self = lock;
+		SUB_UseTargets();
+	}
+*/
+
+
+void Impulse_Movement()
+{
+	// TODO
+}
+
+
+void Impulse_Turning()
+{
+	// TODO
+}
+
+
+void ImpulseCommands()
+{
+	if (self.impulse >= 1 && self.impulse <= 4)
+		Impulse_Movement();
+	
+	else if (self.impulse >= 5 && self.impulse <= 8)
+		Impulse_Turning();
+	
+	else
+	{
+		// TODO other stuff
+	}
+	
+	self.impulse = 0;
+}
+
+
+//----------------------------------------------------------------------
+
 // andrewj: this is called just before the server is killed, and needs to
 //          store persistent stats into the 'parmXX' globals.
 void() SetChangeParms =
@@ -518,14 +564,13 @@ void() PlayerPostThink =
 {
 	if (self.view_ofs == '0 0 0')
 		return;		// intermission or finale
+
 	if (self.deadflag)
 		return;
 
-// do weapon stuff
-
 	INV_ObjectInteraction(self);
 
-	W_WeaponFrame ();
+	ImpulseCommands();
 
 // check to see if player landed and play landing sound	
 	if ((self.jump_flag < -300) && (self.flags & FL_ONGROUND) && (self.health > 0))
