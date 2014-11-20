@@ -325,8 +325,6 @@ fprintf(stderr, "TILE @ (%d %d) in '%s' --> %d\n", st->cur_tile_x, st->cur_tile_
 		}
 		else if (strcmp(st->layer_name, "ceilingTiles") == 0 && gid > 0)
 		{
-			origin[2] = TMX_CEILING_H;
-
 			TMX_AddStaticEnt(st->mod, "pieces/ceiling", gid, 11, origin, angles);
 		}
 		else if (strcmp(st->layer_name, "columns") == 0)
