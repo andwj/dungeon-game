@@ -337,5 +337,19 @@ vector Tile_Neighbor(vector tile, float dir)
 }
 
 
+float Dir_FromAngle(float ang)
+{
+	ang = ang + 45;
+	ang = ang * (256 / 360);
+	ang = ang & 255;
+
+	if (ang >= 192) return DIR_SOUTH;
+	if (ang >= 128) return DIR_WEST;
+	if (ang >=  64) return DIR_NORTH;
+
+	return DIR_EAST;
+}
+
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab
