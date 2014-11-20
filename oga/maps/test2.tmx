@@ -352,9 +352,11 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="Furniture Objects"/>
+ <objectgroup name="Furniture Objects">
+  <object gid="45" x="535" y="386"/>
+ </objectgroup>
  <objectgroup name="Pickup Objects">
-  <object gid="43" x="525" y="410"/>
+  <object gid="43" x="538" y="384"/>
  </objectgroup>
  <objectgroup name="Actors">
   <object gid="42" x="451" y="391">
