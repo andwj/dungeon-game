@@ -471,7 +471,7 @@ void PutClientInServer()
 
 	setsize (self, VEC_HULL_MIN, VEC_HULL_MAX);
 	
-	self.view_ofs = '0 0 22';
+	self.view_ofs = '0 0 40';
 
 	player_stand1 ();
 	
