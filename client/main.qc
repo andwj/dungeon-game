@@ -257,7 +257,11 @@ void CSQC_UpdateView(float vwidth, float vheight)
 
 float CSQC_InputEvent(float evtype, float x, float y)
 {
-	// TODO
+	if (evtype == EVENT_KeyDown && x == K_MOUSE1)
+	{
+		UI_ActivateMoveButton();
+		return 1;
+	}
 
 	return 0;
 }

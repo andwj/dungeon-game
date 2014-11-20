@@ -23,6 +23,8 @@ float  dragging_mode;
 
 float  can_drop_mode;
 
+float  active_move_impulse;
+
 
 void CMD_highlight()
 {
@@ -159,12 +161,8 @@ void UI_DrawHealth()
 //
 // ---- Move Button Stuff ----
 //
-#define MOVEBUTTON_UP			1
-#define MOVEBUTTON_DOWN			2
-#define MOVEBUTTON_LEFT			3
-#define MOVEBUTTON_RIGHT		4
-#define MOVEBUTTON_TURN_LEFT	5
-#define MOVEBUTTON_TURN_RIGHT	6
+#define TURN_RIGHT	5
+#define TURN_LEFT	6
 
 
 float UI_TestHighlightMoveButton(vector pos, vector pos2, vector siz)
@@ -194,30 +192,39 @@ void UI_DrawMoveButtons()
 
 	/* determine which button mouse is over */
 
-	float button = 0;
+	float impulse = 0;
 
 	vector siz = '38 38 0';
 
 	if (UI_TestHighlightMoveButton(pos, pos + '30 16 0', siz))
-		button = MOVEBUTTON_UP;
+		impulse = DIR_NORTH;
 
 	else if (UI_TestHighlightMoveButton(pos, pos + '30 102 0', siz))
-		button = MOVEBUTTON_DOWN;
+		impulse = DIR_SOUTH;
 
 	else if (UI_TestHighlightMoveButton(pos, pos + '0 75 0', siz))
-		button = MOVEBUTTON_LEFT;
+		impulse = DIR_WEST;
 
 	else if (UI_TestHighlightMoveButton(pos, pos + '58 76 0', siz))
-		button = MOVEBUTTON_RIGHT;
+		impulse = DIR_EAST;
 
 	else if (UI_TestHighlightMoveButton(pos, pos + '0 37 0', siz))
-		button = MOVEBUTTON_TURN_LEFT;
+		impulse = TURN_LEFT;
 
 	else if (UI_TestHighlightMoveButton(pos, pos + '58 37 0', siz))
-		button = MOVEBUTTON_TURN_RIGHT;
+		impulse = TURN_RIGHT;
 
 
-	// FIXME : handle initial button press : send impulse to client
+	active_move_impulse = impulse;
+}
+
+
+void UI_ActivateMoveButton()
+{
+	if (active_move_impulse > 0)
+	{
+		localcmd(sprintf("\nimpulse %d\n", active_move_impulse));
+	}
 }
 
 
