@@ -34,9 +34,60 @@ void() Player_Jump;
 */
 
 
+void Player_MoveTurn()
+{
+	float howlong = time - self.last_move_time;
+	self.last_move_time = time;
+
+	if (howlong <= 0) return;
+	if (howlong > 0.1) howlong = 0.1;
+
+	float MOVE = 500 * howlong;
+
+	vector diff = self.dest - self.origin;
+
+	diff_z = 0;
+
+	if (vlen(diff) < MOVE)
+	{
+		// we have arrived
+		self.origin = self.dest;
+		self.dest   = '0 0 0';
+	}
+	else
+	{
+		diff = normalize(diff) * MOVE;
+
+		self.origin = self.origin + diff;
+	}
+
+	setorigin(self, self.origin);
+}
+
+
 void Impulse_Movement()
 {
-	// TODO
+	float dir = 0;
+
+	if (self.impulse == 1) dir = DIR_NORTH;
+	if (self.impulse == 2) dir = DIR_SOUTH;
+	if (self.impulse == 3) dir = DIR_EAST;
+	if (self.impulse == 4) dir = DIR_WEST;
+
+	// already moving?
+	if (self.dest)
+		return;		// FIXME : save a few
+
+	vector new_tile = Tile_Neighbor(self.tile_pos, dir);
+	vector new_pos  = Tile_MiddleCoord(new_tile);
+
+	// !!! FIXME : CHECK IF MOVE IS VALID !!!
+
+	// update 'tile_pos' immediately, but origin will shift over time
+
+	self.tile_pos = new_tile;
+
+	self.dest = new_pos;
 }
 
 
@@ -378,9 +429,12 @@ void() PlayerPreThink =
 	if (self.deadflag == DEAD_DYING)
 		return;	// dying, so do nothing
 
+	if (self.dest != '0 0 0' || self.dest2_y)
+		Player_MoveTurn();
+
 	if (self.button2)
 	{
-		Player_Jump ();
+		Player_Jump();
 	}
 	else
 		self.flags = self.flags | FL_JUMPRELEASED;

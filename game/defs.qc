@@ -122,7 +122,7 @@ float	AS_MISSILE		= 4;
 //
 // doors, etc
 //
-.vector		dest, dest1, dest2;
+.vector		dest, dest1, dest2;		// andrewj: used by players for movement and turning
 .float		wait;			// time from firing to restarting
 .float		delay;			// time from activation to firing
 .entity		trigger_field;	// door's trigger entity
@@ -177,6 +177,7 @@ float	AS_MISSILE		= 4;
 
 // andrewj: player tile position
 .vector		tile_pos;
+.float		last_move_time;
 
 //
 // andrewj: player inventory
