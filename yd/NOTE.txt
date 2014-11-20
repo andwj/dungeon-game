@@ -1,0 +1,8 @@
+
+NOTE: all assets in this 'yd' folder are licensed to
+use in this OGA Dungeon-related project _ONLY_.
+These resources are **NOT FREE** to use,
+they are NOT under Creative Commons of any sort.
+Exclusive permission is granted to use them *ONLY* in
+this OGA Dungeon-related Project.
+
