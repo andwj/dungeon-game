@@ -296,5 +296,33 @@ void() SUB_UseTargets =
 };
 
 
+//=============================================================================
+
+// andrewj : utilities for tile-based movement
+//
+// TILE COORDINATES: bottom-left tile is (0, 0)
+//
+
+vector Tile_MiddleCoord(vector tile)
+{
+	vector p;
+
+	p_x = (tile_x + 0.5) * TILE_SIZE;
+	p_y = (tile_y + 0.5) * TILE_SIZE;
+	p_z = tile_z * TILE_SIZE;
+
+	return p;
+}
+
+vector Tile_FromCoord(vector p)
+{
+	p_x = floor(p_x / TILE_SIZE);
+	p_y = floor(p_y / TILE_SIZE);
+	p_z = p_z / TILE_SIZE;
+
+	return p;
+}
+
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab

@@ -175,6 +175,9 @@ float	AS_MISSILE		= 4;
 .float		volume;
 
 
+// andrewj: player tile position
+.vector		tile_pos;
+
 //
 // andrewj: player inventory
 //

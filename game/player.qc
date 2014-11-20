@@ -627,9 +627,13 @@ void()	player_die_ax9	=	[	$axdeth9,	player_die_ax9	] {PlayerDead();};
 /*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 24)
 The normal starting point for a level.
 */
-void() info_player_start =
+void spawnfunc_info_player_start()
 {
-};
+	// move client to middle of a tile
+	self.origin = Tile_MiddleCoord(Tile_FromCoord(self.origin));
+
+	setorigin(self, self.origin);
+}
 
 
 

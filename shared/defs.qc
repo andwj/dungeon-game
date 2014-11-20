@@ -24,6 +24,10 @@ typedef float	bool;
 float argc;
 
 
+// size of a world tile
+#define TILE_SIZE		256
+
+
 // inventory box size
 #define INV_BOX_WIDTH	2
 #define INV_BOX_HEIGHT	5
