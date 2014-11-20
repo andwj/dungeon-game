@@ -324,5 +324,18 @@ vector Tile_FromCoord(vector p)
 }
 
 
+vector Tile_Neighbor(vector tile, float dir)
+{
+	if (dir == DIR_NORTH) return tile + '0 1 0';
+	if (dir == DIR_SOUTH) return tile - '0 1 0';
+
+	if (dir == DIR_EAST) return tile + '1 0 0';
+	if (dir == DIR_WEST) return tile - '1 0 0';
+
+	error("Tile_Neighbor: illegal dir");
+	return '0 0 0';
+}
+
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab

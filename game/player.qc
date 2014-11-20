@@ -629,8 +629,10 @@ The normal starting point for a level.
 */
 void spawnfunc_info_player_start()
 {
-	// move client to middle of a tile
-	self.origin = Tile_MiddleCoord(Tile_FromCoord(self.origin));
+	self.tile_pos = Tile_FromCoord(self.origin);
+
+	// ensure players are in middle of a tile
+	self.origin = Tile_MiddleCoord(self.tile_pos);
 
 	setorigin(self, self.origin);
 }

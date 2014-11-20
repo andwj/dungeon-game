@@ -160,15 +160,10 @@ Returns the entity to spawn at
 */
 entity() SelectSpawnPoint =
 {
-	local	entity spot;
-	local	entity thing;
-	local	float  pcount;
-	
-// testinfo_player_start is only found in regioned levels
-	spot = find (world, classname, "testplayerstart");
-	if (spot)
-		return spot;
-		
+	entity spot;
+	entity thing;
+	float  pcount;
+
 // choose a info_player_deathmatch point
 	if (coop)
 	{
@@ -251,9 +246,9 @@ entity MakeDropIndicator(entity pl)
 //          (which need to be decoded here, even for very first map).
 void PutClientInServer()
 {
-	local	entity spot;
+	entity spot;
 
-	spot = SelectSpawnPoint ();
+	spot = SelectSpawnPoint();
 
 	self.classname = "player";
 	self.health = 100;
@@ -292,6 +287,7 @@ void PutClientInServer()
 //	spot = SelectSpawnPoint ();
 
 	self.origin = spot.origin + '0 0 1';
+	self.tile_pos = spot.tile_pos;
 	self.angles = spot.angles;
 	self.fixangle = TRUE;		// turn this way immediately
 

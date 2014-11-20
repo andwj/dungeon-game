@@ -27,6 +27,12 @@ float argc;
 // size of a world tile
 #define TILE_SIZE		256
 
+// basic directions
+#define DIR_NORTH		1
+#define DIR_SOUTH		2
+#define DIR_EAST		3
+#define DIR_WEST		4
+
 
 // inventory box size
 #define INV_BOX_WIDTH	2
