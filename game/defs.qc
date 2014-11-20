@@ -178,6 +178,7 @@ float	AS_MISSILE		= 4;
 // andrewj: player tile position
 .vector		tile_pos;
 .float		last_move_time;
+.float		saved_impulse;
 
 //
 // andrewj: player inventory

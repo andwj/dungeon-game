@@ -18,6 +18,8 @@ void() player_pain;
 void() player_stand1;
 void() Player_Jump;
 
+void Impulse_Movement(float imp);
+
 
 /* TEST CRUD
 
@@ -34,7 +36,35 @@ void() Player_Jump;
 */
 
 
-void Player_MoveTurn()
+void Player_QueueImpulse(entity pl, float imp)
+{
+	if (pl.saved_impulse & 0xF0000)
+		return;	// no more room
+
+	if (pl.saved_impulse & 0xF000)
+		imp = imp * 65536;
+	else if (pl.saved_impulse & 0xF00)
+		imp = imp * 4096;
+	else if (pl.saved_impulse & 0xF0)
+		imp = imp * 256;
+	else if (pl.saved_impulse & 0xF)
+		imp = imp * 16;
+
+	pl.saved_impulse = pl.saved_impulse | imp;
+}
+
+
+float Player_UnqueueImpulse(entity pl)
+{
+	float imp = pl.saved_impulse & 0xF;
+
+	pl.saved_impulse = floor(pl.saved_impulse / 16) & 0xFFFF;
+
+	return imp;
+}
+
+
+void Player_MoveTurn(entity pl)
 {
 	float howlong = time - self.last_move_time;
 	self.last_move_time = time;
@@ -42,44 +72,86 @@ void Player_MoveTurn()
 	if (howlong <= 0) return;
 	if (howlong > 0.1) howlong = 0.1;
 
-	float MOVE = 500 * howlong;
 
-	vector diff = self.dest - self.origin;
+	/* movement */
 
-	diff_z = 0;
-
-	if (vlen(diff) < MOVE)
+	if (self.dest != '0 0 0')
 	{
-		// we have arrived
-		self.origin = self.dest;
-		self.dest   = '0 0 0';
+		float MOVE = 500 * howlong;
+
+		vector diff = self.dest - self.origin;
+
+		diff_z = 0;
+
+		if (vlen(diff) < MOVE)
+		{
+			// we have arrived
+			self.origin = self.dest;
+			self.dest   = '0 0 0';
+
+			if (pl.saved_impulse)
+			{
+				Impulse_Movement(Player_UnqueueImpulse(pl));
+			}
+		}
+		else
+		{
+			diff = normalize(diff) * MOVE;
+
+			self.origin = self.origin + diff;
+		}
+
+		setorigin(self, self.origin);
 	}
-	else
+
+
+	/* turning */
+
+	if (self.dest2_x)
 	{
-		diff = normalize(diff) * MOVE;
+		float MOVE = 250.0 * howlong;
 
-		self.origin = self.origin + diff;
+		float diff = angle_diff(self.angles_y, self.dest2_y);
+
+print(sprintf("Player_Turn : MOVE=%1.2f  diff=%1.2f  cur_yaw:%1.2f\n",
+MOVE, diff, self.angles_y));
+
+		if (fabs(diff) < MOVE)
+		{
+print("  ARRIVED\n");
+			// we have arrived
+			self.angles_y = self.dest2_y;
+			self.dest2    = '0 0 0';
+		}
+		else
+		{
+			if (diff < 0)
+				MOVE = -MOVE;
+
+			self.angles_y = self.angles_y + MOVE;
+print(sprintf("  added %1.2f ---> %1.2f\n", MOVE, self.angles_y));
+		}
+
+		self.fixangle = true;
 	}
-
-	setorigin(self, self.origin);
 }
 
 
-void Impulse_Movement()
+void Impulse_Movement(float imp)
 {
+	float pl_dir = Dir_FromAngle(self.angles_y);
+
 	float dir = 0;
 
-	if (self.impulse == 1) dir = DIR_NORTH;
-	if (self.impulse == 2) dir = DIR_SOUTH;
-	if (self.impulse == 3) dir = DIR_EAST;
-	if (self.impulse == 4) dir = DIR_WEST;
-
-	// already moving?
-	if (self.dest)
-		return;		// FIXME : save a few
+	if (imp == 1) dir = DIR_NORTH;
+	if (imp == 2) dir = DIR_SOUTH;
+	if (imp == 3) dir = DIR_EAST;
+	if (imp == 4) dir = DIR_WEST;
 
 	vector new_tile = Tile_Neighbor(self.tile_pos, dir);
 	vector new_pos  = Tile_MiddleCoord(new_tile);
+
+	new_pos_z = 0;
 
 	// !!! FIXME : CHECK IF MOVE IS VALID !!!
 
@@ -91,25 +163,78 @@ void Impulse_Movement()
 }
 
 
-void Impulse_Turning()
+void Impulse_Turning(float imp)
 {
-	// TODO
+	float delta;
+
+	if (imp == 5)
+		delta = -90;
+	else if (imp == 6)
+		delta = 90;
+	else
+		return;
+
+	// if already turning, just update existing target
+
+	if (! self.dest2_x)
+	{
+		self.dest2_x = 1;
+		self.dest2_y = self.angles_y;
+	}
+
+	self.dest2_y = sane_angle(self.dest2_y + delta);
 }
 
 
 void ImpulseCommands()
 {
-	if (self.impulse >= 1 && self.impulse <= 4)
-		Impulse_Movement();
-	
-	else if (self.impulse >= 5 && self.impulse <= 8)
-		Impulse_Turning();
-	
+	if (self.impulse <= 0)
+		return;
+
+print(sprintf("impulse %d\n", self.impulse));
+
+	// we always turn immediately
+
+	if (self.impulse >= 5 && self.impulse <= 8)
+	{
+		Impulse_Turning(self.impulse);
+		self.impulse = 0;
+		return;
+	}
+
+	// ignore most other impulses while moving or turning
+
+	if (! (self.dest == '0 0 0' && ! self.dest2_x))
+	{
+		// queue up movements for later
+		// [ but they still get clobbered by non-movement impulses ]
+		if (self.impulse < 5)
+		{
+			Player_QueueImpulse(self, self.impulse);
+			self.impulse = 0;
+		}
+		else
+		{
+			// otherwise leave 'impulse' as-is
+			// [ it will get executed later unless clobbered by a new one ]
+		}
+
+		return;
+	}
+
+
+	if (self.impulse < 5)
+	{
+		Impulse_Movement(self.impulse);
+	}
 	else
 	{
-		// TODO other stuff
+		// TODO other commands
+
+		// forget saved movement commands too
+		self.saved_impulse = 0;
 	}
-	
+
 	self.impulse = 0;
 }
 
@@ -308,7 +433,7 @@ void PutClientInServer()
 
 	// andrewj: no physics with TMX pieces yet -- use no-clip mode
 	self.solid = SOLID_NOT;
-	self.movetype = MOVETYPE_NOCLIP;
+	self.movetype = MOVETYPE_NONE;	// i.e. DIY
 
 	self.show_hostile = 0;
 	self.max_health = 100;
@@ -429,8 +554,7 @@ void() PlayerPreThink =
 	if (self.deadflag == DEAD_DYING)
 		return;	// dying, so do nothing
 
-	if (self.dest != '0 0 0' || self.dest2_y)
-		Player_MoveTurn();
+	Player_MoveTurn(self);
 
 	if (self.button2)
 	{
@@ -618,9 +742,9 @@ void() PlayerPostThink =
 	if (self.deadflag)
 		return;
 
-	INV_ObjectInteraction(self);
-
 	ImpulseCommands();
+
+	INV_ObjectInteraction(self);
 
 // check to see if player landed and play landing sound	
 	if ((self.jump_flag < -300) && (self.flags & FL_ONGROUND) && (self.health > 0))
