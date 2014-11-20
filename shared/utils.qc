@@ -64,5 +64,36 @@ vector to_vector(float x, float y, float z)
 }
 
 
+//
+// angular maths
+//
+float sane_angle(float a)
+{
+	if (a >= 1080) a = a - 360;
+	if (a >= 720)  a = a - 360;
+	if (a >= 360)  a = a - 360;
+
+	if (a <= -1080) a = a + 360;
+	if (a <= -720)  a = a + 360;
+	if (a <= -360)  a = a + 360;
+
+	return a;
+}
+
+
+float angle_diff(float A, float B)
+{
+	// A + result = B
+	// result ranges from -180 to +180
+
+	float D = sane_angle(B - A);
+
+	if (D >  180) D = D - 360;
+	if (D < -180) D = D + 360;
+
+	return D;
+}
+
+
 //--- editor settings ---
 // vi:ts=4:sw=4:noexpandtab
