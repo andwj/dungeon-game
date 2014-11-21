@@ -219,12 +219,15 @@ void UI_DrawMoveButtons()
 }
 
 
-void UI_ActivateMoveButton()
+bool UI_ActivateMoveButton()
 {
 	if (active_move_impulse > 0)
 	{
 		localcmd(sprintf("\nimpulse %d\n", active_move_impulse));
+		return true;
 	}
+
+	return false;
 }
 
 

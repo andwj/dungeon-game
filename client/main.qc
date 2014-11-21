@@ -259,8 +259,8 @@ float CSQC_InputEvent(float evtype, float x, float y)
 {
 	if (evtype == EVENT_KeyDown && x == K_MOUSE1)
 	{
-		UI_ActivateMoveButton();
-		return 1;
+		if (UI_ActivateMoveButton())
+			return 1;
 	}
 
 	return 0;
