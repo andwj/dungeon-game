@@ -18,7 +18,7 @@ void() player_pain;
 void() player_stand1;
 void() Player_Jump;
 
-void Impulse_Movement(float imp);
+void Impulse_MoveTurn(float imp);
 
 
 /* TEST CRUD
@@ -91,7 +91,7 @@ void Player_MoveTurn(entity pl)
 
 			if (pl.saved_impulse)
 			{
-				Impulse_Movement(Player_UnqueueImpulse(pl));
+				Impulse_MoveTurn(Player_UnqueueImpulse(pl));
 			}
 		}
 		else
@@ -122,6 +122,11 @@ print("  ARRIVED\n");
 			// we have arrived
 			self.angles_y = self.dest2_y;
 			self.dest2    = '0 0 0';
+
+			if (pl.saved_impulse)
+			{
+				Impulse_MoveTurn(Player_UnqueueImpulse(pl));
+			}
 		}
 		else
 		{
@@ -186,6 +191,15 @@ void Impulse_Turning(float imp)
 }
 
 
+void Impulse_MoveTurn(float imp)
+{
+	if (imp < 5)
+		Impulse_Movement(imp);
+	else
+		Impulse_Turning(imp);
+}
+
+
 void ImpulseCommands()
 {
 	if (self.impulse <= 0)
@@ -193,22 +207,13 @@ void ImpulseCommands()
 
 print(sprintf("impulse %d\n", self.impulse));
 
-	// we always turn immediately
-
-	if (self.impulse >= 5 && self.impulse <= 8)
-	{
-		Impulse_Turning(self.impulse);
-		self.impulse = 0;
-		return;
-	}
-
-	// ignore most other impulses while moving or turning
+	// ignore non-movement impulses while moving
 
 	if (! (self.dest == '0 0 0' && ! self.dest2_x))
 	{
 		// queue up movements for later
 		// [ but they still get clobbered by non-movement impulses ]
-		if (self.impulse < 5)
+		if (self.impulse < 10)
 		{
 			Player_QueueImpulse(self, self.impulse);
 			self.impulse = 0;
@@ -223,9 +228,9 @@ print(sprintf("impulse %d\n", self.impulse));
 	}
 
 
-	if (self.impulse < 5)
+	if (self.impulse < 10)
 	{
-		Impulse_Movement(self.impulse);
+		Impulse_MoveTurn(self.impulse);
 	}
 	else
 	{
