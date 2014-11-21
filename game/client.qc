@@ -146,7 +146,9 @@ void Impulse_Movement(float imp)
 {
 	float pl_dir = Dir_FromAngle(self.angles_y);
 
-	float dir = imp;
+	float dir = imp + pl_dir + 2;
+	if (dir > 4) dir = dir - 4;
+	if (dir > 4) dir = dir - 4;
 
 	vector new_tile = Tile_Neighbor(self.tile_pos, dir);
 	vector new_pos  = Tile_MiddleCoord(new_tile);
