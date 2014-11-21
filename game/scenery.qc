@@ -51,7 +51,7 @@ void spawnfunc_table()
 	setmodel(self, "models/table.obj");
 
 	self.skin = 0;
-	self.scale = 1.0;
+	self.scale = 0.66;
 	self.solid = SOLID_BBOX;
 
 	setsize(self, '-76 -16 0', '76 16 40');
