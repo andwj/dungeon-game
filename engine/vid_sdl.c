@@ -2176,8 +2176,8 @@ static SDL_Surface *VID_WrapSDL_SetVideoMode(int screenwidth, int screenheight, 
 }
 #else
 // Adding the OS independent XPM version --blub
-#include "darkplaces.xpm"
-#include "nexuiz.xpm"
+//#include "darkplaces.xpm"
+//#include "nexuiz.xpm"
 #if SDL_MAJOR_VERSION == 1
 #if SDL_VIDEO_DRIVER_X11 && !SDL_VIDEO_DRIVER_QUARTZ
 #include <SDL_syswm.h>
@@ -2238,6 +2238,8 @@ static SDL_Surface *VID_WrapSDL_SetVideoMode(int screenwidth, int screenheight, 
 			}
 		}
 	}
+
+#if 0  // andrewj: disabled
 
 	// we only get here if non-XPM icon was missing, or SDL version is not
 	// sufficient for transparent non-XPM icons
@@ -2346,6 +2348,7 @@ static SDL_Surface *VID_WrapSDL_SetVideoMode(int screenwidth, int screenheight, 
 			Con_Printf("Sorry, but this does not even look similar to an XPM.\n");
 		}
 	}
+#endif
 
 	if (icon)
 		SDL_WM_SetIcon(icon, NULL);
