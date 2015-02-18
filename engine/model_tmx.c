@@ -1144,7 +1144,7 @@ static void TMX_LinkStaticEnt(dp_model_t *mod, tmx_static_entity_t *ent)
 	entity_render_t *render = &ent->render;
 
 
-	memset(render, 0, sizeof(render));
+	memset(render, 0, sizeof(*render));
 
 
 	render->model = ent->piece->model;
