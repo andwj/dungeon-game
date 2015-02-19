@@ -5,7 +5,7 @@
 # NOTE: this is NOT the makefile stuff which Darkplaces normally comes with.
 #
 
-PROGRAM=darkplaces-sdl
+PROGRAM=darkplaces-sdl.exe
 
 all: $(PROGRAM)
 
@@ -40,7 +40,8 @@ EXPAT_LIBS=$(EXPAT_DIR)/libexpat.a
 
 SDL_DIR=$(LIB_LOC)/SDL-1.2.15
 SDL_CFLAGS=-I$(SDL_DIR)/include
-SDL_LIBS=$(SDL_DIR)/libSDL.a
+SDL_LIBS=$(SDL_DIR)/libSDL.a \
+	$(SDL_DIR)/src/main/win32/SDL_win32_main.o
 
 DIRECTX_LIBS=-lddraw -ldsound -ldinput -ldxguid
 

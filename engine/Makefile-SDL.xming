@@ -40,18 +40,16 @@ SOURCES = \
 	src/thread/win32/SDL*.c \
 	src/thread/generic/SDL_syscond.c \
 	src/timer/win32/*.c \
-	src/loadso/win32/*.c
+	src/loadso/win32/*.c \
+	src/main/win32/SDL_win32_main.c
 
 OBJECTS = $(shell echo $(SOURCES) | sed -e 's,\.c,\.o,g')
 
 all: $(TARGET)
 
 $(TARGET): $(CONFIG_H) $(OBJECTS)
-	$(AR) crv $@ $^
+	$(AR) crv $@ $(OBJECTS)
 	$(RANLIB) $@
-
-$(CONFIG_H):
-	cp $(CONFIG_H).default $(CONFIG_H)
 
 clean:
 	rm -f $(TARGET) $(OBJECTS)
