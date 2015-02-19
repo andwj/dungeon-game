@@ -47,7 +47,7 @@ SDL_LIBS=$(SDL_DIR)/libSDL.a
 CFLAGS=-D$(OS) $(FEATURES) $(WARNINGS) $(OPTIMISE) \
 	$(SDL_CFLAGS) $(EXPAT_FLAGS) $(JPEG_FLAGS) $(ZLIB_FLAGS)
 
-LIBS=$(SDL_LIBS) $(EXPAT_DIR) $(JPEG_LIBS) $(ZLIB_LIBS) \
+LIBS=$(SDL_LIBS) $(EXPAT_LIBS) $(JPEG_LIBS) $(ZLIB_LIBS) \
 	-mwindows  -lshell32  \
 	-lcomdlg32 -lole32 -luuid -lgdi32 \
 	-lcomctl32 -lwsock32 \
