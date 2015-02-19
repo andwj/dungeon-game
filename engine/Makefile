@@ -32,6 +32,7 @@ OBJS := \
 	$(OBJ_DIR)/sys_sdl.o  \
 	$(OBJ_DIR)/vid_sdl.o  \
 	$(OBJ_DIR)/thread_sdl.o  \
+	$(OBJ_DIR)/builddate.o  \
 	$(OBJ_DIR)/menu.o  \
 	$(OBJ_DIR)/mvm_cmds.o  \
 	$(OBJ_DIR)/snd_main.o  \
