@@ -1,0 +1,27 @@
+# Makefile to build EXPAT 2.1.0 for Win32 via cross-compiler
+# Requires GNU make.
+
+CROSS=i686-w64-mingw32-
+CC=$(CROSS)gcc
+
+OS=WIN32
+OPTIMISE=-g -O1
+
+CFLAGS  = -D$(OS) $(OPTIMISE) -Wall -DHAVE_EXPAT_CONFIG_H
+AR	= $(CROSS)ar
+RANLIB	= $(CROSS)ranlib
+
+TARGET  = libexpat.a
+OBJECTS = lib/xmlparse.o lib/xmlrole.o lib/xmltok.o
+
+all: $(TARGET)
+
+$(TARGET): $(CONFIG_H) $(OBJECTS)
+	$(AR) crv $@ $^
+	$(RANLIB) $@
+
+clean:
+	rm -f $(TARGET) $(OBJECTS)
+
+#--- editor settings ------------
+# vi:ts=8:sw=8:noexpandtab
