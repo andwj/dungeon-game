@@ -19,7 +19,8 @@ OBJ_DIR=obj_win32
 LIB_LOC=lib_win32
 
 FEATURES=-DCONFIG_MENU \
-	 -DLINK_TO_ZLIB -DLINK_TO_LIBJPEG
+	 -DLINK_TO_ZLIB -DLINK_TO_LIBJPEG \
+	 -DNO_SSE
 
 WARNINGS=-Wall -Wold-style-definition -Wstrict-prototypes -Wsign-compare 
 
@@ -34,11 +35,11 @@ JPEG_FLAGS=-I$(JPEG_DIR)
 JPEG_LIBS=$(JPEG_DIR)/libjpeg.a
 
 EXPAT_DIR=$(LIB_LOC)/expat-2.1.0
-EXPAT_FLAGS=-I$(EXPAT_DIR)
+EXPAT_FLAGS=-I$(EXPAT_DIR)/lib
 EXPAT_LIBS=$(EXPAT_DIR)/libexpat.a
 
 SDL_DIR=$(LIB_LOC)/SDL-1.2.15
-SDL_CFLAGS=-I$(SDL_DIR)/include/SDL
+SDL_CFLAGS=-I$(SDL_DIR)/include
 SDL_LIBS=$(SDL_DIR)/libSDL.a
 
 #------------------------------------------------
@@ -47,8 +48,10 @@ CFLAGS=-D$(OS) $(FEATURES) $(WARNINGS) $(OPTIMISE) \
 	$(SDL_CFLAGS) $(EXPAT_FLAGS) $(JPEG_FLAGS) $(ZLIB_FLAGS)
 
 LIBS=$(SDL_LIBS) $(EXPAT_DIR) $(JPEG_LIBS) $(ZLIB_LIBS) \
+	-mwindows  -lshell32  \
+	-lcomdlg32 -lole32 -luuid -lgdi32 \
+	-lcomctl32 -lwsock32 \
 	-lm
-##FIXME : windows stuff
 
 OBJS := \
 	$(OBJ_DIR)/sys_sdl.o  \
