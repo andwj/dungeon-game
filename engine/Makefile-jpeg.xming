@@ -1,0 +1,29 @@
+# Makefile to build JPEG-8c for Win32 via cross-compiler
+# Requires GNU make.
+
+CROSS=i686-w64-mingw32-
+CC=$(CROSS)gcc
+
+OS=WIN32
+OPTIMISE=-g -O1
+
+CFLAGS  = -D$(OS) $(OPTIMISE) -Wall
+AR	= $(CROSS)ar
+RANLIB	= $(CROSS)ranlib
+
+TARGET  = libjpeg.a
+SOURCES = *.c
+
+OBJECTS = $(shell echo $(SOURCES) | sed -e 's,\.c,\.o,g')
+
+all: $(TARGET)
+
+$(TARGET): $(CONFIG_H) $(OBJECTS)
+	$(AR) crv $@ $^
+	$(RANLIB) $@
+
+clean:
+	rm -f $(TARGET) $(OBJECTS)
+
+#--- editor settings ------------
+# vi:ts=8:sw=8:noexpandtab
