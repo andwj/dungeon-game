@@ -27,13 +27,20 @@ SOURCES = \
 	src/thread/*.c \
 	src/timer/*.c \
 	src/video/*.c \
+	src/audio/windib/*.c \
+	src/audio/windx5/*.c \
+	src/audio/disk/*.c \
 	src/audio/dummy/*.c \
+	src/video/wincommon/*.c \
+	src/video/windib/*.c \
+	src/video/windx5/*.c \
 	src/video/dummy/*.c \
-	src/joystick/dummy/*.c \
-	src/cdrom/dummy/*.c \
-	src/thread/generic/*.c \
-	src/timer/dummy/*.c \
-	src/loadso/dummy/*.c \
+	src/joystick/win32/*.c \
+	src/cdrom/win32/*.c \
+	src/thread/win32/SDL*.c \
+	src/thread/generic/SDL_syscond.c \
+	src/timer/win32/*.c \
+	src/loadso/win32/*.c
 
 OBJECTS = $(shell echo $(SOURCES) | sed -e 's,\.c,\.o,g')
 

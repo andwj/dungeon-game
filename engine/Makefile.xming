@@ -42,16 +42,20 @@ SDL_DIR=$(LIB_LOC)/SDL-1.2.15
 SDL_CFLAGS=-I$(SDL_DIR)/include
 SDL_LIBS=$(SDL_DIR)/libSDL.a
 
+DIRECTX_LIBS=-lddraw -ldsound -ldinput -ldxguid
+
+WIN32_LIBS=\
+	-mwindows -lkernel32 -luser32 -lshell32 \
+	-lgdi32 -lwinspool -lcomdlg32 -ladvapi32 \
+	-lole32 -loleaut32 -luuid -lwinmm -lwsock32
+
 #------------------------------------------------
 
 CFLAGS=-D$(OS) $(FEATURES) $(WARNINGS) $(OPTIMISE) \
 	$(SDL_CFLAGS) $(EXPAT_FLAGS) $(JPEG_FLAGS) $(ZLIB_FLAGS)
 
 LIBS=$(SDL_LIBS) $(EXPAT_LIBS) $(JPEG_LIBS) $(ZLIB_LIBS) \
-	-mwindows  -lshell32  \
-	-lcomdlg32 -lole32 -luuid -lgdi32 \
-	-lcomctl32 -lwsock32 \
-	-lm
+	$(DIRECTX_LIBS) $(WIN32_LIBS) -lm
 
 OBJS := \
 	$(OBJ_DIR)/sys_sdl.o  \
