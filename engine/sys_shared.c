@@ -238,8 +238,10 @@ void* Sys_GetProcAddress (dllhandle_t handle, const char* name)
 # define HAVE_Sleep 1
 #endif
 
+#ifndef WIN32  // andrewj: not working for me
 #if defined(CLOCK_MONOTONIC) || defined(CLOCK_HIRES)
 # define HAVE_CLOCKGETTIME 1
+#endif
 #endif
 
 #ifndef WIN32
