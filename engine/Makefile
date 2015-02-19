@@ -8,29 +8,27 @@ PROGRAM=darkplaces-sdl
 
 all: $(PROGRAM)
 
-FEATURES = -DCONFIG_MENU -DCONFIG_CD -DCONFIG_VIDEO_CAPTURE
-
-## -DDP_MAKE_TARGET=linux
-## -DDP_SOUND_API=ALSA
-
 CC=gcc
 
-CFLAGS=-Wall -Wold-style-definition -Wstrict-prototypes -Wsign-compare \
-        -DLINK_TO_ZLIB -DLINK_TO_LIBJPEG  -D_FILE_OFFSET_BITS=64 \
-        -D__KERNEL_STRICT_NAMES -DCONFIG_MENU -DCONFIG_CD -DCONFIG_VIDEO_CAPTURE
+OS=UNIX
+
+OBJ_DIR=obj_linux
+
+FEATURES=-DCONFIG_MENU \
+	 -DLINK_TO_ZLIB -DLINK_TO_LIBJPEG
+
+WARNINGS=-Wall -Wold-style-definition -Wstrict-prototypes -Wsign-compare 
 
 OPTIMISE=-g3 -fno-math-errno -ffinite-math-only -fno-rounding-math -fno-signaling-nans -fno-trapping-math
-
-MORE_FLAGS=-DBUILDTYPE=debug
-
-LIBS = -lm -lexpat  -lz -ljpeg -lrt -ldl $(SDL_LIBS) -lX11
 
 SDL_CFLAGS := `sdl-config --cflags`
 SDL_LIBS   := `sdl-config --libs`
 
-OBJ_DIR = obj_linux
+CFLAGS=-D$(OS) $(FEATURES) $(WARNINGS) $(OPTIMISE) $(SDL_CFLAGS)
 
-OBJS :=
+LIBS=-lm -lexpat  -lz -ljpeg -ldl $(SDL_LIBS) -lX11
+
+OBJS := \
 	$(OBJ_DIR)/sys_sdl.o  \
 	$(OBJ_DIR)/vid_sdl.o  \
 	$(OBJ_DIR)/thread_sdl.o  \
@@ -127,8 +125,14 @@ OBJS :=
 	$(OBJ_DIR)/world.o  \
 	$(OBJ_DIR)/zone.o
 
-$(OBJ_DIR)/%.o: src/%.c
+$(OBJ_DIR)/%.o: ./%.c
 	$(CC) $(CFLAGS) -o $@ -c $<
+
+$(PROGRAM): $(OBJS)
+	$(CC) -Wl,--warn-common $^ -o $@ $(LDFLAGS) $(LIBS)
+
+clean:
+	rm -f $(PROGRAM) $(OBJ_DIR)/*.o ERRS
 
 #--- editor settings ------------
 # vi:ts=8:sw=8:noexpandtab
