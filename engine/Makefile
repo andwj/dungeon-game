@@ -4,7 +4,7 @@
 # NOTE: this is NOT the makefile stuff which Darkplaces normally comes with.
 #
 
-PROGRAM=darkplaces-sdl
+PROGRAM=../DungeonGame
 
 all: $(PROGRAM)
 
