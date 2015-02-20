@@ -436,7 +436,7 @@ static void TMX_ProcessObject(tmx_parse_state_t *st, const char **attr)
 		case 42:  /* player */
 			TMX_EntityPrintf(st, "{\n");
 			TMX_EntityPrintf(st, "  \"classname\" \"info_player_start\"\n");
-			TMX_EntityPrintf(st, "  \"origin\" \"%1.0f %1.0f %1.0f\"\n", real_x, real_y, 0);
+			TMX_EntityPrintf(st, "  \"origin\" \"%1.0f %1.0f %1.0f\"\n", real_x, real_y, 0.0);
 			break;
 
 		case 41: /* light */
