@@ -1445,8 +1445,26 @@ typedef struct gamemode_info_s
 	const char* gameuserdirname; // not null
 } gamemode_info_t;
 
+// andrewj : changes here for 'dungeon-game'
+#define FORCEGAME  "dungeongame"
+
 static const gamemode_info_t gamemode_info [GAME_COUNT] =
-{// game						basegame					prog_name				cmdline						gamename					gamenetworkfilername		basegame	modgame			screenshot			userdir					   // commandline option
+{
+
+{
+	GAME_NORMAL,			// game
+	GAME_NORMAL,			// basegame
+	"",						// prog_name
+	"-dungeongame",			// cmdline
+	"DungeonGame",			// gamename
+	"DungeonGame",			// gamenetworkfilername
+	"oga",					// basegame
+	"yd",					// modgame
+	"dp",					// screenshot
+	"dungeongame"			// userdir
+}
+
+#if 0
 { GAME_NORMAL,					GAME_NORMAL,				"",						"-quake",					"DarkPlaces-Quake",			"DarkPlaces-Quake",			"id1",		NULL,			"dp",				"darkplaces"			}, // COMMANDLINEOPTION: Game: -quake runs the game Quake (default)
 { GAME_HIPNOTIC,				GAME_NORMAL,				"hipnotic",				"-hipnotic",				"Darkplaces-Hipnotic",		"Darkplaces-Hipnotic",		"id1",		"hipnotic",		"dp",				"darkplaces"			}, // COMMANDLINEOPTION: Game: -hipnotic runs Quake mission pack 1: The Scourge of Armagon
 { GAME_ROGUE,					GAME_NORMAL,				"rogue",				"-rogue",					"Darkplaces-Rogue",			"Darkplaces-Rogue",			"id1",		"rogue",		"dp",				"darkplaces"			}, // COMMANDLINEOPTION: Game: -rogue runs Quake mission pack 2: The Dissolution of Eternity
@@ -1479,6 +1497,7 @@ static const gamemode_info_t gamemode_info [GAME_COUNT] =
 { GAME_STRAPBOMB,				GAME_STRAPBOMB,				"strapbomb",			"-strapbomb",				"Strap-on-bomb Car",		"Strap-on-bomb_Car",		"id1",		NULL,			"strap",			"strapbomb"				}, // COMMANDLINEOPTION: Game: -strapbomb runs the game Strap-on-bomb Car
 { GAME_MOONHELM,				GAME_MOONHELM,				"moonhelm",				"-moonhelm",				"MoonHelm",					"MoonHelm",					"data",		NULL,			"mh",				"moonhelm"				}, // COMMANDLINEOPTION: Game: -moonhelm runs the game MoonHelm
 { GAME_VORETOURNAMENT,			GAME_VORETOURNAMENT,		"voretournament",		"-voretournament",			"Vore Tournament",			"Vore_Tournament",			"data",		NULL,			"voretournament",	"voretournament"		}, // COMMANDLINEOPTION: Game: -voretournament runs the multiplayer game Vore Tournament
+#endif
 };
 
 static void COM_SetGameType(int index);
